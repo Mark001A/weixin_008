@@ -8,6 +8,7 @@ import android.widget.EditText;
 public class SettingActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     EditText startLoginAccount;
+    EditText vpnIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,10 +18,15 @@ public class SettingActivity extends AppCompatActivity {
         startLoginAccount =  (EditText)findViewById(R.id.startLoginAccount);
         startLoginAccount.setText(sharedPreferences.getString("startLoginAccount",""));
 
+        vpnIndex =  (EditText)findViewById(R.id.vpnIndex);
+        String getVpn = sharedPreferences.getString("vpnIndex","");
+        vpnIndex.setText(getVpn==null||"".equals(getVpn)?"1":getVpn);
+
     }
     private void saveParams(){
         SharedPreferences.Editor editor= sharedPreferences.edit();
         editor.putString("startLoginAccount",startLoginAccount.getText()+"");
+        editor.putString("vpnIndex",vpnIndex.getText()+"");
         editor.commit();
     }
 

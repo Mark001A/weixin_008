@@ -33,6 +33,7 @@ public class MyService extends AccessibilityService {
     }
     Map<String,String> record = new HashMap<String,String>();
     List<String[]> str;
+    String vpnIndex;
     @Override
     protected void onServiceConnected() {
         LogUtil.d("myService","开启服务...");
@@ -40,6 +41,10 @@ public class MyService extends AccessibilityService {
         LogUtil.d("myService","读取账号："+str);
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("url",MODE_PRIVATE);
         String startLoginAccount = sharedPreferences.getString("startLoginAccount","");
+        vpnIndex = sharedPreferences.getString("vpnIndex","");
+        if(vpnIndex==null||"".equals(vpnIndex)){
+            vpnIndex = "1";
+        }
         if(startLoginAccount!=null&&!"".equals(startLoginAccount)&&!"null".equals(startLoginAccount)){
             str = removeAct(startLoginAccount);
         }
@@ -106,8 +111,20 @@ public class MyService extends AccessibilityService {
 
         clickTextXY1(700,600,"其他连接方式","miui:id/action_bar_title","设置",100);
         clickTextXY1(700,300,"点击VPN","miui:id/action_bar_title","其他连接方式",100);
+
+
         clickTextXY1(557,1158,"断开连接","miui:id/alertTitle","已连接 VPN",1500);
-        clickTextXY1(500,400,"点击area","miui:id/action_bar_title","VPN",100);
+
+        if("1".equals(vpnIndex)){
+            clickTextXY1(500,400,"点击area","miui:id/action_bar_title","VPN",100);
+        }else if("2".equals(vpnIndex)){
+            clickTextXY1(500,514,"点击area","miui:id/action_bar_title","VPN",100);
+        }else if("3".equals(vpnIndex)){
+            clickTextXY1(500,603,"点击area","miui:id/action_bar_title","VPN",100);
+        }else if("4".equals(vpnIndex)){
+            clickTextXY1(500,706,"点击area","miui:id/action_bar_title","VPN",100);
+        }
+
         clickTextXY1(557,1158,"点击连接","miui:id/alertTitle","连接到",2000);
         if(AutoUtil.checkAction(record,"点击连接")){
             AccessibilityNodeInfo linking1 =AutoUtil.findNodeInfosByText(getRootInActiveWindow(),"正在连接...");
@@ -124,7 +141,19 @@ public class MyService extends AccessibilityService {
                 AutoUtil.sleep(5000);
             }else {
                 AutoUtil.showToastByRunnable(MyService.this,"尝试重新连接...");
-                clickTextXY1(500,400,"点击area","miui:id/action_bar_title","VPN",100);
+
+                //clickTextXY1(500,400,"点击area","miui:id/action_bar_title","VPN",100);
+
+                if("1".equals(vpnIndex)){
+                    clickTextXY1(500,400,"点击area","miui:id/action_bar_title","VPN",100);
+                }else if("2".equals(vpnIndex)){
+                    clickTextXY1(500,514,"点击area","miui:id/action_bar_title","VPN",100);
+                }else if("3".equals(vpnIndex)){
+                    clickTextXY1(500,603,"点击area","miui:id/action_bar_title","VPN",100);
+                }else if("4".equals(vpnIndex)){
+                    clickTextXY1(500,706,"点击area","miui:id/action_bar_title","VPN",100);
+                }
+
                 clickTextXY1(557,1158,"点击连接","miui:id/alertTitle","连接到",100);
             }
         }
@@ -182,9 +211,9 @@ public class MyService extends AccessibilityService {
         @Override
         public void run() {
             while (true){
-                LogUtil.d("myService","-->开启008线程..."+record);
+                LogUtil.d("myService","-->开启008线程..."+Thread.currentThread().getName()+record);
                 if(WeixinAutoHandler.IS_PAUSE){
-                    AutoUtil.showToastByRunnable(MyService.this,"暂停服务..");
+                    //AutoUtil.showToastByRunnable(MyService.this,"暂停服务..");
                     LogUtil.d("autoChat","暂停服务");
                     AutoUtil.sleep(3000);
                     continue;
@@ -243,7 +272,7 @@ public class MyService extends AccessibilityService {
                     AutoUtil.performClick(history,record,"点击保存");
                     AutoUtil.performBack(MyService.this,record,"返回008首页");
                     AutoUtil.recordAndLog(record,"设置VPN");
-                    AutoUtil.showToastByRunnable(getApplicationContext(),"设置VPN");
+                    AutoUtil.showToastByRunnable(getApplicationContext(),"设置VPN--"+vpnIndex);
                     AutoUtil.startSysSetting();
                     //new Thread(new VPNThread()).start();
                     AutoUtil.sleep(3000);
@@ -285,7 +314,7 @@ public class MyService extends AccessibilityService {
         clickIdMode(root,"com.tencent.mm:id/adj","输入密码","登录2");
         //clickTextMode(root,"登录2","否");
         //弹出是否推荐通讯录，点否
-        clickIdMode(root,"com.tencent.mm:id/aer","登录2","否通讯录");
+        clickIdModeDeny(root,"com.tencent.mm:id/aer","登录2","否通讯录");
         //判断登录成功启动008
         loginSuccessStart008();
     }
@@ -299,6 +328,14 @@ public class MyService extends AccessibilityService {
     private void clickIdMode(AccessibilityNodeInfo root,String id,String currentAction,String action){
         if(AutoUtil.checkAction(record,currentAction)){
             AccessibilityNodeInfo phoneNode = AutoUtil.findNodeInfosById(root,id);
+            AutoUtil.performClick(phoneNode,record,action);
+        }
+    }
+    private void clickIdModeDeny(AccessibilityNodeInfo root,String id,String currentAction,String action){
+        if(AutoUtil.checkAction(record,currentAction)){
+            AccessibilityNodeInfo phoneNode = AutoUtil.findNodeInfosById(root,id);
+            if(phoneNode!=null)
+            System.out.println("否通讯录-->"+phoneNode.getText());
             AutoUtil.performClick(phoneNode,record,action);
         }
     }
