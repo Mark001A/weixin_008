@@ -1,6 +1,7 @@
 package hyj.weixin_008;
 
 import android.accessibilityservice.AccessibilityService;
+import android.app.KeyguardManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ComponentName;
@@ -9,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.provider.Settings;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
@@ -238,6 +240,38 @@ public class AutoUtil {
         Intent intent = new Intent(Settings.ACTION_SETTINGS);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         GlobalApplication.getContext().startActivity(intent);
+    }
+
+
+    public  static void  wakeAndUnlock()
+    {
+        KeyguardManager km;
+        KeyguardManager.KeyguardLock kl;
+        PowerManager pm;
+        PowerManager.WakeLock wl;
+        if(true)
+        {
+            System.out.println("--->锁屏");
+            //获取电源管理器对象
+            pm=(PowerManager) GlobalApplication.getContext().getSystemService(Context.POWER_SERVICE);
+            //获取PowerManager.WakeLock对象，后面的参数|表示同时传入两个值，最后的是调试用的Tag
+            wl = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "bright");
+            //点亮屏幕
+            wl.acquire();
+            //得到键盘锁管理器对象
+            km= (KeyguardManager)GlobalApplication.getContext().getSystemService(Context.KEYGUARD_SERVICE);
+            kl = km.newKeyguardLock("unLock");
+            //解锁
+            kl.disableKeyguard();
+        }else {
+            System.out.println("--->亮屏");
+        }
+
+    }
+    public final static boolean isScreenLocked() {
+        android.app.KeyguardManager mKeyguardManager = (KeyguardManager) GlobalApplication.getContext().getSystemService(GlobalApplication.getContext().KEYGUARD_SERVICE);
+        //PowerManager pm = (PowerManager)  GlobalApplication.getContext().getSystemService(Context.POWER_SERVICE);
+        return mKeyguardManager.inKeyguardRestrictedInputMode();
     }
 
     public static List<String> getSomeMsgs(){

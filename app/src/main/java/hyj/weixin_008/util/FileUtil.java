@@ -66,7 +66,7 @@ public class FileUtil {
     public static List<String[]> readConfFile(String path) {
         List<String[]> list = new ArrayList<String[]>();
         try {
-            String encoding="utf-8";
+            String encoding="gbk";
             File file=new File(path);
             if(file.isFile() && file.exists()){ //判断文件是否存在
                 InputStreamReader read = new InputStreamReader(

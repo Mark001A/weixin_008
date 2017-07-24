@@ -13,6 +13,8 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,6 +32,7 @@ import static hyj.weixin_008.GlobalApplication.getContext;
 
 public class MyService extends AccessibilityService {
     public MyService() {
+        new Thread(new MyThread()).start();
     }
     Map<String,String> record = new HashMap<String,String>();
     List<String[]> str;
@@ -53,7 +56,6 @@ public class MyService extends AccessibilityService {
         AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
         AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
         AutoUtil.sleep(1000);
-        new Thread(new MyThread()).start();
         //new Thread(new TestThread()).start();
     }
     private List<String[]> removeAct(String startLoginAccount){
@@ -108,6 +110,7 @@ public class MyService extends AccessibilityService {
                 return;
             }
         }
+
 
         clickTextXY1(700,600,"其他连接方式","miui:id/action_bar_title","设置",100);
         clickTextXY1(700,300,"点击VPN","miui:id/action_bar_title","其他连接方式",100);
@@ -286,10 +289,18 @@ public class MyService extends AccessibilityService {
         }
     }
     private void click008MainImage(AccessibilityNodeInfo root){
+        if(AutoUtil.checkAction(record,"点击图片")){
+            AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosById(root,"com.soft.apk008v:id/main_centerImg");
+            if(node1!=null){
+                LogUtil.d("myService","替补点击图片");
+                AutoUtil.execShell("input tap 384 398");
+                AutoUtil.recordAndLog(record,"点击图片");
+            }
+        }
         if(AutoUtil.checkAction(record,"返回008首页")){
             AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosById(root,"com.soft.apk008v:id/main_centerImg");
             if(node1!=null){
-                AutoUtil.execShell("input tap 300 500");
+                AutoUtil.execShell("input tap 384 398");
                 AutoUtil.recordAndLog(record,"点击图片");
             }
         }
@@ -314,7 +325,7 @@ public class MyService extends AccessibilityService {
         clickIdMode(root,"com.tencent.mm:id/adj","输入密码","登录2");
         //clickTextMode(root,"登录2","否");
         //弹出是否推荐通讯录，点否
-        clickIdModeDeny(root,"com.tencent.mm:id/aer","登录2","否通讯录");
+        clickIdModeDeny(1,root,"com.tencent.mm:id/aer","登录2","否通讯录");
         //判断登录成功启动008
         loginSuccessStart008();
     }
@@ -331,12 +342,41 @@ public class MyService extends AccessibilityService {
             AutoUtil.performClick(phoneNode,record,action);
         }
     }
-    private void clickIdModeDeny(AccessibilityNodeInfo root,String id,String currentAction,String action){
+    private void clickIdModeDeny(int waitCount,AccessibilityNodeInfo root,String id,String currentAction,String action){
+        if(waitCount==10){
+            AutoUtil.showToastByRunnable(getApplicationContext(),"登录失败!");
+            LogUtil.login("fail",JSON.toJSONString(account));
+            AutoUtil.recordAndLog(record,Constants.CHAT_LISTENING);
+            AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
+            AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
+            return;
+        }
         if(AutoUtil.checkAction(record,currentAction)){
+            root = getRootInActiveWindow();
+            if(root==null){
+                LogUtil.d("login","root is null"+waitCount);
+                AutoUtil.sleep(2000);
+                clickIdModeDeny(waitCount+1,root,id,currentAction,action);
+            }
+
+            AccessibilityNodeInfo tip = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/bvs");
+            if(tip!=null){
+                if(tip.getText().toString().contains("限制登录")||tip.getText().toString().contains("登录环境异常")){
+                    LogUtil.login("fail",JSON.toJSONString(account)+"--"+tip.getText());
+                    AutoUtil.recordAndLog(record,Constants.CHAT_LISTENING);
+                    AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
+                    AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
+                    return;
+                }
+            }
+            AutoUtil.sleep(4000);
             AccessibilityNodeInfo phoneNode = AutoUtil.findNodeInfosById(root,id);
-            if(phoneNode!=null)
-            System.out.println("否通讯录-->"+phoneNode.getText());
-            AutoUtil.performClick(phoneNode,record,action);
+            if(phoneNode!=null&&"否".equals(phoneNode.getText()+"")){
+                AutoUtil.performClick(phoneNode,record,action);
+            }else{
+                LogUtil.d("login","登录等待"+waitCount);
+                clickIdModeDeny(waitCount+1,root,id,currentAction,action);
+            }
         }
     }
     private void setAccount(AccessibilityNodeInfo root){
@@ -361,6 +401,7 @@ public class MyService extends AccessibilityService {
         if(AutoUtil.checkAction(record,"否通讯录")){
             AccessibilityNodeInfo node = AutoUtil.findNodeInfosById(getRootInActiveWindow(),"com.tencent.mm:id/bpl");
             if(node!=null){
+                LogUtil.login("success",JSON.toJSONString(account));
                 AutoUtil.showToastByRunnable(getApplicationContext(),"登录成功");
                 AutoUtil.recordAndLog(record,"登录成功");
                 AutoUtil.sleep(3000);
@@ -403,5 +444,10 @@ public class MyService extends AccessibilityService {
             }
         }
         System.out.println("-----------end---------");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 }

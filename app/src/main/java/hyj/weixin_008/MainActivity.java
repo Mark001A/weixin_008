@@ -23,11 +23,18 @@ public class MainActivity extends AppCompatActivity {
         MyWindowManager.createSmallWindow(getApplicationContext());
         GetPermissionUtil.getReadAndWriteContactPermision(this,MainActivity.this);
         setContentView(R.layout.activity_main);
+        AutoUtil.wakeAndUnlock();
 
         Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
         //Intent intent = new Intent(Settings.ACTION_SETTINGS);
         startActivity(intent);
         //AutoUtil.startAppByPackName("com.android.settings","com.android.settings");
         Toast.makeText(MainActivity.this, "开启权限", Toast.LENGTH_LONG).show();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

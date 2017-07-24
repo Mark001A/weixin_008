@@ -32,7 +32,13 @@ public class SettingActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        super.onStop();
         saveParams();
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        saveParams();
+        super.onDestroy();
     }
 }
