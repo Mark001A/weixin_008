@@ -8,6 +8,18 @@
     tools:context="hyj.weixin_008.SettingActivity">
 
     <TextView
+        android:id="@+id/spinnerText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="20sp"
+        android:textColor="#000000" />
+    <Spinner android:id="@+id/Spinner01"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+    <!--<TextView
         android:text="开始登录账号"
         android:textSize="20sp"
         android:textColor="#000000"
@@ -16,7 +28,7 @@
     <EditText
         android:id="@+id/startLoginAccount"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content" />-->
     <TextView
         android:text="VPN序号"
         android:textSize="20sp"

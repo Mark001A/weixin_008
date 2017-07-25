@@ -37,9 +37,13 @@ public class MyService extends AccessibilityService {
     Map<String,String> record = new HashMap<String,String>();
     List<String[]> str;
     String vpnIndex;
+    String ipAddress;
     @Override
     protected void onServiceConnected() {
         LogUtil.d("myService","开启服务...");
+        ipAddress = AutoUtil.getIPAddress(this);
+        AutoUtil.showToastByRunnable(this,"当前IP："+ipAddress);
+        AutoUtil.sleep(1000);
         str= FileUtil.readConfFile("/sdcard/注册成功微信号.txt");
         LogUtil.d("myService","读取账号："+str);
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("url",MODE_PRIVATE);
@@ -78,6 +82,12 @@ public class MyService extends AccessibilityService {
     public void onAccessibilityEvent(AccessibilityEvent event) {
         System.out.println("--event-->"+event.getEventType());
         AccessibilityNodeInfo root = getRootInActiveWindow();
+        if(root!=null){
+            AccessibilityNodeInfo n = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/bvs");
+            if(n!=null){
+                System.out.println("---nnn>+"+n.getText());
+            }
+        }
 
     }
     class TestThread implements Runnable{
@@ -102,7 +112,9 @@ public class MyService extends AccessibilityService {
         if(AutoUtil.checkAction(record,"点击连接")){
             AccessibilityNodeInfo link =AutoUtil.findNodeInfosByText(getRootInActiveWindow(),"已连接");
             if(link!=null){
-                AutoUtil.showToastByRunnable(getApplicationContext(),"连接成功");
+                String newIP = AutoUtil.getIPAddress(this);
+                AutoUtil.showToastByRunnable(getApplicationContext(),"连接成功!\n当前IP："+newIP+"\n上次IP："+ipAddress);
+                ipAddress = newIP;
                 AutoUtil.recordAndLog(record,"连接成功");
                 AutoUtil.showToastByRunnable(getApplicationContext(),"启动微信");
                 AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
@@ -137,7 +149,9 @@ public class MyService extends AccessibilityService {
             }
             AccessibilityNodeInfo link =AutoUtil.findNodeInfosByText(getRootInActiveWindow(),"已连接");
             if(link!=null){
-                AutoUtil.showToastByRunnable(getApplicationContext(),"连接成功");
+                String newIP = AutoUtil.getIPAddress(this);
+                AutoUtil.showToastByRunnable(getApplicationContext(),"连接成功!\n当前IP："+newIP+"\n上次IP："+ipAddress);
+                ipAddress = newIP;
                 AutoUtil.recordAndLog(record,"连接成功");
                 AutoUtil.showToastByRunnable(getApplicationContext(),"启动微信");
                 AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
@@ -315,6 +329,15 @@ public class MyService extends AccessibilityService {
         }
         //点击登录按钮
         clickTextMode(root,"登录","连接成功");
+
+        if(AutoUtil.checkAction(record,"登录")){
+            String tempIp = AutoUtil.getIPAddress(this);
+            if(!ipAddress.equals(tempIp)){
+                String msg = "ip发生变化:"+tempIp;
+                AutoUtil.showToastByRunnable(this,msg);
+                LogUtil.d("myService",msg);
+            }
+        }
         //输入账号
         setAccount(root);
         //下一步
@@ -323,11 +346,8 @@ public class MyService extends AccessibilityService {
         setPwd(root);
         //点击登录
         clickIdMode(root,"com.tencent.mm:id/adj","输入密码","登录2");
-        //clickTextMode(root,"登录2","否");
-        //弹出是否推荐通讯录，点否
-        clickIdModeDeny(1,root,"com.tencent.mm:id/aer","登录2","否通讯录");
-        //判断登录成功启动008
-        loginSuccessStart008();
+        //弹出是否推荐通讯录、其他设备登录提示 退出,判断登录成功启动008
+        clickIdModeDeny(1,"登录2","退出弹出框");
     }
 
     private void clickTextMode(AccessibilityNodeInfo root,String text,String currentAction){
@@ -342,7 +362,7 @@ public class MyService extends AccessibilityService {
             AutoUtil.performClick(phoneNode,record,action);
         }
     }
-    private void clickIdModeDeny(int waitCount,AccessibilityNodeInfo root,String id,String currentAction,String action){
+    private void clickIdModeDeny(int waitCount,String currentAction,String action){
         if(waitCount==10){
             AutoUtil.showToastByRunnable(getApplicationContext(),"登录失败!");
             LogUtil.login("fail",JSON.toJSONString(account));
@@ -351,31 +371,38 @@ public class MyService extends AccessibilityService {
             AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
             return;
         }
-        if(AutoUtil.checkAction(record,currentAction)){
-            root = getRootInActiveWindow();
+        if(AutoUtil.checkAction(record,currentAction)||AutoUtil.checkAction(record,action)){
+            AccessibilityNodeInfo root = getRootInActiveWindow();
             if(root==null){
                 LogUtil.d("login","root is null"+waitCount);
                 AutoUtil.sleep(2000);
-                clickIdModeDeny(waitCount+1,root,id,currentAction,action);
+                clickIdModeDeny(waitCount+1,currentAction,action);
             }
 
             AccessibilityNodeInfo tip = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/bvs");
+            AccessibilityNodeInfo wxList = AutoUtil.findNodeInfosById(getRootInActiveWindow(),"com.tencent.mm:id/bpl");
             if(tip!=null){
+                LogUtil.d("myService",tip.getText()+"");
                 if(tip.getText().toString().contains("限制登录")||tip.getText().toString().contains("登录环境异常")){
                     LogUtil.login("fail",JSON.toJSONString(account)+"--"+tip.getText());
                     AutoUtil.recordAndLog(record,Constants.CHAT_LISTENING);
                     AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
                     AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
                     return;
+                }else if(tip.getText().toString().contains("有人正通过微信密码在")||tip.getText().toString().contains("看看手机通讯录里")){
+                    AutoUtil.performBack(this,record,action);
                 }
-            }
-            AutoUtil.sleep(4000);
-            AccessibilityNodeInfo phoneNode = AutoUtil.findNodeInfosById(root,id);
-            if(phoneNode!=null&&"否".equals(phoneNode.getText()+"")){
-                AutoUtil.performClick(phoneNode,record,action);
-            }else{
-                LogUtil.d("login","登录等待"+waitCount);
-                clickIdModeDeny(waitCount+1,root,id,currentAction,action);
+            }else if(wxList!=null){
+                LogUtil.login("success",JSON.toJSONString(account));
+                AutoUtil.showToastByRunnable(getApplicationContext(),"登录成功");
+                AutoUtil.recordAndLog(record,"登录成功");
+                AutoUtil.sleep(3000);
+                AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
+                AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
+            }else {
+                AutoUtil.sleep(2500);
+                LogUtil.d("login","登录等待成功"+waitCount);
+                clickIdModeDeny(waitCount+1,currentAction,action);
             }
         }
     }
