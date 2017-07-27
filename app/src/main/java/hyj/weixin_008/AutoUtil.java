@@ -188,6 +188,11 @@ public class AutoUtil {
         ClipData clip = ClipData.newPlainText("text", text);
         clipboard.setPrimaryClip(clip);
     }
+    public static void createPasteInThread(String text){
+        ClipboardManager clipboard = (ClipboardManager) GlobalApplication.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("text", text);
+        clipboard.setPrimaryClip(clip);
+    }
     public static void createPasteInHandler(final AccessibilityNodeInfo phoneNode,final String text,final Map<String,String> record, final String recordAction){
         if(phoneNode==null) return;
         Handler handler = new Handler(Looper.getMainLooper());
@@ -224,6 +229,15 @@ public class AutoUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    public static void clickXY(int x,int y){
+        execShell("input tap "+x+" "+y);
+    }
+    public static void inputText(String text){
+        execShell("input text "+text);
+    }
+    public static void inputSwipe(int x1,int y1,int x2,int y2){
+        execShell("input swipe "+x1+" "+y1+" "+x2+" "+y2);
     }
 
     public static void showToastByRunnable(final Context context, final CharSequence text) {

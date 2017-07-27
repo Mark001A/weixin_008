@@ -27,12 +27,14 @@ import java.util.concurrent.TimeUnit;
 import hyj.weixin_008.common.WeixinAutoHandler;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
+import hyj.weixin_008.util.WxUtil;
 
 import static hyj.weixin_008.GlobalApplication.getContext;
 
 public class MyService extends AccessibilityService {
     public MyService() {
-        new Thread(new MyThread()).start();
+        //new Thread(new MyThread()).start();
+        new Thread(new RegisterThread()).start();
     }
     Map<String,String> record = new HashMap<String,String>();
     List<String[]> str;
@@ -57,10 +59,9 @@ public class MyService extends AccessibilityService {
         }
         AutoUtil.recordAndLog(record,Constants.CHAT_LISTENING);
         super.onServiceConnected();
-        AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
+       /* AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
         AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
-        AutoUtil.sleep(1000);
-        //new Thread(new TestThread()).start();
+        AutoUtil.sleep(1000);*/
     }
     private List<String[]> removeAct(String startLoginAccount){
         boolean flag = false;
@@ -82,14 +83,36 @@ public class MyService extends AccessibilityService {
     public void onAccessibilityEvent(AccessibilityEvent event) {
         System.out.println("--event-->"+event.getEventType());
         AccessibilityNodeInfo root = getRootInActiveWindow();
-        if(root!=null){
-            AccessibilityNodeInfo n = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/bvs");
-            if(n!=null){
-                System.out.println("---nnn>+"+n.getText());
-            }
-        }
 
     }
+    class RegisterThread implements Runnable{
+        @Override
+        public void run() {
+            while (true){
+                AutoUtil.sleep(1000);
+                LogUtil.d("myService","-->开启008线程..."+Thread.currentThread().getName()+record);
+                AccessibilityNodeInfo root = getRootInActiveWindow();
+                if(root==null){
+                    LogUtil.d("myService","register is null");
+                    continue;
+                }
+                WxUtil.clickRegisterBtn1(root,record);
+                WxUtil.setNamePhoneAndPwd(root,record);
+                AccessibilityNodeInfo registerNode3 = AutoUtil.findNodeInfosByText(root,"确认手机号码");
+                AccessibilityNodeInfo registerNode4 = AutoUtil.findNodeInfosByText(root,"验证手机号");
+                AccessibilityNodeInfo registerNode5 = AutoUtil.findNodeInfosByText(root,"下一步");
+
+                if(registerNode3!=null)
+                    System.out.println("registerNode3-->"+registerNode3.getText());
+                if(registerNode4!=null)
+                    System.out.println("registerNode4-->"+registerNode4.getText());
+                if(registerNode5!=null)
+                    System.out.println("registerNode5-->"+registerNode5.getText());
+
+            }
+        }
+    }
+
     class TestThread implements Runnable{
         @Override
         public void run() {
