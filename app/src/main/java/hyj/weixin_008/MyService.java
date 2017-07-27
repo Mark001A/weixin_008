@@ -389,8 +389,10 @@ public class MyService extends AccessibilityService {
                     AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
                     AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
                     return;
-                }else if(tip.getText().toString().contains("有人正通过微信密码在")||tip.getText().toString().contains("看看手机通讯录里")){
+                }else if(tip.getText().toString().contains("看看手机通讯录里")){
                     AutoUtil.performBack(this,record,action);
+                }else if(tip.getText().toString().contains("有人正通过微信密码在")){
+                    AutoUtil.performClick(AutoUtil.findNodeInfosByText(root,"忽略"),record,action);
                 }
             }else if(wxList!=null){
                 LogUtil.login("success",JSON.toJSONString(account));
@@ -400,7 +402,7 @@ public class MyService extends AccessibilityService {
                 AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
                 AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
             }else {
-                AutoUtil.sleep(2500);
+                AutoUtil.sleep(3000);
                 LogUtil.d("login","登录等待成功"+waitCount);
                 clickIdModeDeny(waitCount+1,currentAction,action);
             }
