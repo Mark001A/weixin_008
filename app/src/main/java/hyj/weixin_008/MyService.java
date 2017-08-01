@@ -27,12 +27,14 @@ import java.util.concurrent.TimeUnit;
 import hyj.weixin_008.common.WeixinAutoHandler;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
+import hyj.weixin_008.util.WxUtil;
 
 import static hyj.weixin_008.GlobalApplication.getContext;
 
 public class MyService extends AccessibilityService {
     public MyService() {
-        new Thread(new MyThread()).start();
+        //new Thread(new MyThread()).start();
+        new Thread(new RegisterThread()).start();
     }
     Map<String,String> record = new HashMap<String,String>();
     List<String[]> str;
@@ -57,10 +59,9 @@ public class MyService extends AccessibilityService {
         }
         AutoUtil.recordAndLog(record,Constants.CHAT_LISTENING);
         super.onServiceConnected();
-        AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
+       /* AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
         AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
-        AutoUtil.sleep(1000);
-        //new Thread(new TestThread()).start();
+        AutoUtil.sleep(1000);*/
     }
     private List<String[]> removeAct(String startLoginAccount){
         boolean flag = false;
@@ -82,14 +83,69 @@ public class MyService extends AccessibilityService {
     public void onAccessibilityEvent(AccessibilityEvent event) {
         System.out.println("--event-->"+event.getEventType());
         AccessibilityNodeInfo root = getRootInActiveWindow();
-        if(root!=null){
-            AccessibilityNodeInfo n = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/bvs");
-            if(n!=null){
-                System.out.println("---nnn>+"+n.getText());
-            }
-        }
 
     }
+    class RegisterThread implements Runnable{
+        @Override
+        public void run() {
+            while (true){
+                AutoUtil.sleep(1000);
+                LogUtil.d("myService","-->开启008线程..."+Thread.currentThread().getName()+record);
+                AccessibilityNodeInfo root = getRootInActiveWindow();
+                if(root==null){
+                    LogUtil.d("myService","register is null");
+                    continue;
+                }
+                WxUtil.clickRegisterBtn1(root,record);
+                WxUtil.setNamePhoneAndPwd(root,record);
+                AccessibilityNodeInfo registerNode3 = AutoUtil.findNodeInfosByText(root,"确认手机号码");
+                if(registerNode3!=null){
+                    AutoUtil.clickXY(550,800);
+                }
+                AccessibilityNodeInfo registerNode4 = AutoUtil.findNodeInfosByText(root,"验证码");
+                AccessibilityNodeInfo registerNode5 = AutoUtil.findNodeInfosByText(root,"下一步");
+                if(registerNode4!=null&&registerNode5!=null){
+                    AutoUtil.clickXY(350,410);
+                    AutoUtil.sleep(500);
+                    AutoUtil.inputText("028184");//输入手机号
+                    AutoUtil.sleep(1000);
+                    AutoUtil.clickXY(350,645);
+                }
+                AccessibilityNodeInfo registerNode6 = AutoUtil.findNodeInfosByText(root,"不是我的，继续注册");
+                if(registerNode6!=null){
+                    AutoUtil.clickXY(350,744);
+                }
+                AccessibilityNodeInfo registerNode7 = AutoUtil.findNodeInfosByText(root,"工具箱");
+                if(registerNode7!=null){
+                    AutoUtil.clickXY(370,430);
+                }
+                AccessibilityNodeInfo registerNode8 = AutoUtil.findNodeInfosByText(root,"历史记录");
+                if(registerNode8!=null){
+                    AutoUtil.clickXY(68,352);
+                    AutoUtil.sleep(500);
+                    AutoUtil.clickXY(417,352);
+                }
+                AccessibilityNodeInfo registerNode9 = AutoUtil.findNodeInfosByText(root,"编辑");
+                if(registerNode9!=null){
+                    AutoUtil.clickXY(520,150);
+                    AutoUtil.sleep(800);
+                }
+                AccessibilityNodeInfo registerNode10 = AutoUtil.findNodeInfosByText(root,"输入别名");
+                if(registerNode10!=null){
+                    AutoUtil.inputText("65555555555");
+                    AutoUtil.sleep(800);
+                    AutoUtil.clickXY(213,797);
+                    AutoUtil.sleep(2000);
+                    AutoUtil.clickBack();
+                    AutoUtil.sleep(800);
+                    AutoUtil.clickBack();
+                }
+
+
+            }
+        }
+    }
+
     class TestThread implements Runnable{
         @Override
         public void run() {
