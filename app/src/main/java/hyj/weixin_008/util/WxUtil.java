@@ -36,11 +36,11 @@ public class WxUtil {
             AutoUtil.sleep(200);
             AutoUtil.clickXY(650,445);//点击手机号输入框清除
             AutoUtil.sleep(500);
-            AutoUtil.inputText("17076156224");//输入手机号
+            AutoUtil.inputText("17089163462");//输入手机号
             AutoUtil.sleep(1000);
             AutoUtil.clickXY(378,537);//点击密码框
             AutoUtil.sleep(300);
-            AutoUtil.inputText("password..");//输入密码
+            AutoUtil.inputText("www12345");//输入密码
             AutoUtil.sleep(1000);
             AutoUtil.clickXY(378,680);
             AutoUtil.recordAndLog(record,"点击注册2");

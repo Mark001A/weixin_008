@@ -83,6 +83,10 @@ public class MyService extends AccessibilityService {
     public void onAccessibilityEvent(AccessibilityEvent event) {
         System.out.println("--event-->"+event.getEventType());
         AccessibilityNodeInfo root = getRootInActiveWindow();
+        if(root!=null){
+            AccessibilityNodeInfo registerNode62 = AutoUtil.findNodeInfosByText(root,"个人信息");
+            System.out.println("-->re62"+registerNode62);
+        }
 
     }
     class RegisterThread implements Runnable{
@@ -101,34 +105,68 @@ public class MyService extends AccessibilityService {
                 AccessibilityNodeInfo registerNode3 = AutoUtil.findNodeInfosByText(root,"确认手机号码");
                 if(registerNode3!=null){
                     AutoUtil.clickXY(550,800);
+                    AutoUtil.recordAndLog(record,"确认手机号码");
                 }
                 AccessibilityNodeInfo registerNode4 = AutoUtil.findNodeInfosByText(root,"验证码");
                 AccessibilityNodeInfo registerNode5 = AutoUtil.findNodeInfosByText(root,"下一步");
                 if(registerNode4!=null&&registerNode5!=null){
                     AutoUtil.clickXY(350,410);
                     AutoUtil.sleep(500);
-                    AutoUtil.inputText("028184");//输入手机号
+                    AutoUtil.inputText("780199");//输入手机号
                     AutoUtil.sleep(1000);
                     AutoUtil.clickXY(350,645);
+                    AutoUtil.recordAndLog(record,"验证码");
                 }
                 AccessibilityNodeInfo registerNode6 = AutoUtil.findNodeInfosByText(root,"不是我的，继续注册");
-                if(registerNode6!=null){
+                if(registerNode6!=null&&!AutoUtil.checkAction(record,"不是我的，继续注册")){
                     AutoUtil.clickXY(350,744);
+                    AutoUtil.recordAndLog(record,"不是我的，继续注册");
                 }
+                AccessibilityNodeInfo registerNode61 = AutoUtil.findNodeInfosByText(root,"微信团队");
+                if(registerNode61!=null) {
+                    AutoUtil.clickXY(645, 1228);
+                    AutoUtil.recordAndLog(record, "我");
+                    AutoUtil.sleep(500);
+                    AutoUtil.clickXY(365, 262);
+                    AutoUtil.recordAndLog(record, "头像");
+                    AutoUtil.sleep(500);
+                }
+
+                AccessibilityNodeInfo registerNode62 = AutoUtil.findNodeInfosByText(root,"个人信息");
+                if(registerNode62!=null){
+                    clickRecordSleep(378,681,"更多",1000);
+                    clickRecordSleep(357,235,"性别",1000);
+                    clickRecordSleep(365,650,"男",1000);
+                    clickRecordSleep(362,330,"地区",1000);
+                    clickRecordSleep(388,793,"地区1",1000);
+                    clickRecordSleep(372,614,"地区2",1000);
+                    clickRecordSleep(368,428,"地区3",1000);
+                    clickRecordSleep(372,428,"个性签名",1000);
+
+                    AutoUtil.inputText("nihao..");
+                    AutoUtil.recordAndLog(record,"输入个性签名");
+                    AutoUtil.sleep(1000);
+
+                    clickRecordSleep(648,93,"确定个性签名",1000);
+                }
+
                 AccessibilityNodeInfo registerNode7 = AutoUtil.findNodeInfosByText(root,"工具箱");
                 if(registerNode7!=null){
                     AutoUtil.clickXY(370,430);
+                    AutoUtil.recordAndLog(record,"工具箱");
                 }
                 AccessibilityNodeInfo registerNode8 = AutoUtil.findNodeInfosByText(root,"历史记录");
                 if(registerNode8!=null){
                     AutoUtil.clickXY(68,352);
                     AutoUtil.sleep(500);
                     AutoUtil.clickXY(417,352);
+                    AutoUtil.recordAndLog(record,"历史记录");
                 }
                 AccessibilityNodeInfo registerNode9 = AutoUtil.findNodeInfosByText(root,"编辑");
                 if(registerNode9!=null){
                     AutoUtil.clickXY(520,150);
                     AutoUtil.sleep(800);
+                    AutoUtil.recordAndLog(record,"编辑");
                 }
                 AccessibilityNodeInfo registerNode10 = AutoUtil.findNodeInfosByText(root,"输入别名");
                 if(registerNode10!=null){
@@ -139,11 +177,17 @@ public class MyService extends AccessibilityService {
                     AutoUtil.clickBack();
                     AutoUtil.sleep(800);
                     AutoUtil.clickBack();
+                    AutoUtil.recordAndLog(record,"输入别名");
                 }
 
 
             }
         }
+    }
+    private void clickRecordSleep(int x,int y,String action,long ms){
+        AutoUtil.clickXY(x,y);
+        AutoUtil.recordAndLog(record,action);
+        AutoUtil.sleep(ms);
     }
 
     class TestThread implements Runnable{
