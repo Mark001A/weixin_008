@@ -1,5 +1,8 @@
 package hyj.weixin_008;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -12,6 +15,12 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
+        String[] str = new String[2];
+        str[0]="22";
+        str[1]="333";
+        String strs = JSON.toJSONString(str);
+        String[] ds =  JSONObject.parseObject(strs,String[].class);
+        System.out.println("-->"+ds[0]);
+        System.out.println("-->"+ds[1]);
     }
 }
