@@ -115,7 +115,7 @@ public class FileUtil {
     public static List<String> read008Data(String path) {
         List<String> list = new ArrayList<String>();
         try {
-            String encoding="gbk";
+            String encoding="utf-8";
             File file=new File(path);
             if(file.isFile() && file.exists()){ //判断文件是否存在
                 InputStreamReader read = new InputStreamReader(

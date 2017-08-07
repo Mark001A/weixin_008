@@ -78,7 +78,7 @@ public class MyService extends AccessibilityService {
 
     static String[] account={"12345608111","3333"};
     static String get008Phone="";
-    class MyThread implements Runnable{
+   /* class MyThread implements Runnable{
         @Override
         public void run() {
             while (true){
@@ -150,7 +150,80 @@ public class MyService extends AccessibilityService {
 
         }
         }
-    }
+    }*/
+   class MyThread implements Runnable{
+       @Override
+       public void run() {
+           while (true){
+               LogUtil.d("myService","-->开启008线程..."+Thread.currentThread().getName()+record);
+               if(WeixinAutoHandler.IS_PAUSE){
+                   //AutoUtil.showToastByRunnable(MyService.this,"暂停服务..");
+                   LogUtil.d("autoChat","暂停服务");
+                   AutoUtil.sleep(3000);
+                   continue;
+               }
+               if(WeixinAutoHandler.IS_NEXT_NONE){
+                   System.out.println("----跳转下一个");
+                   AutoUtil.recordAndLog(record,Constants.CHAT_LISTENING);
+                   AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
+                   AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
+                   WeixinAutoHandler.IS_NEXT_NONE = false;
+                   continue;
+               }
+               AutoUtil.sleep(300);
+               AccessibilityNodeInfo root = getRootInActiveWindow();
+               if(root==null){
+                   System.out.println("-->root is null");
+                   AutoUtil.sleep(500);
+                   continue;
+               }
+               AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosByText(root,"工具箱");
+               if(node1!=null){
+                   AutoUtil.clickXY(373,422);
+                   AutoUtil.recordAndLog(record,"点击图片");
+                   AutoUtil.sleep(1000);
+                   continue;
+               }
+               //点击历史记录
+               clickIdMode(root,"com.soft.apk008v:id/button_history","点击图片","点击历史记录");
+               if(AutoUtil.checkAction(record,"点击历史记录")){
+                   List<AccessibilityNodeInfo> phoneList = root.findAccessibilityNodeInfosByViewId("com.soft.apk008v:id/listItem_tagName");
+                   if(phoneList==null||phoneList.size()==0) continue;
+                   String txtPhone = str.get(str.size()-1)[0];
+                   AccessibilityNodeInfo phone = getNextPhoneByCurrentPhone(phoneList,txtPhone);
+                   LogUtil.d("myservice","txtPhone--->"+txtPhone);
+                   if(phone==null){
+                       AutoUtil.performScroll(phoneList.get(0),record,"下滚");
+                       AutoUtil.recordAndLog(record,"点击历史记录");
+                       continue;
+                   }
+                   account = str.remove(str.size()-1);
+                   LogUtil.d("myService","nodePhone-->"+phone.getText());
+                   get008Phone = phone.getText()+"";
+                   AutoUtil.showToastByRunnable(getApplicationContext(),"获取登录账号："+phone.getText());
+                   AutoUtil.performClick(phone,record,"点击号码",400);
+                   continue;
+               }
+               if(AutoUtil.checkAction(record,"点击号码")){
+                   //AccessibilityNodeInfo history = AutoUtil.findNodeInfosById(root,"com.soft.apk008v:id/button_restore");
+                   AccessibilityNodeInfo list = AutoUtil.findNodeInfosById(root,"com.soft.apk008v:id/set_value_con");
+                   String[] str = new String[93];
+                   if(list!=null&&list.getChildCount()==92){
+                       for(int i=0;i<92;i++){
+                           str[i]=list.getChild(i).getText()+"";
+                       }
+                       str[92]= get008Phone;
+                   }
+                   LogUtil.log008(JSON.toJSONString(str));
+                   System.out.println("json-->"+JSON.toJSONString(str));
+                   AutoUtil.recordAndLog(record,"点击图片");
+                   AutoUtil.sleep(1000);
+               }
+
+
+           }
+       }
+   }
 
     private void clickIdMode(AccessibilityNodeInfo root,String id,String currentAction,String action){
         if(AutoUtil.checkAction(record,currentAction)){

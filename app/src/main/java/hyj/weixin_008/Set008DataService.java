@@ -33,6 +33,8 @@ public class Set008DataService implements Runnable{
         adbService = new ADBClickService(context,record);
         datas = get008Datas();
         accounts = getWxAccounts();
+        System.out.println("datas-->"+JSON.toJSONString(datas));
+        System.out.println("accounts-->"+accounts);
     }
     @Override
     public void run() {
@@ -99,21 +101,26 @@ public class Set008DataService implements Runnable{
             AutoUtil.sleep(4000);
         }
     }
-    int currentIndex=0;
+    int currentIndex=2;
+    int getIndex=2;
     private void set008Data(AccessibilityNodeInfo root){
+        System.out.println("--->json-->"+JSON.toJSONString(datas.get(currentIndex)));
         AccessibilityNodeInfo list = AutoUtil.findNodeInfosById(root,"com.soft.apk008v:id/set_value_con");
-        if(list!=null&&list.getChildCount()==91){
+        AutoUtil.showToastByRunnable(GlobalApplication.getContext().getApplicationContext(),"总共:"+datas.size()+"  当前序号:"+currentIndex+" "+getIndex);
+        if(list!=null&&list.getChildCount()>88){
             for(int i=1;i<91;i++){
-                if(list.getChild(i).isEditable()){
-                    String data  = datas.get(currentIndex)[i+1];
-                    System.out.println("-rr->"+i+" "+data);
+                if(list.getChild(i).isEditable()&&getIndex<datas.get(currentIndex).length-1){
+                    if(i==24||i==26||i==28||i==32||i==34) continue;
+                    String data  = datas.get(currentIndex)[getIndex];
+                    System.out.println("--test->"+list.getChild(i).getText()+"  "+i+"----"+data);
                     AutoUtil.performSetText(list.getChild(i),data,record,"写入"+i+" "+data);
+                    getIndex = getIndex+1;
                 }
             }
-            AutoUtil.showToastByRunnable(GlobalApplication.getContext().getApplicationContext(),"总共:"+datas.size()+"  当前序号:"+currentIndex);
+            getIndex=2;
             AutoUtil.sleep(500);
             AutoUtil.clickXY(90,359);
-            currentAccount = datas.get(currentIndex)[datas.get(currentIndex).length-1];
+            currentAccount = datas.get(currentIndex)[0];
             if(currentIndex<datas.size()-1){
                 currentIndex = currentIndex+1;
             }else {
@@ -123,15 +130,33 @@ public class Set008DataService implements Runnable{
         }
     }
 
-    private List<String[]> get008Datas(){
+    /*private List<String[]> get008Datas(){
         List<String> list =  FileUtil.read008Data("/sdcard/A_hyj_008data/008data.txt");
         List<String[]> newList = new ArrayList<String[]>();
         for(String s:list){
             newList.add(JSONObject.parseObject(s,String[].class));
         }
        return newList;
+    }*/
+    private List<String[]> get008Datas(){
+        List<String> list =  FileUtil.read008Data("/sdcard/微信号记录.txt");
+        List<String[]> newList = new ArrayList<String[]>();
+        for(String s:list){
+            newList.add(s.split("----"));
+        }
+        return newList;
     }
     private Map<String,String>  getWxAccounts(){
+        Map<String,String> accounts = new HashMap<String,String>();
+        List<String> list =  FileUtil.read008Data("/sdcard/微信号记录.txt");
+        for(String str:list){
+            String[] ac = str.split("----");
+            accounts.put(ac[0],ac[1]);
+        }
+        System.out.println("currentAccount-->"+accounts);
+        return accounts;
+    }
+    /*private Map<String,String>  getWxAccounts(){
         Map<String,String> accounts = new HashMap<String,String>();
         List<String[]> list =   FileUtil.readConfFile("/sdcard/wxAccounts.txt");
         for(String[] str:list){
@@ -139,7 +164,7 @@ public class Set008DataService implements Runnable{
         }
         System.out.println("currentAccount-->"+accounts);
         return accounts;
-    }
+    }*/
     private int getStartIndex(){
         List<String[]> datas = get008Datas();
         return datas.indexOf("序列号");
