@@ -3,6 +3,7 @@ package hyj.weixin_008;
 import android.accessibilityservice.AccessibilityService;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -46,12 +47,13 @@ public class Set008DataService implements Runnable{
                 continue;
             }
             do008(root);
+            doVPN();
             doWxLogin(root);
         }
     }
 
     private void doWxLogin(AccessibilityNodeInfo root){
-        if(AutoUtil.checkAction(record,"写入数据")){
+        if(AutoUtil.checkAction(record,"连接成功")){
             AutoUtil.showToastByRunnable(GlobalApplication.getContext().getApplicationContext(),"启动微信");
             AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
             AutoUtil.sleep(5000);
@@ -122,6 +124,83 @@ public class Set008DataService implements Runnable{
             AutoUtil.recordAndLog(record,"写入数据");
         }
     }
+    String vpnIndex="1";
+    private void doVPN(){
+        if(AutoUtil.checkAction(record,"写入数据")){
+            AutoUtil.recordAndLog(record,"设置VPN");
+            AutoUtil.showToastByRunnable(context.getApplicationContext(),"设置VPN--"+vpnIndex);
+            AutoUtil.startSysSetting();
+            AutoUtil.sleep(500);
+        }
+        //AccessibilityNodeInfo linking =AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"正在连接...");
+        AccessibilityNodeInfo linkText = AutoUtil.findNodeInfosById(context.getRootInActiveWindow(),"android:id/summary");
+        if(linkText!=null&&linkText.getText().toString().equals("正在连接...")){
+            AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"正在连接...");
+            System.out.println("--->正在连接..");
+            AutoUtil.sleep(1000);
+            return;
+        }
+        if(AutoUtil.checkAction(record,"点击连接")){
+            AccessibilityNodeInfo link =AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"已连接");
+            if(link!=null){
+                String newIP = AutoUtil.getIPAddress(context);
+                AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"连接成功!\n当前IP："+newIP);
+                AutoUtil.recordAndLog(record,"连接成功");
+                AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"启动微信");
+                AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
+                AutoUtil.sleep(5000);
+                return;
+            }
+        }
+
+
+        clickTextXY1(538,890,"其他连接方式","miui:id/action_bar_title","设置",100);
+        clickTextXY1(514,425,"点击VPN","miui:id/action_bar_title","其他连接方式",100);
+
+
+        clickTextXY1(743,1796,"断开连接","miui:id/alertTitle","已连接 VPN",1500);
+
+        if(AutoUtil.checkAction(record,"点击VPN")){
+            AutoUtil.clickXY(522,421);
+            AutoUtil.sleep(800);
+            AutoUtil.clickXY(522,421);
+            AutoUtil.sleep(500);
+            AutoUtil.recordAndLog(record,"点击连接");
+        }
+        if(AutoUtil.checkAction(record,"点击连接")){
+            AccessibilityNodeInfo linkText1 = AutoUtil.findNodeInfosById(context.getRootInActiveWindow(),"android:id/summary");
+            System.out.println("nodeInfoa-->"+linkText1);
+            if(linkText1!=null&&linkText1.getText().toString().equals("正在连接...")){
+                AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"正在连接...");
+                return;
+            }
+            if(linkText1!=null&&linkText1.getText().toString().equals("已连接")){
+                String newIP = AutoUtil.getIPAddress(context);
+                AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"连接成功!\n当前IP："+newIP);
+                AutoUtil.recordAndLog(record,"连接成功");
+                AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"启动微信");
+                AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
+                AutoUtil.sleep(5000);
+            }else {
+                AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"尝试重新连接...");
+            }
+        }
+    }
+
+    //先判断所在页面，在点击操作
+    private void clickTextXY1(int x,int y,String action,String titleId,String title,int milliSeconds){
+        AccessibilityNodeInfo root = context.getRootInActiveWindow();
+        if(root==null){
+            LogUtil.d("myService",title+"is null");
+            return;
+        }
+        AccessibilityNodeInfo titleNode = AutoUtil.findNodeInfosById(root,titleId);
+        if(titleNode!=null&&titleNode.getText().toString().contains(title)){
+            AutoUtil.execShell("input tap "+x+" "+y);
+            AutoUtil.recordAndLog(record,action);
+            AutoUtil.sleep(milliSeconds);
+        }
+    }
 
     private List<String[]> get008Datas(){
         List<String> list =  FileUtil.read008Data("/sdcard/A_hyj_008data/008data.txt");
@@ -133,7 +212,7 @@ public class Set008DataService implements Runnable{
     }
     private Map<String,String>  getWxAccounts(){
         Map<String,String> accounts = new HashMap<String,String>();
-        List<String[]> list =   FileUtil.readConfFile("/sdcard/wxAccounts.txt");
+        List<String[]> list =   FileUtil.readConfFile("/sdcard/A_hyj_008data/wxAccounts.txt");
         for(String[] str:list){
             accounts.put(str[0],str[1]);
         }

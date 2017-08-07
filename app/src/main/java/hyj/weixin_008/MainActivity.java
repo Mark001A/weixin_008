@@ -28,8 +28,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         AutoUtil.wakeAndUnlock();
 
+        Toast.makeText(MainActivity.this, "开启权限11", Toast.LENGTH_LONG).show();
+
         Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-        //Intent intent = new Intent(Settings.ACTION_SETTINGS);
         startActivity(intent);
         //AutoUtil.startAppByPackName("com.android.settings","com.android.settings");
         Toast.makeText(MainActivity.this, "开启权限", Toast.LENGTH_LONG).show();

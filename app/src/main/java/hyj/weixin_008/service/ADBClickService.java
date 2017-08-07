@@ -27,7 +27,6 @@ public class ADBClickService {
         AutoUtil.sleep(sleepTime);
     }
     public void setTextByWindow(String windowNodeTexts,int clickX,int clickY,String inputText,String action,long sleepTime){
-        System.out.println("-dddd-->"+checkWindow(windowNodeTexts,action));
         if(!checkWindow(windowNodeTexts,action)) return;
         AutoUtil.clickXY(clickX,clickY);
         AutoUtil.sleep(1500);
@@ -46,7 +45,7 @@ public class ADBClickService {
             for(String text:str){
                 AccessibilityNodeInfo node = AutoUtil.findNodeInfosByText(root,text);
                 if(node==null){
-                    LogUtil.d(TAG,"node's text  "+text+" is not find!");
+                    //LogUtil.d(TAG,"node's text  "+text+" is not find!");
                     return false;
                 }
             }
@@ -54,7 +53,7 @@ public class ADBClickService {
         }else{
             AccessibilityNodeInfo node = AutoUtil.findNodeInfosByText(root,windowNodeTexts);
             if(node==null){
-                LogUtil.d(TAG,"node's text  "+windowNodeTexts+" is not find!");
+                //LogUtil.d(TAG,"node's text  "+windowNodeTexts+" is not find!");
                 return false;
             }
         }
