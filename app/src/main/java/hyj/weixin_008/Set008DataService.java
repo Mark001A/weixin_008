@@ -47,7 +47,7 @@ public class Set008DataService implements Runnable{
                 continue;
             }
             do008(root);
-            doVPN();
+            doVPN(root);
             doWxLogin(root);
         }
     }
@@ -125,7 +125,7 @@ public class Set008DataService implements Runnable{
         }
     }
     String vpnIndex="1";
-    private void doVPN(){
+    private void doVPN(AccessibilityNodeInfo root){
         if(AutoUtil.checkAction(record,"写入数据")){
             AutoUtil.recordAndLog(record,"设置VPN");
             AutoUtil.showToastByRunnable(context.getApplicationContext(),"设置VPN--"+vpnIndex);
@@ -140,8 +140,8 @@ public class Set008DataService implements Runnable{
             AutoUtil.sleep(1000);
             return;
         }
-        if(AutoUtil.checkAction(record,"点击连接")){
-            AccessibilityNodeInfo link =AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"已连接");
+      /*  if(AutoUtil.checkAction(record,"点击连接")){
+            AccessibilityNodeInfo link =AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"已连接1");
             if(link!=null){
                 String newIP = AutoUtil.getIPAddress(context);
                 AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"连接成功!\n当前IP："+newIP);
@@ -151,7 +151,7 @@ public class Set008DataService implements Runnable{
                 AutoUtil.sleep(5000);
                 return;
             }
-        }
+        }*/
 
 
         clickTextXY1(538,890,"其他连接方式","miui:id/action_bar_title","设置",100);
@@ -160,21 +160,39 @@ public class Set008DataService implements Runnable{
 
         clickTextXY1(743,1796,"断开连接","miui:id/alertTitle","已连接 VPN",1500);
 
-        if(AutoUtil.checkAction(record,"点击VPN")){
-            AutoUtil.clickXY(522,421);
-            AutoUtil.sleep(800);
-            AutoUtil.clickXY(522,421);
-            AutoUtil.sleep(500);
-            AutoUtil.recordAndLog(record,"点击连接");
+        if(AutoUtil.checkAction(record,"点击VPN")||AutoUtil.checkAction(record,"点击连接")||AutoUtil.checkAction(record,"弹出")){
+           /* AccessibilityNodeInfo mp = AutoUtil.findNodeInfosByText(root,"VPN");
+            if(mp==null) return;*/
+            AccessibilityNodeInfo linkText4 = AutoUtil.findNodeInfosById(context.getRootInActiveWindow(),"android:id/summary");
+            System.out.println("--->linkText4--"+linkText4.getText().toString());
+            //if(linkText4!=null){
+                if(linkText4.getText().toString().equals("已连接")){
+                   AutoUtil.clickXY(522,738);
+                    AutoUtil.recordAndLog(record,"弹出");
+                    AutoUtil.sleep(1000);
+
+                    AutoUtil.clickXY(769,1788);
+                    AutoUtil.recordAndLog(record,"断开");
+                    AutoUtil.sleep(1000);
+
+                    AutoUtil.clickXY(522,738);
+                    AutoUtil.recordAndLog(record,"点击连接");
+                    AutoUtil.sleep(3000);
+                }else {
+                  /*  AutoUtil.clickXY(522,738);
+                    AutoUtil.recordAndLog(record,"点击连接");
+                    AutoUtil.sleep(3000);*/
+                }
+            //}
+
         }
         if(AutoUtil.checkAction(record,"点击连接")){
             AccessibilityNodeInfo linkText1 = AutoUtil.findNodeInfosById(context.getRootInActiveWindow(),"android:id/summary");
-            System.out.println("nodeInfoa-->"+linkText1);
             if(linkText1!=null&&linkText1.getText().toString().equals("正在连接...")){
                 AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"正在连接...");
                 return;
             }
-            if(linkText1!=null&&linkText1.getText().toString().equals("已连接")){
+            if(linkText1!=null&&linkText1.getText().toString().equals("已连接1")){
                 String newIP = AutoUtil.getIPAddress(context);
                 AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"连接成功!\n当前IP："+newIP);
                 AutoUtil.recordAndLog(record,"连接成功");
@@ -183,6 +201,10 @@ public class Set008DataService implements Runnable{
                 AutoUtil.sleep(5000);
             }else {
                 AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"尝试重新连接...");
+               /* System.out.println("--->尝试重新连接...");
+                AutoUtil.clickXY(522,738);
+                AutoUtil.recordAndLog(record,"点击连接");
+                AutoUtil.sleep(3000);*/
             }
         }
     }
