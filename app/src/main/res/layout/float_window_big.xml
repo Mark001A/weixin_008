@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/big_window_layout"
     android:layout_width="300dip"
     android:layout_height="300dip"
-    android:background="@color/colorPrimary"
-    android:orientation="vertical"
-    >
+    android:background="@android:color/black"
+    android:orientation="vertical">
+
     <TextView
         android:id="@+id/status_text"
         android:layout_width="match_parent"
@@ -22,31 +22,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="暂停"
-        />
+        android:text="暂停" />
+
     <Button
         android:id="@+id/nextOne"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="登录下一个"
-        />
+        android:text="登录下一个" />
+
     <Button
         android:id="@+id/open_assist"
-        android:text="打开辅助权限"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="打开辅助权限" />
+
     <Button
         android:id="@+id/open_setting"
-        android:text="打开参数设置面板"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="打开参数设置面板" />
 
     <Button
         android:id="@+id/back"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="返回"
-        />
+        android:text="返回" />
 </LinearLayout>

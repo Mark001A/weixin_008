@@ -1,6 +1,8 @@
 package hyj.weixin_008;
 
+import android.app.ActivityManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.provider.Settings;
@@ -26,19 +28,19 @@ public class MainActivity extends AppCompatActivity {
         MyWindowManager.createSmallWindow(getApplicationContext());
         GetPermissionUtil.getReadAndWriteContactPermision(this,MainActivity.this);
         setContentView(R.layout.activity_main);
-        AutoUtil.wakeAndUnlock();
+        //AutoUtil.wakeAndUnlock();
 
         Toast.makeText(MainActivity.this, "开启权限11", Toast.LENGTH_LONG).show();
 
         Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
         startActivity(intent);
-        //AutoUtil.startAppByPackName("com.android.settings","com.android.settings");
+        //AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
         Toast.makeText(MainActivity.this, "开启权限", Toast.LENGTH_LONG).show();
-        List<String> list  = FileUtil.read008Data("/sdcard/A_hyj_008data/008data.txt");
+       /* List<String> list  = FileUtil.read008Data("/sdcard/A_hyj_008data/008data.txt");
         for(String s :list){
             System.out.println("-->"+s);
         }
-        System.out.println("read008 data-->"+JSON.toJSON(list));
+        System.out.println("read008 data-->"+JSON.toJSON(list));*/
     }
 
     @Override

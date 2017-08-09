@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import hyj.weixin_008.common.ConstantWxId;
 import hyj.weixin_008.service.ADBClickService;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
@@ -38,101 +39,173 @@ public class Set008DataService implements Runnable{
     @Override
     public void run() {
         while (true){
-            AutoUtil.sleep(1000);
-            LogUtil.d("myService","-->写入008数据线程..."+Thread.currentThread().getName()+record);
+            AutoUtil.sleep(500);
+            LogUtil.d("myService","-->线程运行..."+Thread.currentThread().getName()+record);
             AccessibilityNodeInfo root = context.getRootInActiveWindow();
             if(root==null){
                 System.out.println("-->root is null");
                 AutoUtil.sleep(500);
                 continue;
             }
-            do008(root);
-            doVPN(root);
-            doWxLogin(root);
+
+            AccessibilityNodeInfo node4 = AutoUtil.findNodeInfosById(root,ConstantWxId.TIPS);
+            if(node4!=null){
+                String tips = node4.getText().toString();
+                System.out.println("tips--->"+tips);
+                AutoUtil.sleep(500);
+                continue;
+            }
+            AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosByText(root,"等待数据恢复");
+            AccessibilityNodeInfo node2 = AutoUtil.findNodeInfosByText(root,"正在登录...");
+            AccessibilityNodeInfo node3 = AutoUtil.findNodeInfosByText(root,"请稍后...");
+            if(node1!=null||node2!=null||node3!=null){
+                System.out.println("--->请稍后...");
+                AutoUtil.sleep(500);
+                continue;
+            }
+            if(record.get("recordAction").contains("008")||AutoUtil.checkAction(record,Constants.CHAT_LISTENING))
+                do008(root);
+            if(record.get("recordAction").contains("st"))
+                doVPN(root);
+            if(record.get("recordAction").contains("wx"))
+                doWxLogin(root);
         }
     }
 
     private void doWxLogin(AccessibilityNodeInfo root){
-        if(AutoUtil.checkAction(record,"连接成功")){
+        if(AutoUtil.checkAction(record,"wx连接成功")){
             AutoUtil.showToastByRunnable(GlobalApplication.getContext().getApplicationContext(),"启动微信");
             AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
             AutoUtil.sleep(5000);
         }
-        adbService.clickXYByWindow("登录&注册",164,1192,"点击登录1",500);
-        if(!AutoUtil.checkAction(record,"输入手机号")){
-            adbService.setTextByWindow("用微信号/QQ号/邮箱登录",387,490,currentAccount,"输入手机号",0);
+        adbService.clickXYByWindow("登录&注册",255,1790,"wx点击登录1",500);
+        if(!AutoUtil.checkAction(record,"wx输入手机号")){
+            adbService.setTextByWindow("用微信号/QQ号/邮箱登录",540,720,currentAccount,"wx输入手机号",0);
         }
         if(AutoUtil.findNodeInfosByText(root,currentAccount)!=null)
-            adbService.clickXYByWindow("用微信号/QQ号/邮箱登录",361,751,"下一步",1000);
+            adbService.clickXYByWindow("用微信号/QQ号/邮箱登录",540,1115,"wx下一步",1000);
         System.out.println("密码---》"+accounts.get(currentAccount));
-        if(AutoUtil.checkAction(record,"下一步"))
-            adbService.setTextByWindow("用短信验证码登录",387,490,accounts.get(currentAccount),"输入密码",2000);
-        adbService.clickXYByWindow("用短信验证码登录",361,751,"登录2",5000);
-        adbService.clickXYByWindow("是&否",416,793,"不推荐通讯录",3000);
-        if(AutoUtil.checkAction(record,"不推荐通讯录")){
-            AutoUtil.clickXY(272,1228);
+        if(AutoUtil.checkAction(record,"wx下一步"))
+            adbService.setTextByWindow("用短信验证码登录",538,691,accounts.get(currentAccount),"wx输入密码",2000);
+        if(adbService.clickXYByWindow("用短信验证码登录",563,995,"wx登录2",2000)) return;
+        adbService.clickXYByWindow("是&否",625,1190,"wx不推荐通讯录",3000);
+        if(AutoUtil.checkAction(record,"wx不推荐通讯录")){
+            AutoUtil.clickXY(400,1845);
+            System.out.println("---->切换");
+            AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosByText(root,"微信团队");
+            AccessibilityNodeInfo node3 = AutoUtil.findNodeInfosByText(root,"应急联系人");
+            System.out.println("node1-->"+node1);
+            if(node1!=null||node3!=null){
+                AutoUtil.showToastByRunnable(context,"登录成功");
+                AutoUtil.recordAndLog(record,"008登录成功");
+                AutoUtil.sleep(3000);
+            }
+            return;
         }
-        List<AccessibilityNodeInfo> node1 = root.findAccessibilityNodeInfosByText("微信团队");
-        List<AccessibilityNodeInfo> node2 = root.findAccessibilityNodeInfosByText("腾讯新闻");
-        if(node1!=null&&!node1.isEmpty()){
-            AutoUtil.showToastByRunnable(context,"登录成功");
-            AutoUtil.recordAndLog(record,"登录成功");
-            AutoUtil.sleep(3000);
+        /*if(AutoUtil.checkAction(record,"wx切换")){
+            AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosByText(root,"微信团队");
+            AccessibilityNodeInfo node3 = AutoUtil.findNodeInfosByText(root,"应急联系人");
+            System.out.println("node1-->"+node1);
+            if(node1!=null||node3!=null){
+                AutoUtil.showToastByRunnable(context,"登录成功");
+                AutoUtil.recordAndLog(record,"008登录成功");
+                AutoUtil.sleep(3000);
+            }
+        }*/
+        wxException(root);
+    }
+    private void wxException(AccessibilityNodeInfo root){
+        if(!AutoUtil.checkAction(record,"wx登录2")) return;
+        AccessibilityNodeInfo node = AutoUtil.findNodeInfosByText(root,Constants.wx_Exception1);
+        if(node!=null){
+            LogUtil.d("exception",Constants.wx_Exception1);
+            AutoUtil.recordAndLog(record,"008登录异常");
+        }
+        AccessibilityNodeInfo loginNode = AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"登录");
+        if(loginNode!=null){
+            LogUtil.d("exception","登录错误（0，5）");
+            AutoUtil.recordAndLog(record,"008登录异常");
+
+            AccessibilityNodeInfo expNode = AutoUtil.findNodeInfosById(context.getRootInActiveWindow(),ConstantWxId.EXPMSG);
+            if(expNode!=null){
+                LogUtil.d("exception",expNode.getText().toString());
+            }
         }
     }
 
     private void do008(AccessibilityNodeInfo root){
 
-        adbService.clickXYByWindow("工具箱",373,422,"点击图片",1000);
-        if(AutoUtil.checkAction(record,"点击图片")||AutoUtil.checkAction(record,"清除数据")) {
+       if(AutoUtil.checkAction(record,Constants.CHAT_LISTENING)){
+           adbService.clickXYByWindow("工具箱",373,422,"008点击图片",1000);
+       }
+        if(AutoUtil.checkAction(record,"008点击图片")||AutoUtil.checkAction(record,"008一键操作")) {
             set008Data(root);
         }
-        if(AutoUtil.checkAction(record,"登录成功")){
+        if(AutoUtil.checkAction(record,"008登录成功")||AutoUtil.checkAction(record,"008登录异常")){
             AutoUtil.showToastByRunnable(GlobalApplication.getContext().getApplicationContext(),"启动008");
             AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
-            AutoUtil.recordAndLog(record,"wx-启动008");
+            AutoUtil.recordAndLog(record,"008启动008");
             AutoUtil.sleep(2000);
         }
-        if(AutoUtil.checkAction(record,"wx-启动008")){
-            AutoUtil.clickXY(50,1226);
+        if(AutoUtil.checkAction(record,"008点击图片")||AutoUtil.checkAction(record,"008启动008")||AutoUtil.checkAction(record,Constants.CHAT_LISTENING)){
+           /* AccessibilityNodeInfo n = AutoUtil.findNodeInfosByText(root,"008");
+            AutoUtil.performClick(n,record,"008点击悬浮框");
+            return;*/
+            AutoUtil.clickXY(61,1863);
             AutoUtil.sleep(1500);
-            AutoUtil.clickXY(376,622);
-            AutoUtil.recordAndLog(record,"清除数据");
+            AutoUtil.recordAndLog(record,"008点击悬浮框");
+            return;
+        }
+        AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosByText(root,"一键操作");
+        if(node1!=null){
+            AutoUtil.clickXY(518,918);
+            AutoUtil.recordAndLog(record,"008一键操作");
             AutoUtil.sleep(4000);
         }
     }
-    int currentIndex=0;
+    int currentIndex=12;
     private void set008Data(AccessibilityNodeInfo root){
         AccessibilityNodeInfo list = AutoUtil.findNodeInfosById(root,"com.soft.apk008v:id/set_value_con");
-        if(list!=null&&list.getChildCount()==91){
+        System.out.println("list-->"+list);
+        if(list!=null){
+            System.out.println("--list-getChildCount->"+list.getChildCount());
+        }
+        if(list!=null&&list.getChildCount()>90){
             for(int i=1;i<91;i++){
                 if(list.getChild(i).isEditable()){
                     String data  = datas.get(currentIndex)[i+1];
                     System.out.println("-rr->"+i+" "+data);
-                    AutoUtil.performSetText(list.getChild(i),data,record,"写入"+i+" "+data);
+                    AutoUtil.performSetText(list.getChild(i),data,record,"008写入"+i+" "+data);
                 }
             }
+            AutoUtil.recordAndLog(record,"008写入数据完成");
             AutoUtil.showToastByRunnable(GlobalApplication.getContext().getApplicationContext(),"总共:"+datas.size()+"  当前序号:"+currentIndex);
-            AutoUtil.sleep(500);
-            AutoUtil.clickXY(90,359);
-            currentAccount = datas.get(currentIndex)[datas.get(currentIndex).length-1];
-            if(currentIndex<datas.size()-1){
-                currentIndex = currentIndex+1;
-            }else {
+            if(AutoUtil.checkAction(record,"008写入数据完成")){
+                AccessibilityNodeInfo save =AutoUtil.findNodeInfosByText(root,"保存");
+                AutoUtil.performClick(save,record,"st保存");
+                AutoUtil.recordAndLog(record,"st写入数据");
 
+                currentAccount = datas.get(currentIndex)[datas.get(currentIndex).length-1];
+                if(currentIndex<datas.size()-1){
+                    currentIndex = currentIndex+1;
+                }else {
+
+                }
             }
-            AutoUtil.recordAndLog(record,"写入数据");
+          /*  AutoUtil.sleep(1000);
+            AutoUtil.clickXY(123,506);//保存
+            System.out.println("--->保存");*/
+
         }
     }
     String vpnIndex="1";
     private void doVPN(AccessibilityNodeInfo root){
-        if(AutoUtil.checkAction(record,"写入数据")){
-            AutoUtil.recordAndLog(record,"设置VPN");
+        if(AutoUtil.checkAction(record,"st写入数据")){
+            AutoUtil.recordAndLog(record,"st设置VPN");
             AutoUtil.showToastByRunnable(context.getApplicationContext(),"设置VPN--"+vpnIndex);
             AutoUtil.startSysSetting();
             AutoUtil.sleep(500);
         }
-        //AccessibilityNodeInfo linking =AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"正在连接...");
         AccessibilityNodeInfo linkText = AutoUtil.findNodeInfosById(context.getRootInActiveWindow(),"android:id/summary");
         if(linkText!=null&&linkText.getText().toString().equals("正在连接...")){
             AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"正在连接...");
@@ -140,71 +213,47 @@ public class Set008DataService implements Runnable{
             AutoUtil.sleep(1000);
             return;
         }
-      /*  if(AutoUtil.checkAction(record,"点击连接")){
-            AccessibilityNodeInfo link =AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"已连接1");
+       if(AutoUtil.checkAction(record,"st点击连接")){
+            AccessibilityNodeInfo link =AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"已连接");
             if(link!=null){
-                String newIP = AutoUtil.getIPAddress(context);
-                AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"连接成功!\n当前IP："+newIP);
-                AutoUtil.recordAndLog(record,"连接成功");
+                AutoUtil.recordAndLog(record,"wx连接成功");
                 AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"启动微信");
                 AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
-                AutoUtil.sleep(5000);
+                //AutoUtil.sleep(5000);
                 return;
             }
-        }*/
-
-
-        clickTextXY1(538,890,"其他连接方式","miui:id/action_bar_title","设置",100);
-        clickTextXY1(514,425,"点击VPN","miui:id/action_bar_title","其他连接方式",100);
-
-
-        clickTextXY1(743,1796,"断开连接","miui:id/alertTitle","已连接 VPN",1500);
-
-        if(AutoUtil.checkAction(record,"点击VPN")||AutoUtil.checkAction(record,"点击连接")||AutoUtil.checkAction(record,"弹出")){
-           /* AccessibilityNodeInfo mp = AutoUtil.findNodeInfosByText(root,"VPN");
-            if(mp==null) return;*/
-            AccessibilityNodeInfo linkText4 = AutoUtil.findNodeInfosById(context.getRootInActiveWindow(),"android:id/summary");
-            System.out.println("--->linkText4--"+linkText4.getText().toString());
-            //if(linkText4!=null){
-                if(linkText4.getText().toString().equals("已连接")){
-                   AutoUtil.clickXY(522,738);
-                    AutoUtil.recordAndLog(record,"弹出");
-                    AutoUtil.sleep(1000);
-
-                    AutoUtil.clickXY(769,1788);
-                    AutoUtil.recordAndLog(record,"断开");
-                    AutoUtil.sleep(1000);
-
-                    AutoUtil.clickXY(522,738);
-                    AutoUtil.recordAndLog(record,"点击连接");
-                    AutoUtil.sleep(3000);
-                }else {
-                  /*  AutoUtil.clickXY(522,738);
-                    AutoUtil.recordAndLog(record,"点击连接");
-                    AutoUtil.sleep(3000);*/
-                }
-            //}
-
         }
-        if(AutoUtil.checkAction(record,"点击连接")){
-            AccessibilityNodeInfo linkText1 = AutoUtil.findNodeInfosById(context.getRootInActiveWindow(),"android:id/summary");
-            if(linkText1!=null&&linkText1.getText().toString().equals("正在连接...")){
-                AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"正在连接...");
-                return;
+
+        clickTextXY1(538,890,"st其他连接方式","miui:id/action_bar_title","设置",100);
+        clickTextXY1(514,425,"st点击VPN","miui:id/action_bar_title","其他连接方式",800);
+
+        if(AutoUtil.checkAction(record,"st点击VPN")||AutoUtil.checkAction(record,"st弹出")){
+
+            AccessibilityNodeInfo linkText4 = AutoUtil.findNodeInfosById(context.getRootInActiveWindow(),"android:id/summary");
+            if(linkText4!=null){
+                if(linkText4.getText().toString().equals("已连接")){
+                    AutoUtil.clickXY(522,738);
+                    AutoUtil.recordAndLog(record,"st弹出");
+                    AutoUtil.sleep(1000);
+
+                }else if (linkText4.getText().toString().equals("PPTP VPN")){
+                    AutoUtil.clickXY(522,738);
+                    AutoUtil.recordAndLog(record,"st点击连接");
+                    AutoUtil.sleep(2000);
+                }
             }
-            if(linkText1!=null&&linkText1.getText().toString().equals("已连接1")){
-                String newIP = AutoUtil.getIPAddress(context);
-                AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"连接成功!\n当前IP："+newIP);
-                AutoUtil.recordAndLog(record,"连接成功");
-                AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"启动微信");
-                AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
-                AutoUtil.sleep(5000);
-            }else {
-                AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"尝试重新连接...");
-               /* System.out.println("--->尝试重新连接...");
+        }
+        if(AutoUtil.checkAction(record,"st弹出")){
+            AccessibilityNodeInfo dkNode = AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"断开连接");
+            if(dkNode!=null){
+                AutoUtil.clickXY(756,1792);
+                AutoUtil.recordAndLog(record,"st断开");
+                AutoUtil.sleep(1000);
+            }
+            if(AutoUtil.checkAction(record,"st断开")){
                 AutoUtil.clickXY(522,738);
-                AutoUtil.recordAndLog(record,"点击连接");
-                AutoUtil.sleep(3000);*/
+                AutoUtil.recordAndLog(record,"st点击连接");
+                AutoUtil.sleep(2000);
             }
         }
     }
@@ -241,8 +290,5 @@ public class Set008DataService implements Runnable{
         System.out.println("currentAccount-->"+accounts);
         return accounts;
     }
-    private int getStartIndex(){
-        List<String[]> datas = get008Datas();
-        return datas.indexOf("序列号");
-    }
+
 }

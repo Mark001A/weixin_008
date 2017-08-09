@@ -1,7 +1,10 @@
 package hyj.weixin_008;
 
 import android.accessibilityservice.AccessibilityService;
+import android.app.Activity;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
@@ -47,6 +50,7 @@ public class MyService extends AccessibilityService {
         }
         AutoUtil.recordAndLog(record,Constants.CHAT_LISTENING);
         super.onServiceConnected();
+
         AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
         AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
         AutoUtil.sleep(1000);
@@ -71,9 +75,6 @@ public class MyService extends AccessibilityService {
     }
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        System.out.println("--event-->"+event.getEventType());
-        AccessibilityNodeInfo root = getRootInActiveWindow();
-
     }
 
     static String[] account={"12345608111","3333"};

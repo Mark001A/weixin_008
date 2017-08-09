@@ -53,4 +53,6 @@ public class Constants {
     public static final String CONTROL_AUTO_LOGIN="IS_AUTO_LOGIN";
     public static final String CONTROL_AUTO_SENDFRMSG="IS_AUTO_SENDFRMSG";
 
+    public static final String wx_Exception1="系统检测到你的帐号有异常，已被限制登录。轻触“确定”可申请激活。";
+
 }

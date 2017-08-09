@@ -1,6 +1,7 @@
 package hyj.weixin_008;
 
 import android.accessibilityservice.AccessibilityService;
+import android.app.ActivityManager;
 import android.app.KeyguardManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;

@@ -20,11 +20,12 @@ public class ADBClickService {
         this.record = record;
         this.context = context;
     }
-    public void clickXYByWindow(String windowNodeTexts,int clickX,int clickY,String action,long sleepTime){
-        if(!checkWindow(windowNodeTexts,action)) return;
+    public boolean clickXYByWindow(String windowNodeTexts,int clickX,int clickY,String action,long sleepTime){
+        if(!checkWindow(windowNodeTexts,action)) return false;
         AutoUtil.clickXY(clickX,clickY);
         AutoUtil.recordAndLog(record,action);
         AutoUtil.sleep(sleepTime);
+        return true;
     }
     public void setTextByWindow(String windowNodeTexts,int clickX,int clickY,String inputText,String action,long sleepTime){
         if(!checkWindow(windowNodeTexts,action)) return;
@@ -37,7 +38,7 @@ public class ADBClickService {
     public boolean checkWindow(String windowNodeTexts,String action){
         AccessibilityNodeInfo root = context.getRootInActiveWindow();
         if(root==null){
-            LogUtil.d(TAG,"action "+action+" root is null!");
+            //LogUtil.d(TAG,"action "+action+" root is null!");
             return false;
         }
         if(windowNodeTexts.contains("&")){
