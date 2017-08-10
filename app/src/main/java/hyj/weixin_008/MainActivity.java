@@ -36,11 +36,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
         //AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
         Toast.makeText(MainActivity.this, "开启权限", Toast.LENGTH_LONG).show();
-       /* List<String> list  = FileUtil.read008Data("/sdcard/A_hyj_008data/008data.txt");
-        for(String s :list){
-            System.out.println("-->"+s);
-        }
-        System.out.println("read008 data-->"+JSON.toJSON(list));*/
+
     }
 
     @Override

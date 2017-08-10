@@ -29,6 +29,9 @@ public class GetPermissionUtil {
         if (ContextCompat.checkSelfPermission(context,Manifest.permission.SYSTEM_ALERT_WINDOW)!=PackageManager.PERMISSION_GRANTED) {
             permissionList.add(Manifest.permission.SYSTEM_ALERT_WINDOW);
         }
+        if (ContextCompat.checkSelfPermission(context,Manifest.permission.WRITE_SETTINGS)!=PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.WRITE_SETTINGS);
+        }
         if(!permissionList.isEmpty()){
             String[] permisions = permissionList.toArray(new String[permissionList.size()]);
             ActivityCompat.requestPermissions(activity,permisions,1);

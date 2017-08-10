@@ -265,6 +265,11 @@ public class AutoUtil {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         GlobalApplication.getContext().startActivity(intent);
     }
+    public static void opentActivity(String acvityName){
+        Intent intent = new Intent(acvityName);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        GlobalApplication.getContext().startActivity(intent);
+    }
     public static void startVPN(){
         Intent intent = new Intent(Settings.ACTION_VPN_SETTINGS);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
