@@ -8,7 +8,7 @@ import java.util.Map;
  */
 
 public class WeixinAutoHandler {
-    public Map<String, String> controller = new HashMap<String, String>();
+    public static  Map<String, String> record = new HashMap<String, String>();
     private static WeixinAutoHandler weixinAutoHandler = new WeixinAutoHandler();
     private WeixinAutoHandler(){}
     public static WeixinAutoHandler getInstance(){

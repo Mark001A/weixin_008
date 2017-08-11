@@ -16,8 +16,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
 
 import hyj.weixin_008.common.WeixinAutoHandler;
+import hyj.weixin_008.flowWindow.MyWindowManager;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
 
@@ -48,14 +50,15 @@ public class MyService extends AccessibilityService {
         if(startLoginAccount!=null&&!"".equals(startLoginAccount)&&!"null".equals(startLoginAccount)){
             str = removeAct(startLoginAccount);
         }
-        AutoUtil.recordAndLog(record,Constants.CHAT_LISTENING);
+        AutoUtil.recordAndLog(WeixinAutoHandler.record,Constants.CHAT_LISTENING);
         super.onServiceConnected();
 
         AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
         AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
         AutoUtil.sleep(1000);
 
-        new Thread(new Set008DataService(this,record)).start();
+        new Thread(new Set008DataService(this,WeixinAutoHandler.record)).start();
+        //new Timer().scheduleAtFixedRate(new RefreshFlowMsg(record), 0, 500);
     }
     private List<String[]> removeAct(String startLoginAccount){
         boolean flag = false;
@@ -75,6 +78,7 @@ public class MyService extends AccessibilityService {
     }
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
+        MyWindowManager.updateFlowMsg(WeixinAutoHandler.record+"");
     }
 
     static String[] account={"12345608111","3333"};

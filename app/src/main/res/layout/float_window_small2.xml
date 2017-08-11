@@ -2,17 +2,17 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/small_window_layout"
-    android:layout_width="40dip"
+    android:id="@+id/small_window_layout2"
+    android:layout_width="200dip"
     android:layout_height="40dip"
     android:background="#6c6868"
     >
 
     <TextView
-        android:id="@+id/percent"
+        android:id="@+id/flow_msg"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:gravity="center"
-        android:text="009"
+        android:text="状态栏"
         android:textColor="#ffffff" />
 </LinearLayout>

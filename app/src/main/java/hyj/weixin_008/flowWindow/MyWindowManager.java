@@ -3,13 +3,19 @@ package hyj.weixin_008.flowWindow;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.PixelFormat;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
+import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+
+import hyj.weixin_008.AutoUtil;
+import hyj.weixin_008.R;
+import hyj.weixin_008.common.WeixinAutoHandler;
 
 /**
  * Created by Administrator on 2017/6/30.
@@ -22,15 +28,19 @@ public class MyWindowManager {
      */
     private static FloatWindowSmallView smallWindow;
 
+    private static FloatWindowSmallView2 smallWindow2;
+
     /**
      * 大悬浮窗View的实例
      */
     private static FloatWindowBigView bigWindow;
 
+
     /**
      * 小悬浮窗View的参数
      */
     private static LayoutParams smallWindowParams;
+    private static LayoutParams smallWindowParams2;
 
     /**
      * 大悬浮窗View的参数
@@ -75,6 +85,53 @@ public class MyWindowManager {
             windowManager.addView(smallWindow, smallWindowParams);
         }
     }
+    public static void createSmallWindow2(Context context) {
+        final WindowManager windowManager = getWindowManager(context);
+        int screenWidth = windowManager.getDefaultDisplay().getWidth();
+        int screenHeight = windowManager.getDefaultDisplay().getHeight();
+        if (smallWindow2 == null) {
+            smallWindow2 = new FloatWindowSmallView2(context);
+            if (smallWindowParams2 == null) {
+                smallWindowParams2 = new LayoutParams();
+                smallWindowParams2.type = LayoutParams.TYPE_PHONE;
+                smallWindowParams2.format = PixelFormat.RGBA_8888;
+                smallWindowParams2.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL
+                        | LayoutParams.FLAG_NOT_FOCUSABLE;
+                smallWindowParams2.gravity = Gravity.LEFT | Gravity.TOP;
+                smallWindowParams2.width = FloatWindowSmallView2.viewWidth;
+                smallWindowParams2.height = FloatWindowSmallView2.viewHeight;
+                //smallWindowParams2.x = screenWidth;
+                //smallWindowParams2.y = screenHeight / 2;
+                smallWindowParams2.x = 100;
+                smallWindowParams2.y = 0;
+            }
+            smallWindow2.setParams(smallWindowParams2);
+            windowManager.addView(smallWindow2, smallWindowParams2);
+
+         /*  Handler handler = new Handler();
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    while (true){
+                        AutoUtil.sleep(500);
+                        TextView percentView = (TextView) smallWindow2.findViewById(R.id.flow_msg);
+                        percentView.setText(WeixinAutoHandler.record+"");
+                    }
+
+                }
+            });*/
+
+
+        }
+    }
+
+    public static void updateFlowMsg(String flowMsg) {
+        if (smallWindow2 != null) {
+            TextView percentView = (TextView) smallWindow2.findViewById(R.id.flow_msg);
+            percentView.setText(flowMsg);
+        }
+    }
+
 
     /**
      * 将小悬浮窗从屏幕上移除。

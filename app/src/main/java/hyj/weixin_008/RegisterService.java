@@ -2,13 +2,9 @@ package hyj.weixin_008;
 
 import android.accessibilityservice.AccessibilityService;
 import android.content.SharedPreferences;
-import android.os.Handler;
 import android.provider.Settings;
-import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
-import android.widget.Toast;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import java.util.ArrayList;
@@ -18,7 +14,6 @@ import java.util.Map;
 
 import hyj.weixin_008.common.ConstantWxId;
 import hyj.weixin_008.common.WeixinAutoHandler;
-import hyj.weixin_008.flowWindow.MyWindowManager;
 import hyj.weixin_008.service.ADBClickService;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
@@ -30,7 +25,7 @@ import static hyj.weixin_008.GlobalApplication.getContext;
  * Created by Administrator on 2017/8/4.
  */
 
-public class Set008DataService implements Runnable{
+public class RegisterService implements Runnable{
     static List<String[]> datas;
     static Map<String,String> accounts;
     String currentAccount;
@@ -38,7 +33,7 @@ public class Set008DataService implements Runnable{
     Map<String,String> record;
     ADBClickService adbService;
     int currentIndex;
-    public Set008DataService(AccessibilityService context, Map<String,String> record){
+    public RegisterService(AccessibilityService context, Map<String,String> record){
         this.context = context;
         this.record = record;
         adbService = new ADBClickService(context,record);
@@ -110,7 +105,7 @@ public class Set008DataService implements Runnable{
             if(record.get("recordAction").contains("st"))
                 doVPN(root);
             if(record.get("recordAction").contains("wx"))
-                doWxLogin(root);
+                doWxRegister(root);
         }
     }
     private void loginNext(){
@@ -120,7 +115,7 @@ public class Set008DataService implements Runnable{
         WeixinAutoHandler.IS_NEXT_NONE = false;
     }
 
-    private void doWxLogin(AccessibilityNodeInfo root){
+    private void doWxRegister(AccessibilityNodeInfo root){
         if(AutoUtil.checkAction(record,"wx连接成功")){
             countLongin =0;
             AutoUtil.showToastByRunnable(GlobalApplication.getContext().getApplicationContext(),"启动微信");
@@ -135,9 +130,10 @@ public class Set008DataService implements Runnable{
             adbService.clickXYByWindow("用微信号/QQ号/邮箱登录",540,1115,"wx下一步",1000);
         System.out.println("密码---》"+accounts.get(currentAccount));
         if(AutoUtil.checkAction(record,"wx下一步"))
-            adbService.setTextByWindow("用短信验证码登录",538,691,accounts.get(currentAccount),"wx输入密码",2000);
-        if(adbService.clickXYByWindow("用短信验证码登录",563,995,"wx登录2",2000)) return;
-        adbService.clickXYByWindow("是&否",625,1190,"wx不推荐通讯录",3000);
+            adbService.clickXYByWindow("用短信验证码登录",267,885,"wx点击短信验证码登录",500);
+            //adbService.setTextByWindow("用短信验证码登录",538,691,accounts.get(currentAccount),"wx输入密码",2000);
+        if(adbService.clickXYByWindow("获取验证码",897,723,"wx点击获取验证码",2000)) return;
+        //adbService.clickXYByWindow("是&否",625,1190,"wx不推荐通讯录",3000);
         if(AutoUtil.checkAction(record,"wx不推荐通讯录")){
             AutoUtil.clickXY(400,1845);
             System.out.println("---->切换");
@@ -153,16 +149,6 @@ public class Set008DataService implements Runnable{
             }
             return;
         }
-        /*if(AutoUtil.checkAction(record,"wx切换")){
-            AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosByText(root,"微信团队");
-            AccessibilityNodeInfo node3 = AutoUtil.findNodeInfosByText(root,"应急联系人");
-            System.out.println("node1-->"+node1);
-            if(node1!=null||node3!=null){
-                AutoUtil.showToastByRunnable(context,"登录成功");
-                AutoUtil.recordAndLog(record,"008登录成功");
-                AutoUtil.sleep(3000);
-            }
-        }*/
         wxException(root);
     }
     private void wxException(AccessibilityNodeInfo root){

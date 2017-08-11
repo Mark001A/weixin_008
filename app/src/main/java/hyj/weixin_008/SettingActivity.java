@@ -10,6 +10,9 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,13 +75,22 @@ public class SettingActivity extends AppCompatActivity {
         public void onNothingSelected(AdapterView<?> arg0) {
         }
     }
-    private String[] getAllPhoneList(){
+   /* private String[] getAllPhoneList(){
         List<String> phones = new ArrayList<String>();
         List<String[]> list =  FileUtil.readConfFile("/sdcard/注册成功微信号.txt");
         for(String[] str:list){
             phones.add(str[0]);
         }
         return phones.toArray(new String[phones.size()]);
+    }*/
+    private String[] getAllPhoneList(){
+        List<String> list =  FileUtil.read008Data("/sdcard/A_hyj_008data/008data.txt");
+        List<String> newList = new ArrayList<String>();
+        for(int i=0,l=list.size();i<l;i++){
+            String[] str = JSONObject.parseObject(list.get(i),String[].class);
+            newList.add(i+"-"+str[str.length-1]);
+        }
+        return newList.toArray(new String[newList.size()]);
     }
 
     @Override
