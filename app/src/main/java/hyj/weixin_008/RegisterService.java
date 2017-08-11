@@ -122,7 +122,8 @@ public class RegisterService implements Runnable{
             AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
             AutoUtil.sleep(5000);
         }
-        adbService.clickXYByWindow("登录&注册",255,1790,"wx点击登录1",500);
+        if(!AutoUtil.checkAction(record,"wx一键操作"))
+            adbService.clickXYByWindow("登录&注册",255,1790,"wx点击登录1",500);
         if(!AutoUtil.checkAction(record,"wx输入手机号")){
             adbService.setTextByWindow("用微信号/QQ号/邮箱登录",540,720,currentAccount,"wx输入手机号",0);
         }
@@ -133,6 +134,37 @@ public class RegisterService implements Runnable{
             adbService.clickXYByWindow("用短信验证码登录",267,885,"wx点击短信验证码登录",500);
             //adbService.setTextByWindow("用短信验证码登录",538,691,accounts.get(currentAccount),"wx输入密码",2000);
         if(adbService.clickXYByWindow("获取验证码",897,723,"wx点击获取验证码",2000)) return;
+        if(adbService.clickXYByWindow("确认手机号码",818,1192,"wx确认手机号码",2000)){
+            AutoUtil.clickXY(61,1863);
+            AutoUtil.sleep(1500);
+            AutoUtil.recordAndLog(record,"wx点击悬浮框");
+            return;
+        }
+        AccessibilityNodeInfo node008 = AutoUtil.findNodeInfosByText(root,"一键操作");
+        if(node008!=null){
+            AutoUtil.clickXY(518,918);
+            AutoUtil.recordAndLog(record,"wx一键操作");
+            AutoUtil.sleep(1000);
+            AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
+        }
+        if(AutoUtil.checkAction(record,"wx一键操作")){
+            adbService.clickXYByWindow("登录&注册",834,1790,"wx点击注册1",500);
+            return;
+        }
+        AccessibilityNodeInfo textNode1 = AutoUtil.findNodeInfosByText(root,ConstantWxId.REGMSG1);
+        System.out.println("textNode1-->"+textNode1);
+        if(textNode1!=null){
+            AccessibilityNodeInfo textNode2 = AutoUtil.findNodeInfosById(root,"注册");
+            AccessibilityNodeInfo textNode3 = AutoUtil.findNodeInfosById(root,"例如：陈晨");
+            AccessibilityNodeInfo textNode4 = AutoUtil.findNodeInfosById(root,"手机号");
+            AccessibilityNodeInfo textNode5 = AutoUtil.findNodeInfosById(root,"密码");
+            AutoUtil.performSetText(textNode3,"夺得",record,"wx输入昵称");
+            AutoUtil.performSetText(textNode4.getParent().getChild(1),"15236251584",record,"wx手机号");
+            AutoUtil.performSetText(textNode5.getParent().getChild(1),"www12345",record,"wx输入秘密");
+            AutoUtil.performClick(textNode2,record,"wx点击注册2");
+            return;
+        }
+
         //adbService.clickXYByWindow("是&否",625,1190,"wx不推荐通讯录",3000);
         if(AutoUtil.checkAction(record,"wx不推荐通讯录")){
             AutoUtil.clickXY(400,1845);
@@ -193,12 +225,6 @@ public class RegisterService implements Runnable{
             AutoUtil.recordAndLog(record,"008启动008");
             AutoUtil.sleep(2000);
         }
-       /* if(AutoUtil.checkAction(record,"008点击图片")||AutoUtil.checkAction(record,"008启动008")){
-            AutoUtil.clickXY(61,1863);
-            AutoUtil.sleep(1500);
-            AutoUtil.recordAndLog(record,"008点击悬浮框");
-            return;
-        }*/
 
         if(list!=null&&!AutoUtil.checkAction(record,"st写入数据")){
             AutoUtil.clickXY(61,1863);

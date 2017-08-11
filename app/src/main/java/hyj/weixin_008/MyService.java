@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 
+import hyj.weixin_008.common.ConstantWxId;
 import hyj.weixin_008.common.WeixinAutoHandler;
 import hyj.weixin_008.flowWindow.MyWindowManager;
 import hyj.weixin_008.util.FileUtil;
@@ -57,8 +58,8 @@ public class MyService extends AccessibilityService {
         AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
         AutoUtil.sleep(1000);
 
-        new Thread(new Set008DataService(this,WeixinAutoHandler.record)).start();
-        //new Timer().scheduleAtFixedRate(new RefreshFlowMsg(record), 0, 500);
+        //new Thread(new Set008DataService(this,WeixinAutoHandler.record)).start();
+        //new Thread(new RegisterService(this,WeixinAutoHandler.record)).start();
     }
     private List<String[]> removeAct(String startLoginAccount){
         boolean flag = false;
@@ -79,6 +80,51 @@ public class MyService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         MyWindowManager.updateFlowMsg(WeixinAutoHandler.record+"");
+
+        AccessibilityNodeInfo root = getRootInActiveWindow();
+        if(root==null) return;
+        AccessibilityNodeInfo textNode1 = AutoUtil.findNodeInfosByText(root, ConstantWxId.REGMSG1);
+        System.out.println("textNode1-->"+textNode1);
+        if(textNode1!=null){
+            AccessibilityNodeInfo textNode2 = AutoUtil.findNodeInfosByText(root,"注册");
+            AccessibilityNodeInfo textNode3 = AutoUtil.findNodeInfosByText(root,"昵称");
+            AccessibilityNodeInfo textNode4 = AutoUtil.findNodeInfosByText(root,"手机号");
+            AccessibilityNodeInfo textNode5 = AutoUtil.findNodeInfosByText(root,"密码");
+            System.out.println("textNode2-->"+textNode2);
+            System.out.println("textNode3-->"+textNode3);
+            System.out.println("textNode4-->"+textNode4);
+            System.out.println("textNode5-->"+textNode5);
+            AutoUtil.performSetText(textNode3,"夺得",record,"wx输入昵称");
+
+
+            //AutoUtil.performSetText(textNode4.getParent().getChild(1),"15236251584",record,"wx手机号");
+            //AutoUtil.performSetText(textNode5.getParent().getChild(1),"www12345",record,"wx输入秘密");
+            AutoUtil.performClick(textNode2,record,"wx点击注册2");
+            System.out.println("---2----2---");
+            getChild(textNode2.getParent());
+            System.out.println("---3----3---");
+            getChild(textNode3);
+            System.out.println("---4----4---");
+            getChild(textNode4);
+            System.out.println("---5----5---");
+            getChild(textNode5);
+            return;
+        }
+    }
+    public  static void getChild(AccessibilityNodeInfo node){
+        System.out.println("-----------start---------");
+        if(node!=null){
+            int count = node.getChildCount();
+            System.out.println("child count"+count+"node text-->"+node.getText()+"  node clsName-->"+node.getClassName()+" desc"+node.getContentDescription());
+            if(count>0){
+                for(int i=0,l=count;i<l;i++){
+                    AccessibilityNodeInfo child = node.getChild(i);
+                    //getChild(child);
+                    System.out.println(i+" child text-->"+child.getText()+" child clsName-->"+child.getClassName()+" desc"+node.getContentDescription());
+                }
+            }
+        }
+        System.out.println("-----------end---------");
     }
 
     static String[] account={"12345608111","3333"};
