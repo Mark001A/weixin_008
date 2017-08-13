@@ -27,13 +27,14 @@ public class ADBClickService {
         AutoUtil.sleep(sleepTime);
         return true;
     }
-    public void setTextByWindow(String windowNodeTexts,int clickX,int clickY,String inputText,String action,long sleepTime){
-        if(!checkWindow(windowNodeTexts,action)) return;
+    public boolean setTextByWindow(String windowNodeTexts,int clickX,int clickY,String inputText,String action,long sleepTime){
+        if(!checkWindow(windowNodeTexts,action)) return false;
         AutoUtil.clickXY(clickX,clickY);
         AutoUtil.sleep(1500);
         AutoUtil.inputText(inputText);
         AutoUtil.recordAndLog(record,action);
         AutoUtil.sleep(sleepTime);
+        return true;
     }
     public boolean checkWindow(String windowNodeTexts,String action){
         AccessibilityNodeInfo root = context.getRootInActiveWindow();

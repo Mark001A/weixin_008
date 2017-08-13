@@ -133,12 +133,14 @@ public class RegisterService implements Runnable{
         if(AutoUtil.checkAction(record,"wx下一步"))
             adbService.clickXYByWindow("用短信验证码登录",267,885,"wx点击短信验证码登录",500);
             //adbService.setTextByWindow("用短信验证码登录",538,691,accounts.get(currentAccount),"wx输入密码",2000);
-        if(adbService.clickXYByWindow("获取验证码",897,723,"wx点击获取验证码",2000)) return;
-        if(adbService.clickXYByWindow("确认手机号码",818,1192,"wx确认手机号码",2000)){
+        if(adbService.clickXYByWindow("获取验证码",897,723,"wx点击获取验证码",1000)) return;
+        if(!AutoUtil.checkAction(record,"wx点击注册2")&&adbService.clickXYByWindow("确认手机号码",818,1192,"wx确认手机号码",2000)){
             AutoUtil.clickXY(61,1863);
             AutoUtil.sleep(1500);
             AutoUtil.recordAndLog(record,"wx点击悬浮框");
             return;
+        }else {
+            adbService.clickXYByWindow("确认手机号码",818,1192,"wx确认手机号码",2000);
         }
         AccessibilityNodeInfo node008 = AutoUtil.findNodeInfosByText(root,"一键操作");
         if(node008!=null){
@@ -152,18 +154,19 @@ public class RegisterService implements Runnable{
             return;
         }
         AccessibilityNodeInfo textNode1 = AutoUtil.findNodeInfosByText(root,ConstantWxId.REGMSG1);
-        System.out.println("textNode1-->"+textNode1);
         if(textNode1!=null){
-            AccessibilityNodeInfo textNode2 = AutoUtil.findNodeInfosById(root,"注册");
-            AccessibilityNodeInfo textNode3 = AutoUtil.findNodeInfosById(root,"例如：陈晨");
-            AccessibilityNodeInfo textNode4 = AutoUtil.findNodeInfosById(root,"手机号");
-            AccessibilityNodeInfo textNode5 = AutoUtil.findNodeInfosById(root,"密码");
-            AutoUtil.performSetText(textNode3,"夺得",record,"wx输入昵称");
+            AccessibilityNodeInfo textNode2 = AutoUtil.findNodeInfosByText(root,"注册");
+            AccessibilityNodeInfo textNode3 = AutoUtil.findNodeInfosByText(root,"昵称");
+            AccessibilityNodeInfo textNode4 = root.findAccessibilityNodeInfosByText("手机号").get(1);
+            AccessibilityNodeInfo textNode5 = AutoUtil.findNodeInfosByText(root,"密码");
+            AutoUtil.performSetText(textNode3.getParent().getChild(1),"夺得",record,"wx输入昵称");
             AutoUtil.performSetText(textNode4.getParent().getChild(1),"15236251584",record,"wx手机号");
-            AutoUtil.performSetText(textNode5.getParent().getChild(1),"www12345",record,"wx输入秘密");
+            AutoUtil.performSetText(textNode5.getParent().getChild(1),"www12345",record,"wx输入密码");
             AutoUtil.performClick(textNode2,record,"wx点击注册2");
             return;
         }
+        if(adbService.setTextByWindow(ConstantWxId.REGMSG2,550,600,"123456","wx输入验证码",1500))
+        if(adbService.clickXYByWindow(ConstantWxId.REGMSG2,550,950,"wx输入验证码下一步",2000)) return;
 
         //adbService.clickXYByWindow("是&否",625,1190,"wx不推荐通讯录",3000);
         if(AutoUtil.checkAction(record,"wx不推荐通讯录")){

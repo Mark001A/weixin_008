@@ -83,33 +83,34 @@ public class MyService extends AccessibilityService {
 
         AccessibilityNodeInfo root = getRootInActiveWindow();
         if(root==null) return;
-        AccessibilityNodeInfo textNode1 = AutoUtil.findNodeInfosByText(root, ConstantWxId.REGMSG1);
-        System.out.println("textNode1-->"+textNode1);
-        if(textNode1!=null){
-            AccessibilityNodeInfo textNode2 = AutoUtil.findNodeInfosByText(root,"注册");
-            AccessibilityNodeInfo textNode3 = AutoUtil.findNodeInfosByText(root,"昵称");
-            AccessibilityNodeInfo textNode4 = AutoUtil.findNodeInfosByText(root,"手机号");
-            AccessibilityNodeInfo textNode5 = AutoUtil.findNodeInfosByText(root,"密码");
-            System.out.println("textNode2-->"+textNode2);
-            System.out.println("textNode3-->"+textNode3);
-            System.out.println("textNode4-->"+textNode4);
-            System.out.println("textNode5-->"+textNode5);
-            AutoUtil.performSetText(textNode3,"夺得",record,"wx输入昵称");
-
-
-            //AutoUtil.performSetText(textNode4.getParent().getChild(1),"15236251584",record,"wx手机号");
-            //AutoUtil.performSetText(textNode5.getParent().getChild(1),"www12345",record,"wx输入秘密");
-            AutoUtil.performClick(textNode2,record,"wx点击注册2");
-            System.out.println("---2----2---");
-            getChild(textNode2.getParent());
-            System.out.println("---3----3---");
-            getChild(textNode3);
-            System.out.println("---4----4---");
-            getChild(textNode4);
-            System.out.println("---5----5---");
-            getChild(textNode5);
-            return;
+       /* AccessibilityNodeInfo node = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/bzr");
+        AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosByText(root,"更多");
+        AccessibilityNodeInfo node2 = AutoUtil.findNodeInfosByText(root,"个性签名");
+        AccessibilityNodeInfo node3 = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/i7");
+        AccessibilityNodeInfo node4 = AutoUtil.findNodeInfosByText(root,"保存");
+        System.out.println(node);
+        AutoUtil.performClick(node,record,"22",1000);
+        AutoUtil.performClick(node1,record,"更多",1000);
+        if(!AutoUtil.checkAction(record,"保存个性签名"))
+            AutoUtil.performClick(node2,record,"个性签名",1000);
+        if(AutoUtil.checkAction(record,"个性签名"))
+            AutoUtil.performSetText(node3,"255",record,"qm");
+        AutoUtil.performClick(node4,record,"保存个性签名",1000);*/
+        AccessibilityNodeInfo node5 = AutoUtil.findNodeInfosByText(root,"朋友圈");
+        AccessibilityNodeInfo node6 = AutoUtil.findNodeInfosById(root,ConstantWxId.ID_SENDFR);
+        AccessibilityNodeInfo node7 = AutoUtil.findNodeInfosByText(root,"发送");
+        AutoUtil.performClick(node5,record,"朋友圈",1000);
+        if(node6!=null&&AutoUtil.checkAction(record,"朋友圈")){
+            node6.getParent().performAction(AccessibilityNodeInfo.ACTION_LONG_CLICK);
         }
+        AutoUtil.performClick(node7,record,"发送",1000);
+        if(AutoUtil.checkAction(record,"发送")){
+            AccessibilityNodeInfo node8 = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/crp");
+            AutoUtil.performClick(node8,record,"点赞1");
+        }
+        AccessibilityNodeInfo node9 = AutoUtil.findNodeInfosByText(root,"赞");
+        AutoUtil.performClick(node9,record,"点赞2");
+
     }
     public  static void getChild(AccessibilityNodeInfo node){
         System.out.println("-----------start---------");
