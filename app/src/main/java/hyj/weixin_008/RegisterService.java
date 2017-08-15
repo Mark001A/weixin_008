@@ -14,7 +14,9 @@ import java.util.Map;
 
 import hyj.weixin_008.common.ConstantWxId;
 import hyj.weixin_008.common.WeixinAutoHandler;
+import hyj.weixin_008.model.PhoneApi;
 import hyj.weixin_008.service.ADBClickService;
+import hyj.weixin_008.service.PhoneNumberAPIService;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
 
@@ -33,9 +35,11 @@ public class RegisterService implements Runnable{
     Map<String,String> record;
     ADBClickService adbService;
     int currentIndex;
-    public RegisterService(AccessibilityService context, Map<String,String> record){
+    PhoneApi pa;
+    public RegisterService(AccessibilityService context, Map<String,String> record,PhoneApi pa){
         this.context = context;
         this.record = record;
+        this.pa = pa;
         adbService = new ADBClickService(context,record);
         datas = get008Datas();
         accounts = getWxAccounts();
@@ -125,11 +129,10 @@ public class RegisterService implements Runnable{
         if(!AutoUtil.checkAction(record,"wx一键操作"))
             adbService.clickXYByWindow("登录&注册",255,1790,"wx点击登录1",500);
         if(!AutoUtil.checkAction(record,"wx输入手机号")){
-            adbService.setTextByWindow("用微信号/QQ号/邮箱登录",540,720,currentAccount,"wx输入手机号",0);
+            adbService.setTextByWindow("用微信号/QQ号/邮箱登录",540,720,pa.getPhone(),"wx输入手机号",0);
         }
-        if(AutoUtil.findNodeInfosByText(root,currentAccount)!=null)
+        if(AutoUtil.findNodeInfosByText(root,pa.getPhone())!=null)
             adbService.clickXYByWindow("用微信号/QQ号/邮箱登录",540,1115,"wx下一步",1000);
-        System.out.println("密码---》"+accounts.get(currentAccount));
         if(AutoUtil.checkAction(record,"wx下一步"))
             adbService.clickXYByWindow("用短信验证码登录",267,885,"wx点击短信验证码登录",500);
             //adbService.setTextByWindow("用短信验证码登录",538,691,accounts.get(currentAccount),"wx输入密码",2000);
@@ -160,12 +163,12 @@ public class RegisterService implements Runnable{
             AccessibilityNodeInfo textNode4 = root.findAccessibilityNodeInfosByText("手机号").get(1);
             AccessibilityNodeInfo textNode5 = AutoUtil.findNodeInfosByText(root,"密码");
             AutoUtil.performSetText(textNode3.getParent().getChild(1),"夺得",record,"wx输入昵称");
-            AutoUtil.performSetText(textNode4.getParent().getChild(1),"15236251584",record,"wx手机号");
+            AutoUtil.performSetText(textNode4.getParent().getChild(1),pa.getPhone(),record,"wx手机号");
             AutoUtil.performSetText(textNode5.getParent().getChild(1),"www12345",record,"wx输入密码");
             AutoUtil.performClick(textNode2,record,"wx点击注册2");
             return;
         }
-        if(adbService.setTextByWindow(ConstantWxId.REGMSG2,550,600,"123456","wx输入验证码",1500))
+        if(adbService.setTextByWindow(ConstantWxId.REGMSG2,550,600,pa.getValidCode(),"wx输入验证码",1500))
         if(adbService.clickXYByWindow(ConstantWxId.REGMSG2,550,950,"wx输入验证码下一步",2000)) return;
 
         //adbService.clickXYByWindow("是&否",625,1190,"wx不推荐通讯录",3000);

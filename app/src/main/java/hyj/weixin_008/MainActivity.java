@@ -35,11 +35,10 @@ public class MainActivity extends AppCompatActivity {
         GetPermissionUtil.getReadAndWriteContactPermision(this,MainActivity.this);
         setContentView(R.layout.activity_main);
         //AutoUtil.wakeAndUnlock();
-
         Toast.makeText(MainActivity.this, "开启权限", Toast.LENGTH_LONG).show();
 
         Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-        //startActivity(intent);
+        startActivity(intent);
         //AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
         Toast.makeText(MainActivity.this, "开启权限", Toast.LENGTH_LONG).show();
 

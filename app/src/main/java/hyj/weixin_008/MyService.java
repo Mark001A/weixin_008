@@ -21,6 +21,7 @@ import java.util.Timer;
 import hyj.weixin_008.common.ConstantWxId;
 import hyj.weixin_008.common.WeixinAutoHandler;
 import hyj.weixin_008.flowWindow.MyWindowManager;
+import hyj.weixin_008.model.PhoneApi;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
 
@@ -58,8 +59,11 @@ public class MyService extends AccessibilityService {
         AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
         AutoUtil.sleep(1000);
 
+        PhoneApi pa = new PhoneApi("52922-akx","aa105105","1289");
         //new Thread(new Set008DataService(this,WeixinAutoHandler.record)).start();
-        //new Thread(new RegisterService(this,WeixinAutoHandler.record)).start();
+        new Thread(new RegisterService(this,WeixinAutoHandler.record,pa)).start();
+
+        new Thread(new GetPhoneAndValidCodeThread(pa)).start();
     }
     private List<String[]> removeAct(String startLoginAccount){
         boolean flag = false;
@@ -96,7 +100,7 @@ public class MyService extends AccessibilityService {
         if(AutoUtil.checkAction(record,"个性签名"))
             AutoUtil.performSetText(node3,"255",record,"qm");
         AutoUtil.performClick(node4,record,"保存个性签名",1000);*/
-        AccessibilityNodeInfo node5 = AutoUtil.findNodeInfosByText(root,"朋友圈");
+       /* AccessibilityNodeInfo node5 = AutoUtil.findNodeInfosByText(root,"朋友圈");
         AccessibilityNodeInfo node6 = AutoUtil.findNodeInfosById(root,ConstantWxId.ID_SENDFR);
         AccessibilityNodeInfo node7 = AutoUtil.findNodeInfosByText(root,"发送");
         AutoUtil.performClick(node5,record,"朋友圈",1000);
@@ -109,7 +113,7 @@ public class MyService extends AccessibilityService {
             AutoUtil.performClick(node8,record,"点赞1");
         }
         AccessibilityNodeInfo node9 = AutoUtil.findNodeInfosByText(root,"赞");
-        AutoUtil.performClick(node9,record,"点赞2");
+        AutoUtil.performClick(node9,record,"点赞2");*/
 
     }
     public  static void getChild(AccessibilityNodeInfo node){
