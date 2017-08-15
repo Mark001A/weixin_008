@@ -11,13 +11,25 @@ public class PhoneApi {
     private String token;
     private String phone;
     private String validCode;
+
+    private String zcPwd;
     private boolean phoneIsAvailavle=false;
     private boolean validCodeIsAvailavle=false;
 
-    public PhoneApi(String apiId, String pwd, String pjId) {
+    public PhoneApi(String apiId, String pwd, String pjId,String zcPwd) {
         this.apiId = apiId;
         this.pwd = pwd;
+        this.zcPwd = zcPwd;
         this.pjId = pjId;
+
+    }
+
+    public String getZcPwd() {
+        return zcPwd;
+    }
+
+    public void setZcPwd(String zcPwd) {
+        this.zcPwd = zcPwd;
     }
 
     public String getApiId() {

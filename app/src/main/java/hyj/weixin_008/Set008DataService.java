@@ -58,7 +58,7 @@ public class Set008DataService implements Runnable{
     public void run() {
         while (true){
             AutoUtil.sleep(500);
-            LogUtil.d("myService","-->线程运行..."+Thread.currentThread().getName()+record);
+            LogUtil.d("myService","-->养号线程运行..."+Thread.currentThread().getName()+record);
 
             if(WeixinAutoHandler.IS_PAUSE){
                 LogUtil.d("autoChat","暂停服务");

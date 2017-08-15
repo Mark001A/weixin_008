@@ -9,13 +9,48 @@
     tools:context="hyj.weixin_008.MainActivity">
 
     <CheckBox
-        android:id="@+id/fetch_pic"
+        android:id="@+id/zc1"
         android:textColor="#2E2E2E"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="是否抓图片"
+        android:text="注册（成功写个性签名、发朋友圈）"
         android:textSize="18sp"
         android:textStyle="bold" />
+    <CheckBox
+        android:id="@+id/zc2"
+        android:textColor="#2E2E2E"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="注册成功不写个性签名"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+    <CheckBox
+        android:id="@+id/zc3"
+        android:textColor="#2E2E2E"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="注册成功不发朋友圈"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+    <CheckBox
+        android:id="@+id/yh"
+        android:textColor="#2E2E2E"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="养号"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+    <TextView
+        android:text="注册默认密码"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#2E2E2E"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <EditText
+        android:id="@+id/zc_pwd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
     <Button
         android:id="@+id/api_setting"
         android:layout_width="match_parent"
@@ -23,10 +58,22 @@
         android:text="api对接设置"
         android:textSize="18sp" />
     <Button
+        android:id="@+id/yh_setting"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="养号设置"
+        android:textSize="18sp" />
+    <Button
+        android:id="@+id/vpn_setting"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="VPN设置"
+        android:textSize="18sp" />
+    <Button
         android:id="@+id/open_assist"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="开启权限"
+        android:text="开始运行"
         android:textSize="18sp" />
     <Button
         android:id="@+id/del_upload_file"

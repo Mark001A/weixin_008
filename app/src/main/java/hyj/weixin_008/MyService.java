@@ -55,15 +55,29 @@ public class MyService extends AccessibilityService {
         AutoUtil.recordAndLog(WeixinAutoHandler.record,Constants.CHAT_LISTENING);
         super.onServiceConnected();
 
+
+        String apiId = sharedPreferences.getString("apiId","");
+        String apiPwd = sharedPreferences.getString("apiPwd","");
+        String apiPjId = sharedPreferences.getString("apiPjId","");
+        String zcPwd = sharedPreferences.getString("wxPwd","");
+        String zc1 = sharedPreferences.getString("zc1","");
+        String zc2 = sharedPreferences.getString("zc2","");
+        String zc3 = sharedPreferences.getString("zc3","");
+        String yh = sharedPreferences.getString("yh","");
+        PhoneApi pa = new PhoneApi(apiId,apiPwd,apiPjId,zcPwd);
+
+        if("true".equals(zc1)){
+            new Thread(new RegisterService(this,WeixinAutoHandler.record,pa)).start();
+            new Thread(new GetPhoneAndValidCodeThread(pa)).start();
+        }
+        if("true".equals(yh)){
+            new Thread(new Set008DataService(this,WeixinAutoHandler.record)).start();
+        }
+
+
         AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
         AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
         AutoUtil.sleep(1000);
-
-        PhoneApi pa = new PhoneApi("52922-akx","aa105105","1289");
-        //new Thread(new Set008DataService(this,WeixinAutoHandler.record)).start();
-        new Thread(new RegisterService(this,WeixinAutoHandler.record,pa)).start();
-
-        new Thread(new GetPhoneAndValidCodeThread(pa)).start();
     }
     private List<String[]> removeAct(String startLoginAccount){
         boolean flag = false;
@@ -83,7 +97,7 @@ public class MyService extends AccessibilityService {
     }
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        MyWindowManager.updateFlowMsg(WeixinAutoHandler.record+"");
+        MyWindowManager.updateFlowMsg(WeixinAutoHandler.record.get("recordAction"));
 
         AccessibilityNodeInfo root = getRootInActiveWindow();
         if(root==null) return;

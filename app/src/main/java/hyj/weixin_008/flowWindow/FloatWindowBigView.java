@@ -105,7 +105,7 @@ public class FloatWindowBigView extends LinearLayout {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
-                intent.setClass(GlobalApplication.getContext(),SettingActivity.class);
+                intent.setClass(GlobalApplication.getContext(),MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 GlobalApplication.getContext().startActivity(intent);
                 MyWindowManager.removeBigWindow(context);

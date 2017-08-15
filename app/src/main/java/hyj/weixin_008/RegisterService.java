@@ -57,7 +57,7 @@ public class RegisterService implements Runnable{
     public void run() {
         while (true){
             AutoUtil.sleep(500);
-            LogUtil.d("myService","-->线程运行..."+Thread.currentThread().getName()+record);
+            LogUtil.d("myService","-->注册线程运行..."+Thread.currentThread().getName()+record);
 
             if(WeixinAutoHandler.IS_PAUSE){
                 LogUtil.d("autoChat","暂停服务");
@@ -164,7 +164,7 @@ public class RegisterService implements Runnable{
             AccessibilityNodeInfo textNode5 = AutoUtil.findNodeInfosByText(root,"密码");
             AutoUtil.performSetText(textNode3.getParent().getChild(1),"夺得",record,"wx输入昵称");
             AutoUtil.performSetText(textNode4.getParent().getChild(1),pa.getPhone(),record,"wx手机号");
-            AutoUtil.performSetText(textNode5.getParent().getChild(1),"www12345",record,"wx输入密码");
+            AutoUtil.performSetText(textNode5.getParent().getChild(1),pa.getZcPwd(),record,"wx输入密码");
             AutoUtil.performClick(textNode2,record,"wx点击注册2");
             return;
         }
