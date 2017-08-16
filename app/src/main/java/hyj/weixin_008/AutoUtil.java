@@ -217,6 +217,12 @@ public class AutoUtil {
             return true;
         return false;
     }
+    //核对状态
+    public static boolean actionContains(Map<String,String> record, String str){
+        if(record.get("recordAction").startsWith(str))
+            return true;
+        return false;
+    }
 
     public static void  execShell(String cmd){
         try {

@@ -22,6 +22,7 @@ import hyj.weixin_008.common.ConstantWxId;
 import hyj.weixin_008.common.WeixinAutoHandler;
 import hyj.weixin_008.flowWindow.MyWindowManager;
 import hyj.weixin_008.model.PhoneApi;
+import hyj.weixin_008.service.ADBClickService;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
 
@@ -65,14 +66,15 @@ public class MyService extends AccessibilityService {
         String zc3 = sharedPreferences.getString("zc3","");
         String yh = sharedPreferences.getString("yh","");
         PhoneApi pa = new PhoneApi(apiId,apiPwd,apiPjId,zcPwd);
+        System.out.println("\"true\".equals(zc1)-->"+"true".equals(zc1));
 
-        if("true".equals(zc1)){
+     /*  if("true".equals(zc1)){
             new Thread(new RegisterService(this,WeixinAutoHandler.record,pa)).start();
             new Thread(new GetPhoneAndValidCodeThread(pa)).start();
         }
         if("true".equals(yh)){
             new Thread(new Set008DataService(this,WeixinAutoHandler.record)).start();
-        }
+        }*/
 
 
         AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
@@ -95,25 +97,39 @@ public class MyService extends AccessibilityService {
         Collections.reverse(newStr);
         return newStr;
     }
+    ADBClickService adbService  = new ADBClickService(this,record);
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         MyWindowManager.updateFlowMsg(WeixinAutoHandler.record.get("recordAction"));
 
         AccessibilityNodeInfo root = getRootInActiveWindow();
         if(root==null) return;
-       /* AccessibilityNodeInfo node = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/bzr");
-        AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosByText(root,"更多");
-        AccessibilityNodeInfo node2 = AutoUtil.findNodeInfosByText(root,"个性签名");
-        AccessibilityNodeInfo node3 = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/i7");
-        AccessibilityNodeInfo node4 = AutoUtil.findNodeInfosByText(root,"保存");
-        System.out.println(node);
-        AutoUtil.performClick(node,record,"22",1000);
-        AutoUtil.performClick(node1,record,"更多",1000);
-        if(!AutoUtil.checkAction(record,"保存个性签名"))
-            AutoUtil.performClick(node2,record,"个性签名",1000);
-        if(AutoUtil.checkAction(record,"个性签名"))
-            AutoUtil.performSetText(node3,"255",record,"qm");
-        AutoUtil.performClick(node4,record,"保存个性签名",1000);*/
+        List<AccessibilityNodeInfo> moBtn = root.findAccessibilityNodeInfosByText("更多");
+        if(moBtn!=null){
+            System.out.println("more-->"+moBtn.size());
+        }
+
+        if(true||AutoUtil.checkAction(WeixinAutoHandler.record,"wx注册成功")||AutoUtil.actionContains(WeixinAutoHandler.record,"qm")){
+            AccessibilityNodeInfo node = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/bzr");
+            AccessibilityNodeInfo node2 = AutoUtil.findNodeInfosByText(root,"个性签名");
+            AccessibilityNodeInfo node4 = AutoUtil.findNodeInfosByText(root,"保存");
+            System.out.println(node);
+            AutoUtil.performClick(node,WeixinAutoHandler.record,"qm点击头像",1000);
+            if(AutoUtil.checkAction(WeixinAutoHandler.record,"qm点击头像")){
+                AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosByText(root,"更多");
+                AutoUtil.performClick(node1,WeixinAutoHandler.record,"qm更多",1000);
+            }
+            if(!AutoUtil.checkAction(WeixinAutoHandler.record,"qm保存个性签名"))
+                AutoUtil.performClick(node2,WeixinAutoHandler.record,"qm个性签名",1000);
+            if(AutoUtil.checkAction(WeixinAutoHandler.record,"qm个性签名")){
+                AccessibilityNodeInfo node3 = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/i7");
+                AutoUtil.performSetText(node3,System.currentTimeMillis()+"",WeixinAutoHandler.record,"qm输入签名");
+            }
+            if(AutoUtil.checkAction(WeixinAutoHandler.record,"qm输入签名"))
+             AutoUtil.performClick(node4,WeixinAutoHandler.record,"qm保存个性签名",1000);
+        }
+
+
        /* AccessibilityNodeInfo node5 = AutoUtil.findNodeInfosByText(root,"朋友圈");
         AccessibilityNodeInfo node6 = AutoUtil.findNodeInfosById(root,ConstantWxId.ID_SENDFR);
         AccessibilityNodeInfo node7 = AutoUtil.findNodeInfosByText(root,"发送");

@@ -18,6 +18,7 @@ public class GetPhoneAndValidCodeThread  implements Runnable{
     public void run() {
         while (true){
             AutoUtil.sleep(4000);
+            LogUtil.d("GetPhoneAndValidCodeThread","-->获取号码线程运行..."+Thread.currentThread().getName()+" phone:"+pa.isPhoneIsAvailavle()+" validCode:"+pa.isValidCodeIsAvailavle());
             if(pa.getToken()==null){
                 String token = phoneService.login(pa.getApiId(),pa.getPwd());
                 pa.setToken(token);
@@ -26,19 +27,19 @@ public class GetPhoneAndValidCodeThread  implements Runnable{
             if(pa.getToken()!=null){
                 if(!pa.isPhoneIsAvailavle()){
                     String phone = phoneService.getPhone(pa.getApiId(),pa.getToken(),pa.getPjId());
+                    LogUtil.d("GetPhoneAndValidCodeThread","phoneBody:"+phone);
                     if(phone.matches("[\\d]{11}")){
                         pa.setPhone(phone);
                         pa.setPhoneIsAvailavle(true);
-                        LogUtil.d("GetPhoneAndValidCodeThread","phone获取成功："+phone);
                     }
                 }
 
                 if(pa.isPhoneIsAvailavle()&&!pa.isValidCodeIsAvailavle()){
                     String validCode = phoneService.getValidCode(pa.getApiId(),pa.getPhone(),pa.getToken(),pa.getPjId());
+                    LogUtil.d("GetPhoneAndValidCodeThread","validCodeBody："+validCode);
                     if(validCode.matches("[\\d]{4,8}")){
                         pa.setValidCode(validCode);
                         pa.setValidCodeIsAvailavle(true);
-                        LogUtil.d("GetPhoneAndValidCodeThread","validCode获取成功："+validCode);
                     }
                 }
             }

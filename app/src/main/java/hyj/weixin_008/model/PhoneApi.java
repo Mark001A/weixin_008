@@ -12,6 +12,8 @@ public class PhoneApi {
     private String phone;
     private String validCode;
 
+    private int waitValicodeTime;
+
     private String zcPwd;
     private boolean phoneIsAvailavle=false;
     private boolean validCodeIsAvailavle=false;
@@ -22,6 +24,14 @@ public class PhoneApi {
         this.zcPwd = zcPwd;
         this.pjId = pjId;
 
+    }
+
+    public int getWaitValicodeTime() {
+        return waitValicodeTime;
+    }
+
+    public void setWaitValicodeTime(int waitValicodeTime) {
+        this.waitValicodeTime = waitValicodeTime;
     }
 
     public String getZcPwd() {

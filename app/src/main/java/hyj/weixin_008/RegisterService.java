@@ -168,11 +168,28 @@ public class RegisterService implements Runnable{
             AutoUtil.performClick(textNode2,record,"wx点击注册2");
             return;
         }
-        if(adbService.setTextByWindow(ConstantWxId.REGMSG2,550,600,pa.getValidCode(),"wx输入验证码",1500))
-        if(adbService.clickXYByWindow(ConstantWxId.REGMSG2,550,950,"wx输入验证码下一步",2000)) return;
+
+        if(pa.isValidCodeIsAvailavle()){
+            if(adbService.setTextByWindow(ConstantWxId.REGMSG2,550,600,pa.getValidCode(),"wx输入验证码",1500))
+                if(adbService.clickXYByWindow(ConstantWxId.REGMSG2,550,950,"wx输入验证码下一步",2000)) return;
+        }
+        if(AutoUtil.checkAction(record,"wx确认手机号码")){
+            if(AutoUtil.findNodeInfosByText(root,ConstantWxId.REGMSG2)!=null&&!pa.isValidCodeIsAvailavle()){
+                if(pa.getWaitValicodeTime()==20){
+                    pa.setWaitValicodeTime(0);
+                    AutoUtil.recordAndLog(record,"008登录异常");
+                }
+                LogUtil.d("WaitValicodeTim",pa.getWaitValicodeTime()+"");
+                pa.setWaitValicodeTime(pa.getWaitValicodeTime()+1);
+                return;
+            }
+        }
+        if(adbService.clickXYByWindow(ConstantWxId.REGMSG5,540,1100,"wx不是我的，继续注册",1000)) return;
+        if(adbService.clickXYByWindow(ConstantWxId.REGMSG3,600,1220,"wx了解更多",1000)) return;
+        if(adbService.clickXYByWindow(ConstantWxId.REGMSG4,540,1800,"wx以后再说",1000)) return;
 
         //adbService.clickXYByWindow("是&否",625,1190,"wx不推荐通讯录",3000);
-        if(AutoUtil.checkAction(record,"wx不推荐通讯录")){
+        if(AutoUtil.checkAction(record,"wx以后再说")){
             AutoUtil.clickXY(400,1845);
             System.out.println("---->切换");
             AutoUtil.performClick(AutoUtil.findNodeInfosByText(root,"忽略"),record,"wx不推荐通讯录");
@@ -180,9 +197,9 @@ public class RegisterService implements Runnable{
             AccessibilityNodeInfo node3 = AutoUtil.findNodeInfosByText(root,"应急联系人");
             if(node1!=null||node3!=null){
                 countLongin =0;
-                LogUtil.login("success",currentAccount+"-"+accounts.get(currentAccount));
-                AutoUtil.showToastByRunnable(context,"登录成功");
-                AutoUtil.recordAndLog(record,"008登录成功");
+                LogUtil.reg("reg",pa.getPhone()+"-"+pa.getZcPwd());
+                AutoUtil.showToastByRunnable(context,"注册成功");
+                AutoUtil.recordAndLog(record,"wx注册成功");
                 AutoUtil.sleep(3000);
             }
             return;

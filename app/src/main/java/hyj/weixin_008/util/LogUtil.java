@@ -27,6 +27,15 @@ public class LogUtil {
         System.out.println(logMsg);
         FileUtil.writeContent2File("/sdcard/A_hyj_login/","loginInfo_"+dateTime.substring(0,10)+".txt",logMsg);
     }
+    //记录登录账号sd卡
+    public static void reg(String tab,String msg){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String dateTime = sdf.format(new Date());
+        String logMsg = dateTime+" "+tab+"---->"+msg;
+        //以天为单位生成日志文件
+        System.out.println(logMsg);
+        FileUtil.writeContent2File("/sdcard/A_hyj_reg/","reg_"+dateTime.substring(0,10)+".txt",logMsg);
+    }
     //记录008数据到sd卡
     public static void log008(String msg){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
