@@ -36,6 +36,10 @@ public class MyService extends AccessibilityService {
     List<String[]> str;
     String vpnIndex;
     String ipAddress;
+    String zc1;
+    String zc2;
+    String zc3;
+    String yh;
     @Override
     protected void onServiceConnected() {
         LogUtil.d("myService","开启服务...");
@@ -61,10 +65,13 @@ public class MyService extends AccessibilityService {
         String apiPwd = sharedPreferences.getString("apiPwd","");
         String apiPjId = sharedPreferences.getString("apiPjId","");
         String zcPwd = sharedPreferences.getString("wxPwd","");
-        String zc1 = sharedPreferences.getString("zc1","");
-        String zc2 = sharedPreferences.getString("zc2","");
-        String zc3 = sharedPreferences.getString("zc3","");
-        String yh = sharedPreferences.getString("yh","");
+        zc1 = sharedPreferences.getString("zc1","");
+        zc2 = sharedPreferences.getString("zc2","");
+        zc3 = sharedPreferences.getString("zc3","");
+        yh = sharedPreferences.getString("yh","");
+        System.out.println("zc1-->"+zc1);
+        System.out.println("zc2-->"+zc2);
+        System.out.println("zc3-->"+zc3);
         PhoneApi pa = new PhoneApi(apiId,apiPwd,apiPjId,zcPwd);
         System.out.println("\"true\".equals(zc1)-->"+"true".equals(zc1));
 
@@ -104,47 +111,78 @@ public class MyService extends AccessibilityService {
 
         AccessibilityNodeInfo root = getRootInActiveWindow();
         if(root==null) return;
-        List<AccessibilityNodeInfo> moBtn = root.findAccessibilityNodeInfosByText("更多");
-        if(moBtn!=null){
-            System.out.println("more-->"+moBtn.size());
-        }
+        System.out.println("--->"+event.getEventType()+"--"+JSON.toJSONString(event.getText())+"-"+"true".equals(zc2)+"-"+WeixinAutoHandler.record);
 
-        if(true||AutoUtil.checkAction(WeixinAutoHandler.record,"wx注册成功")||AutoUtil.actionContains(WeixinAutoHandler.record,"qm")){
-            AccessibilityNodeInfo node = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/bzr");
+        if(AutoUtil.checkAction(WeixinAutoHandler.record,Constants.CHAT_LISTENING)){
+            if(!"true".equals(zc2)){
+                AutoUtil.recordAndLog(WeixinAutoHandler.record,"qm");
+            }
+            if("true".equals(zc2)&&!"true".equals(zc3)){
+                AutoUtil.recordAndLog(WeixinAutoHandler.record,"pyq");
+            }
+
+        }else if(AutoUtil.checkAction(WeixinAutoHandler.record,"wx登录成功")){
+            if(!"true".equals(zc3)){
+                AutoUtil.recordAndLog(WeixinAutoHandler.record,"pyq");
+            }
+        }
+        setQm(root);
+        sentFr(root);
+
+    }
+    private void sentFr(AccessibilityNodeInfo root){
+        if(AutoUtil.actionContains(WeixinAutoHandler.record,"pyq")){
+            AccessibilityNodeInfo node5 = AutoUtil.findNodeInfosByText(root,"朋友圈");
+            AccessibilityNodeInfo node6 = AutoUtil.findNodeInfosById(root,ConstantWxId.ID_SENDFR);
+            AccessibilityNodeInfo node7 = AutoUtil.findNodeInfosByText(root,"发送");
+            AccessibilityNodeInfo node10 = AutoUtil.findNodeInfosById(root,ConstantWxId.REGID4);
+            AutoUtil.performClick(node5,record,"pyq朋友圈",1000);
+            if(node6!=null&&AutoUtil.checkAction(record,"pyq朋友圈")){
+                node6.getParent().performAction(AccessibilityNodeInfo.ACTION_LONG_CLICK);
+            }
+            AutoUtil.performSetText(node10,System.currentTimeMillis()+"",record,"pyq输入朋友圈内容");
+            System.out.println("node10-->"+node10);
+            AutoUtil.performClick(node7,record,"pyq发送",1000);
+            if(AutoUtil.checkAction(record,"pyq发送")){
+                AccessibilityNodeInfo node8 = AutoUtil.findNodeInfosById(root,ConstantWxId.REGID3);
+                AutoUtil.performClick(node8,record,"pyq点赞1");
+            }
+            AccessibilityNodeInfo node9 = AutoUtil.findNodeInfosByText(root,"赞");
+            AutoUtil.performClick(node9,record,"pyq点赞2");
+        }
+    }
+    private void setQm(AccessibilityNodeInfo root){
+        //wx注册成功
+        if(AutoUtil.actionContains(WeixinAutoHandler.record,"qm")){
+            AccessibilityNodeInfo node = AutoUtil.findNodeInfosById(root,ConstantWxId.REGID1);
             AccessibilityNodeInfo node2 = AutoUtil.findNodeInfosByText(root,"个性签名");
             AccessibilityNodeInfo node4 = AutoUtil.findNodeInfosByText(root,"保存");
-            System.out.println(node);
-            AutoUtil.performClick(node,WeixinAutoHandler.record,"qm点击头像",1000);
+
+            if(AutoUtil.checkAction(WeixinAutoHandler.record,"qm保存个性签名")||AutoUtil.checkAction(WeixinAutoHandler.record,"qm返回")){
+                if(AutoUtil.findNodeInfosByText(root,"我")!=null){
+                    AutoUtil.recordAndLog(WeixinAutoHandler.record,"pyq发朋友圈");
+                }
+                AutoUtil.performClick(AutoUtil.findNodeInfosById(root,ConstantWxId.BACK),WeixinAutoHandler.record,"qm返回");
+                return;
+            }
+            if(node!=null){
+                AutoUtil.performClick(node,WeixinAutoHandler.record,"qm点击头像",500);
+            }
             if(AutoUtil.checkAction(WeixinAutoHandler.record,"qm点击头像")){
                 AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosByText(root,"更多");
-                AutoUtil.performClick(node1,WeixinAutoHandler.record,"qm更多",1000);
+                AutoUtil.performClick(node1,WeixinAutoHandler.record,"qm更多",500);
             }
-            if(!AutoUtil.checkAction(WeixinAutoHandler.record,"qm保存个性签名"))
-                AutoUtil.performClick(node2,WeixinAutoHandler.record,"qm个性签名",1000);
+            if(!AutoUtil.checkAction(WeixinAutoHandler.record,"qm保存个性签名")){
+                AutoUtil.performClick(node2,WeixinAutoHandler.record,"qm个性签名",500);
+            }
             if(AutoUtil.checkAction(WeixinAutoHandler.record,"qm个性签名")){
-                AccessibilityNodeInfo node3 = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/i7");
+                AccessibilityNodeInfo node3 = AutoUtil.findNodeInfosById(root,ConstantWxId.REGID2);
                 AutoUtil.performSetText(node3,System.currentTimeMillis()+"",WeixinAutoHandler.record,"qm输入签名");
             }
-            if(AutoUtil.checkAction(WeixinAutoHandler.record,"qm输入签名"))
-             AutoUtil.performClick(node4,WeixinAutoHandler.record,"qm保存个性签名",1000);
+            if(AutoUtil.checkAction(WeixinAutoHandler.record,"qm输入签名")){
+                AutoUtil.performClick(node4,WeixinAutoHandler.record,"qm保存个性签名",500);
+            }
         }
-
-
-       /* AccessibilityNodeInfo node5 = AutoUtil.findNodeInfosByText(root,"朋友圈");
-        AccessibilityNodeInfo node6 = AutoUtil.findNodeInfosById(root,ConstantWxId.ID_SENDFR);
-        AccessibilityNodeInfo node7 = AutoUtil.findNodeInfosByText(root,"发送");
-        AutoUtil.performClick(node5,record,"朋友圈",1000);
-        if(node6!=null&&AutoUtil.checkAction(record,"朋友圈")){
-            node6.getParent().performAction(AccessibilityNodeInfo.ACTION_LONG_CLICK);
-        }
-        AutoUtil.performClick(node7,record,"发送",1000);
-        if(AutoUtil.checkAction(record,"发送")){
-            AccessibilityNodeInfo node8 = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/crp");
-            AutoUtil.performClick(node8,record,"点赞1");
-        }
-        AccessibilityNodeInfo node9 = AutoUtil.findNodeInfosByText(root,"赞");
-        AutoUtil.performClick(node9,record,"点赞2");*/
-
     }
     public  static void getChild(AccessibilityNodeInfo node){
         System.out.println("-----------start---------");

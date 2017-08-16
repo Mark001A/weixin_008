@@ -13,5 +13,10 @@ public class ConstantWxId {
     public static final String REGMSG4="同意并进入微信";
     public static final String REGMSG5="不是我的，继续注册";
 
+    public static final String BACK="com.tencent.mm:id/h7";//左上角返回
     public static final String ID_SENDFR="com.tencent.mm:id/fk";//长按发送朋友圈
+    public static final String REGID1="com.tencent.mm:id/bzr";//我--头像
+    public static final String REGID2="com.tencent.mm:id/i7";//我--头像--更多--个性签名--输入框
+    public static final String REGID3="com.tencent.mm:id/crp";//评论、点赞图标
+    public static final String REGID4="com.tencent.mm:id/cvm";//发朋友圈内容输入框
 }

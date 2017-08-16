@@ -17,6 +17,14 @@
         android:textSize="18sp"
         android:textStyle="bold" />
     <CheckBox
+        android:id="@+id/yh"
+        android:textColor="#2E2E2E"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="养号（发朋友圈）"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+    <CheckBox
         android:id="@+id/zc2"
         android:textColor="#2E2E2E"
         android:layout_width="match_parent"
@@ -29,15 +37,7 @@
         android:textColor="#2E2E2E"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="注册成功不发朋友圈"
-        android:textSize="18sp"
-        android:textStyle="bold" />
-    <CheckBox
-        android:id="@+id/yh"
-        android:textColor="#2E2E2E"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="养号"
+        android:text="不发朋友圈"
         android:textSize="18sp"
         android:textStyle="bold" />
     <TextView

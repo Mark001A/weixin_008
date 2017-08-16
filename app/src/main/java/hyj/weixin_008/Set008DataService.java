@@ -148,7 +148,7 @@ public class Set008DataService implements Runnable{
                 countLongin =0;
                 LogUtil.login("success",currentAccount+"-"+accounts.get(currentAccount));
                 AutoUtil.showToastByRunnable(context,"登录成功");
-                AutoUtil.recordAndLog(record,"008登录成功");
+                AutoUtil.recordAndLog(record,"wx登录成功");
                 AutoUtil.sleep(3000);
             }
             return;
