@@ -153,16 +153,18 @@ public class RegisterService implements Runnable{
             AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
         }
         if(AutoUtil.checkAction(record,"wx一键操作")){
-            adbService.clickXYByWindow("登录&注册",834,1790,"wx点击注册1",500);
+            if(!adbService.clickXYByWindow("登录&注册",834,1790,"wx点击注册1",500)){
+                AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
+            }
             return;
         }
         AccessibilityNodeInfo textNode1 = AutoUtil.findNodeInfosByText(root,ConstantWxId.REGMSG1);
-        if(textNode1!=null){
+        if(textNode1!=null&&!AutoUtil.checkAction(record,"wx点击注册2")){
             AccessibilityNodeInfo textNode2 = AutoUtil.findNodeInfosByText(root,"注册");
             AccessibilityNodeInfo textNode3 = AutoUtil.findNodeInfosByText(root,"昵称");
             AccessibilityNodeInfo textNode4 = root.findAccessibilityNodeInfosByText("手机号").get(1);
             AccessibilityNodeInfo textNode5 = AutoUtil.findNodeInfosByText(root,"密码");
-            AutoUtil.performSetText(textNode3.getParent().getChild(1),"夺得",record,"wx输入昵称");
+            AutoUtil.performSetText(textNode3.getParent().getChild(1),String.valueOf(System.currentTimeMillis()).substring(10),record,"wx输入昵称");
             AutoUtil.performSetText(textNode4.getParent().getChild(1),pa.getPhone(),record,"wx手机号");
             AutoUtil.performSetText(textNode5.getParent().getChild(1),pa.getZcPwd(),record,"wx输入密码");
             AutoUtil.performClick(textNode2,record,"wx点击注册2");
@@ -184,12 +186,18 @@ public class RegisterService implements Runnable{
                 return;
             }
         }
+        if(AutoUtil.checkAction(record,"wx不是我的，继续注册")){
+            if(AutoUtil.findNodeInfosByText(root,ConstantWxId.REGMSG6)!=null||AutoUtil.findNodeInfosByText(root,ConstantWxId.REGMSG8)!=null){
+                AutoUtil.recordAndLog(record,"008登录异常");
+                return;
+            }
+        }
         if(adbService.clickXYByWindow(ConstantWxId.REGMSG5,540,1100,"wx不是我的，继续注册",1000)) return;
         if(adbService.clickXYByWindow(ConstantWxId.REGMSG3,600,1220,"wx了解更多",1000)) return;
         if(adbService.clickXYByWindow(ConstantWxId.REGMSG4,540,1800,"wx以后再说",1000)) return;
 
         //adbService.clickXYByWindow("是&否",625,1190,"wx不推荐通讯录",3000);
-        if(AutoUtil.checkAction(record,"wx以后再说")){
+        if(AutoUtil.checkAction(record,"wx以后再说")||AutoUtil.checkAction(record,"wx不是我的，继续注册")){
             AutoUtil.clickXY(400,1845);
             System.out.println("---->切换");
             AutoUtil.performClick(AutoUtil.findNodeInfosByText(root,"忽略"),record,"wx不推荐通讯录");
@@ -201,6 +209,7 @@ public class RegisterService implements Runnable{
                 AutoUtil.showToastByRunnable(context,"注册成功");
                 AutoUtil.recordAndLog(record,"wx注册成功");
                 AutoUtil.sleep(3000);
+                AutoUtil.clickXY(946,1833);//点我
             }
             return;
         }
@@ -265,37 +274,12 @@ public class RegisterService implements Runnable{
     }
     private void set008Data(AccessibilityNodeInfo root){
         AccessibilityNodeInfo list = AutoUtil.findNodeInfosById(root,"com.soft.apk008v:id/set_value_con");
-        if(list!=null){
-            System.out.println("--list-getChildCount->"+list.getChildCount());
-        }
         if(list!=null&&list.getChildCount()>90){
-            for(int i=1;i<91;i++){
-                if(list.getChild(i).isEditable()){
-                    String data  = datas.get(currentIndex)[i+1];
-                    System.out.println("-rr->"+i+" "+data);
-                    AutoUtil.performSetText(list.getChild(i),data,record,"008写入"+i+" "+data);
-                }
-            }
-            AutoUtil.recordAndLog(record,"008写入数据完成");
-            String msg = "总共:"+datas.size()+"  当前序号:"+currentIndex;
-            LogUtil.d("number",msg);
-            AutoUtil.showToastByRunnable(GlobalApplication.getContext().getApplicationContext(),msg);
-            if(AutoUtil.checkAction(record,"008写入数据完成")){
-                AccessibilityNodeInfo save =AutoUtil.findNodeInfosByText(root,"保存");
-                AutoUtil.performClick(save,record,"st保存",1000);
-                AutoUtil.recordAndLog(record,"st写入数据");
-
-                currentAccount = datas.get(currentIndex)[datas.get(currentIndex).length-1];
-                if(currentIndex<datas.size()-1){
-                    currentIndex = currentIndex+1;
-                }else {
-
-                }
-            }
-          /*  AutoUtil.sleep(1000);
-            AutoUtil.clickXY(123,506);//保存
-            System.out.println("--->保存");*/
-
+            AccessibilityNodeInfo generate =AutoUtil.findNodeInfosByText(root,"随机生成");
+            AccessibilityNodeInfo save =AutoUtil.findNodeInfosByText(root,"保存");
+            AutoUtil.performClick(generate,record,"008随机生成",1000);
+            AutoUtil.performClick(save,record,"008保存",1000);
+            AutoUtil.recordAndLog(record,"st写入数据");
         }
     }
     String vpnIndex="1";

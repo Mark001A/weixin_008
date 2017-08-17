@@ -106,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
         vpnSetting.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-
                 startActivity(new Intent(Settings.ACTION_AIRPLANE_MODE_SETTINGS));
             }
         });
@@ -123,10 +122,11 @@ public class MainActivity extends AppCompatActivity {
         editor.commit();
     }
 
+
     @Override
-    protected void onDestroy() {
-        System.out.println("save--->");
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
+        System.out.println("save--->onPause");
         saveParams();
     }
 }

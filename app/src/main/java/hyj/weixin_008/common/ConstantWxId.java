@@ -12,6 +12,9 @@ public class ConstantWxId {
     public static final String REGMSG3="查找你的微信朋友";
     public static final String REGMSG4="同意并进入微信";
     public static final String REGMSG5="不是我的，继续注册";
+    public static final String REGMSG6="当前手机号近期已成功注册微信号，相同手机号不可频繁重复注册微信帐号。";
+    public static final String REGMSG8="当前手机号当天已成功注册微信号，相同手机号不可频繁重复注册微信帐号。";
+    public static final String REGMSG7="这一刻的想法...";
 
     public static final String BACK="com.tencent.mm:id/h7";//左上角返回
     public static final String ID_SENDFR="com.tencent.mm:id/fk";//长按发送朋友圈

@@ -76,9 +76,9 @@ public class ApiSettingActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
+        System.out.println("save api--->onPause");
         saveParams();
-        System.out.println("--->onDestroy--");
     }
 }
