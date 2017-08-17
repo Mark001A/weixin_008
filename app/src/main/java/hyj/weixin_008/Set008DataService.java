@@ -52,6 +52,7 @@ public class Set008DataService implements Runnable{
         }else{
             currentIndex=0;
         }
+        currentIndex=101;
     }
     int countLongin=0;
     @Override
@@ -132,10 +133,10 @@ public class Set008DataService implements Runnable{
             adbService.setTextByWindow("用微信号/QQ号/邮箱登录",540,720,currentAccount,"wx输入手机号",0);
         }
         if(AutoUtil.findNodeInfosByText(root,currentAccount)!=null)
-            adbService.clickXYByWindow("用微信号/QQ号/邮箱登录",540,1115,"wx下一步",1000);
+            adbService.clickXYByWindow("用微信号/QQ号/邮箱登录",540,1115,"wx下一步",2000);
         System.out.println("密码---》"+accounts.get(currentAccount));
         if(AutoUtil.checkAction(record,"wx下一步"))
-            adbService.setTextByWindow("用短信验证码登录",538,691,accounts.get(currentAccount),"wx输入密码",2000);
+            adbService.setTextByWindow("用短信验证码登录",538,691,accounts.get(currentAccount)==null?"www12345":accounts.get(currentAccount),"wx输入密码",2000);
         if(adbService.clickXYByWindow("用短信验证码登录",563,995,"wx登录2",2000)) return;
         adbService.clickXYByWindow("是&否",625,1190,"wx不推荐通讯录",3000);
         if(AutoUtil.checkAction(record,"wx不推荐通讯录")){
@@ -148,7 +149,8 @@ public class Set008DataService implements Runnable{
                 countLongin =0;
                 LogUtil.login("success",currentAccount+"-"+accounts.get(currentAccount));
                 AutoUtil.showToastByRunnable(context,"登录成功");
-                AutoUtil.recordAndLog(record,"wx登录成功");
+                //AutoUtil.recordAndLog(record,"wx登录成功");
+                AutoUtil.recordAndLog(record,"008登录成功");
                 AutoUtil.sleep(3000);
             }
             return;
@@ -236,7 +238,12 @@ public class Set008DataService implements Runnable{
         if(list!=null&&list.getChildCount()>90){
             for(int i=1;i<91;i++){
                 if(list.getChild(i).isEditable()){
-                    String data  = datas.get(currentIndex)[i+1];
+                    String data;
+                    if(datas.get(currentIndex)[1].contains("历史记录")){//红米2s提取的008数据
+                        data  = datas.get(currentIndex)[i+1];
+                    }else {
+                        data  = datas.get(currentIndex)[i];
+                    }
                     System.out.println("-rr->"+i+" "+data);
                     AutoUtil.performSetText(list.getChild(i),data,record,"008写入"+i+" "+data);
                 }

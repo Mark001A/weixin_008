@@ -33,6 +33,7 @@ public class FloatWindowBigView extends LinearLayout {
      */
     public static int viewHeight;
     Button pause;
+    Button save008;
     TextView statusText;
 
     public FloatWindowBigView(final Context context) {
@@ -45,6 +46,7 @@ public class FloatWindowBigView extends LinearLayout {
         Button openAssist = (Button)findViewById(R.id.open_assist);
         Button nextOne = (Button)findViewById(R.id.nextOne);
         Button openSetting = (Button)findViewById(R.id.open_setting);
+        save008 = (Button)findViewById(R.id.save_008);
         statusText = (TextView)findViewById(R.id.status_text);
         pause = (Button) findViewById(R.id.pause);
         String status = "";
@@ -76,6 +78,20 @@ public class FloatWindowBigView extends LinearLayout {
                     WeixinAutoHandler.IS_PAUSE = false;
                     pause.setText("暂停");
                     statusText.setText("当前状态：已经开启");
+                }
+                MyWindowManager.removeBigWindow(context);
+                MyWindowManager.createSmallWindow(context);
+            }
+        });
+        save008.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (WeixinAutoHandler.IS_SAVE_008==false){
+                    WeixinAutoHandler.IS_SAVE_008=true;
+                    pause.setText("开启保存008数据");
+                }else{
+                    WeixinAutoHandler.IS_SAVE_008 = false;
+                    pause.setText("关闭保存008数据");
                 }
                 MyWindowManager.removeBigWindow(context);
                 MyWindowManager.createSmallWindow(context);

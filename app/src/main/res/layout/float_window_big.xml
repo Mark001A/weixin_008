@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/big_window_layout"
     android:layout_width="300dip"
-    android:layout_height="300dip"
+    android:layout_height="330dip"
     android:background="@android:color/black"
     android:orientation="vertical">
 
@@ -42,6 +42,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="打开参数设置面板" />
+    <Button
+        android:id="@+id/save_008"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="开启保存008数据" />
+
 
     <Button
         android:id="@+id/back"

@@ -18,5 +18,6 @@ public class WeixinAutoHandler {
     public static boolean IS_PAUSE=false;
     public static boolean IS_START_SERVICE=false;
     public static boolean IS_NEXT_NONE=false;
+    public static boolean IS_SAVE_008=false;
 
 }

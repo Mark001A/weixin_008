@@ -21,8 +21,10 @@ import java.util.Timer;
 import hyj.weixin_008.common.ConstantWxId;
 import hyj.weixin_008.common.WeixinAutoHandler;
 import hyj.weixin_008.flowWindow.MyWindowManager;
+import hyj.weixin_008.model.Get008Data;
 import hyj.weixin_008.model.PhoneApi;
 import hyj.weixin_008.service.ADBClickService;
+import hyj.weixin_008.thread.Get008DataThread;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
 
@@ -81,6 +83,7 @@ public class MyService extends AccessibilityService {
         }else if("true".equals(yh)){
             new Thread(new Set008DataService(this,WeixinAutoHandler.record)).start();
         }
+        //new Thread(new Get008DataThread(this,new Get008Data())).start();
 
 
         AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
@@ -122,7 +125,6 @@ public class MyService extends AccessibilityService {
         }
         setQm(root);
         sentFr(root);
-
     }
     private void sentFr(AccessibilityNodeInfo root){
         if("true".equals(zc3)&&AutoUtil.actionContains(WeixinAutoHandler.record,"pyq")){
@@ -272,6 +274,19 @@ public class MyService extends AccessibilityService {
 
         }
         }
+    }
+    private void save008Data(AccessibilityNodeInfo root){
+        AccessibilityNodeInfo list = AutoUtil.findNodeInfosById(root,"com.soft.apk008v:id/set_value_con");
+        String[] str = new String[93];
+        if(list!=null&&list.getChildCount()==92){
+            for(int i=0;i<92;i++){
+                str[i]=list.getChild(i).getText()+"";
+                System.out.println("-->"+i+" "+str[i]);
+            }
+            str[92]= get008Phone;
+        }
+        //LogUtil.log008(JSON.toJSONString(str));
+        System.out.println("save 008data-->"+JSON.toJSONString(str));
     }
 
     private void clickIdMode(AccessibilityNodeInfo root,String id,String currentAction,String action){
