@@ -1,6 +1,5 @@
 package hyj.weixin_008.flowWindow;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -8,12 +7,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import hyj.weixin_008.GlobalApplication;
 import hyj.weixin_008.MainActivity;
 import hyj.weixin_008.R;
-import hyj.weixin_008.SettingActivity;
 import hyj.weixin_008.common.WeixinAutoHandler;
 
 

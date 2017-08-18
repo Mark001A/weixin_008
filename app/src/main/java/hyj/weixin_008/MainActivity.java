@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import hyj.weixin_008.acvitity.ApiSettingActivity;
+import hyj.weixin_008.acvitity.SettingActivity;
 import hyj.weixin_008.common.WeixinAutoHandler;
 import hyj.weixin_008.flowWindow.MyWindowManager;
 import hyj.weixin_008.util.FileUtil;
@@ -101,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
         yhSetting.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,SettingActivity.class));
             }
         });
         vpnSetting.setOnClickListener(new View.OnClickListener(){

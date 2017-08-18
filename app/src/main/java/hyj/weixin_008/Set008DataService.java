@@ -19,6 +19,7 @@ import java.util.Map;
 import hyj.weixin_008.common.ConstantWxId;
 import hyj.weixin_008.common.WeixinAutoHandler;
 import hyj.weixin_008.flowWindow.MyWindowManager;
+import hyj.weixin_008.model.RegObj;
 import hyj.weixin_008.service.ADBClickService;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
@@ -31,28 +32,20 @@ import static hyj.weixin_008.GlobalApplication.getContext;
  */
 
 public class Set008DataService implements Runnable{
-    static List<String[]> datas;
-    static Map<String,String> accounts;
-    String currentAccount;
     AccessibilityService context;
     Map<String,String> record;
     ADBClickService adbService;
-    int currentIndex;
-    public Set008DataService(AccessibilityService context, Map<String,String> record){
+    RegObj regObj;
+    public Set008DataService(AccessibilityService context, Map<String,String> record,RegObj regObj){
         this.context = context;
         this.record = record;
-        adbService = new ADBClickService(context,record);
-        datas = get008Datas();
-        accounts = getWxAccounts();
+        this.regObj = regObj;
+        this.adbService = new ADBClickService(context,record);
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("url",MODE_PRIVATE);
-        String startLoginAccount = sharedPreferences.getString("startLoginAccount","");
-        if(startLoginAccount!=null&&!"".equals(startLoginAccount)){
-            System.out.println("startLoginAccount-->"+startLoginAccount);
-            currentIndex = Integer.parseInt(startLoginAccount.split("-")[0]);
-        }else{
-            currentIndex=0;
+        String startLoginIndex = sharedPreferences.getString("startLoginIndex","");
+        if(startLoginIndex!=null&&!"".equals(startLoginIndex)){
+            regObj.setCurrentIndex(Integer.parseInt(startLoginIndex.split("-")[0]));
         }
-        currentIndex=101;
     }
     int countLongin=0;
     @Override
@@ -69,7 +62,7 @@ public class Set008DataService implements Runnable{
             if(WeixinAutoHandler.IS_NEXT_NONE){
                 System.out.println("----跳转下一个");
                 loginNext();
-                LogUtil.login("exception",currentAccount+"-跳转下一个");
+                LogUtil.login("exception", regObj.getCurrentAccount()+"-跳转下一个");
                 continue;
             }
 
@@ -102,7 +95,7 @@ public class Set008DataService implements Runnable{
                 System.out.println("countLongin-->"+countLongin);
                 if(countLongin>5){
                     loginNext();
-                    LogUtil.login("exception",currentAccount+"-登录失败（0，5）");
+                    LogUtil.login("exception",regObj.getCurrentAccount()+"-登录失败（0，5）");
                 }
             }
 
@@ -128,15 +121,16 @@ public class Set008DataService implements Runnable{
             AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
             AutoUtil.sleep(5000);
         }
-        adbService.clickXYByWindow("登录&注册",255,1790,"wx点击登录1",500);
+        if(!AutoUtil.checkAction(record,"wx登录2"))
+            adbService.clickXYByWindow("登录&注册",255,1790,"wx点击登录1",500);
         if(!AutoUtil.checkAction(record,"wx输入手机号")){
-            adbService.setTextByWindow("用微信号/QQ号/邮箱登录",540,720,currentAccount,"wx输入手机号",0);
+            adbService.setTextByWindow("用微信号/QQ号/邮箱登录",540,720,regObj.getCurrentAccount(),"wx输入手机号",0);
         }
-        if(AutoUtil.findNodeInfosByText(root,currentAccount)!=null)
+        if(AutoUtil.findNodeInfosByText(root,regObj.getCurrentAccount())!=null)
             adbService.clickXYByWindow("用微信号/QQ号/邮箱登录",540,1115,"wx下一步",2000);
-        System.out.println("密码---》"+accounts.get(currentAccount));
+        System.out.println("密码---》"+regObj.getAccounts().get(regObj.getCurrentAccount()));
         if(AutoUtil.checkAction(record,"wx下一步"))
-            adbService.setTextByWindow("用短信验证码登录",538,691,accounts.get(currentAccount)==null?"www12345":accounts.get(currentAccount),"wx输入密码",2000);
+            adbService.setTextByWindow("用短信验证码登录",538,691,regObj.getAccounts().get(regObj.getCurrentAccount())==null?"www12345":regObj.getAccounts().get(regObj.getCurrentAccount()),"wx输入密码",2000);
         if(adbService.clickXYByWindow("用短信验证码登录",563,995,"wx登录2",2000)) return;
         adbService.clickXYByWindow("是&否",625,1190,"wx不推荐通讯录",3000);
         if(AutoUtil.checkAction(record,"wx不推荐通讯录")){
@@ -147,7 +141,7 @@ public class Set008DataService implements Runnable{
             AccessibilityNodeInfo node3 = AutoUtil.findNodeInfosByText(root,"应急联系人");
             if(node1!=null||node3!=null){
                 countLongin =0;
-                LogUtil.login("success",currentAccount+"-"+accounts.get(currentAccount));
+                LogUtil.login("success",regObj.getCurrentAccount()+"-"+regObj.getAccounts().get(regObj.getCurrentAccount()));
                 AutoUtil.showToastByRunnable(context,"登录成功");
                 //AutoUtil.recordAndLog(record,"wx登录成功");
                 AutoUtil.recordAndLog(record,"008登录成功");
@@ -155,23 +149,13 @@ public class Set008DataService implements Runnable{
             }
             return;
         }
-        /*if(AutoUtil.checkAction(record,"wx切换")){
-            AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosByText(root,"微信团队");
-            AccessibilityNodeInfo node3 = AutoUtil.findNodeInfosByText(root,"应急联系人");
-            System.out.println("node1-->"+node1);
-            if(node1!=null||node3!=null){
-                AutoUtil.showToastByRunnable(context,"登录成功");
-                AutoUtil.recordAndLog(record,"008登录成功");
-                AutoUtil.sleep(3000);
-            }
-        }*/
         wxException(root);
     }
     private void wxException(AccessibilityNodeInfo root){
         if(!AutoUtil.checkAction(record,"wx登录2")) return;
         AccessibilityNodeInfo node = AutoUtil.findNodeInfosByText(root,Constants.wx_Exception1);
         if(node!=null){
-            LogUtil.login("exception",currentAccount+"-"+accounts.get(currentAccount)+"-"+Constants.wx_Exception1);
+            LogUtil.login("exception",regObj.getCurrentAccount()+"-"+regObj.getAccounts().get(regObj.getCurrentAccount())+"-"+Constants.wx_Exception1);
             LogUtil.d("exception",Constants.wx_Exception1);
             AutoUtil.recordAndLog(record,"008登录异常");
         }
@@ -188,7 +172,7 @@ public class Set008DataService implements Runnable{
                 errMsg = "手机不在身边？";
             }
             LogUtil.d("exception",errMsg);
-            LogUtil.login("exception",currentAccount+"-"+accounts.get(currentAccount)+"-"+errMsg);
+            LogUtil.login("exception",regObj.getCurrentAccount()+"-"+regObj.getAccounts().get(regObj.getCurrentAccount())+"-"+errMsg);
         }
     }
 
@@ -239,34 +223,31 @@ public class Set008DataService implements Runnable{
             for(int i=1;i<91;i++){
                 if(list.getChild(i).isEditable()){
                     String data;
-                    if(datas.get(currentIndex)[1].contains("历史记录")){//红米2s提取的008数据
-                        data  = datas.get(currentIndex)[i+1];
+                    if(regObj.getDatas().get(regObj.getCurrentIndex())[1].contains("历史记录")){//红米2s提取的008数据
+                        data  = regObj.getDatas().get(regObj.getCurrentIndex())[i+1];
                     }else {
-                        data  = datas.get(currentIndex)[i];
+                        data  = regObj.getDatas().get(regObj.getCurrentIndex())[i];
                     }
                     System.out.println("-rr->"+i+" "+data);
                     AutoUtil.performSetText(list.getChild(i),data,record,"008写入"+i+" "+data);
                 }
             }
             AutoUtil.recordAndLog(record,"008写入数据完成");
-            String msg = "总共:"+datas.size()+"  当前序号:"+currentIndex;
+            String msg = "总共:"+regObj.getDatas().size()+"  当前序号:"+regObj.getCurrentIndex();
             LogUtil.d("number",msg);
             AutoUtil.showToastByRunnable(GlobalApplication.getContext().getApplicationContext(),msg);
             if(AutoUtil.checkAction(record,"008写入数据完成")){
                 AccessibilityNodeInfo save =AutoUtil.findNodeInfosByText(root,"保存");
                 AutoUtil.performClick(save,record,"st保存",1000);
                 AutoUtil.recordAndLog(record,"st写入数据");
-
-                currentAccount = datas.get(currentIndex)[datas.get(currentIndex).length-1];
-                if(currentIndex<datas.size()-1){
-                    currentIndex = currentIndex+1;
+                regObj.setCurrentAccount(regObj.getDatas().get(regObj.getCurrentIndex())[regObj.getDatas().get(regObj.getCurrentIndex()).length-1]);
+                //currentAccount = regObj.getDatas().get(regObj.getCurrentIndex())[regObj.getDatas().get(regObj.getCurrentIndex()).length-1];
+                if(regObj.getCurrentIndex()<regObj.getDatas().size()-1){
+                    regObj.setCurrentIndex(regObj.getCurrentIndex()+1);
                 }else {
 
                 }
             }
-          /*  AutoUtil.sleep(1000);
-            AutoUtil.clickXY(123,506);//保存
-            System.out.println("--->保存");*/
 
         }
     }
@@ -353,24 +334,6 @@ public class Set008DataService implements Runnable{
             AutoUtil.recordAndLog(record,action);
             AutoUtil.sleep(milliSeconds);
         }
-    }
-
-    private List<String[]> get008Datas(){
-        List<String> list =  FileUtil.read008Data("/sdcard/A_hyj_008data/008data.txt");
-        List<String[]> newList = new ArrayList<String[]>();
-        for(String s:list){
-            newList.add(JSONObject.parseObject(s,String[].class));
-        }
-       return newList;
-    }
-    private Map<String,String>  getWxAccounts(){
-        Map<String,String> accounts = new HashMap<String,String>();
-        List<String[]> list =   FileUtil.readConfFile("/sdcard/A_hyj_008data/wxAccounts.txt");
-        for(String[] str:list){
-            accounts.put(str[0],str[1]);
-        }
-        System.out.println("currentAccount-->"+accounts);
-        return accounts;
     }
 
 }

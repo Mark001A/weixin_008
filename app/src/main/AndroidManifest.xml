@@ -43,7 +43,7 @@
                 android:resource="@xml/envelope_service_config" />
         </service>
 
-        <activity android:name=".SettingActivity" />
+        <activity android:name=".acvitity.SettingActivity" />
         <activity android:name=".acvitity.ApiSettingActivity"></activity>
     </application>
 

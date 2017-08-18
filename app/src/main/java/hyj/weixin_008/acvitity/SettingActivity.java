@@ -1,4 +1,4 @@
-package hyj.weixin_008;
+package hyj.weixin_008.acvitity;
 
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +17,8 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
+import hyj.weixin_008.GlobalApplication;
+import hyj.weixin_008.R;
 import hyj.weixin_008.util.FileUtil;
 
 public class SettingActivity extends AppCompatActivity {
@@ -67,9 +69,11 @@ public class SettingActivity extends AppCompatActivity {
     class SpinnerSelectedListener implements AdapterView.OnItemSelectedListener {
         public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
             startLoginAccount.setText(m[arg2]);
+            TextView tv = (TextView)arg1;
+            tv.setTextSize(20);
 
             SharedPreferences.Editor editor= sharedPreferences.edit();
-            editor.putString("qNum",m[arg2]);
+            editor.putString("startLoginIndex",m[arg2]);
             editor.commit();
         }
         public void onNothingSelected(AdapterView<?> arg0) {

@@ -10,6 +10,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,6 +24,7 @@ import hyj.weixin_008.common.WeixinAutoHandler;
 import hyj.weixin_008.flowWindow.MyWindowManager;
 import hyj.weixin_008.model.Get008Data;
 import hyj.weixin_008.model.PhoneApi;
+import hyj.weixin_008.model.RegObj;
 import hyj.weixin_008.service.ADBClickService;
 import hyj.weixin_008.thread.Get008DataThread;
 import hyj.weixin_008.util.FileUtil;
@@ -42,6 +44,7 @@ public class MyService extends AccessibilityService {
     String zc2;
     String zc3;
     String yh;
+    RegObj regObj;
     @Override
     protected void onServiceConnected() {
         LogUtil.d("myService","开启服务...");
@@ -74,14 +77,15 @@ public class MyService extends AccessibilityService {
         System.out.println("zc1-->"+zc1);
         System.out.println("zc2-->"+zc2);
         System.out.println("zc3-->"+zc3);
+
         PhoneApi pa = new PhoneApi(apiId,apiPwd,apiPjId,zcPwd);
-        System.out.println("\"true\".equals(zc1)-->"+"true".equals(zc1));
+        regObj = new RegObj(get008Datas(),getWxAccounts());
 
        if("true".equals(zc1)){
             new Thread(new RegisterService(this,WeixinAutoHandler.record,pa)).start();
             new Thread(new GetPhoneAndValidCodeThread(pa)).start();
         }else if("true".equals(yh)){
-            new Thread(new Set008DataService(this,WeixinAutoHandler.record)).start();
+            new Thread(new Set008DataService(this,WeixinAutoHandler.record,regObj)).start();
         }
         //new Thread(new Get008DataThread(this,new Get008Data())).start();
 
@@ -89,6 +93,12 @@ public class MyService extends AccessibilityService {
         AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
         AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
         AutoUtil.sleep(1000);
+    }
+    private String getFlowMsg(RegObj regObj,Map<String,String> record){
+        String msg = "总数："+regObj.getTotalNum()+" 序号："+regObj.getCurrentIndex()
+                    +" 成功："+regObj.getLoginSuccessNum()+" 失败："+regObj.getLoginFailNum()
+                    +"\n"+record.get("recordAction");
+        return msg;
     }
     private List<String[]> removeAct(String startLoginAccount){
         boolean flag = false;
@@ -109,11 +119,11 @@ public class MyService extends AccessibilityService {
     ADBClickService adbService  = new ADBClickService(this,record);
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        MyWindowManager.updateFlowMsg(WeixinAutoHandler.record.get("recordAction"));
+        MyWindowManager.updateFlowMsg(getFlowMsg(regObj,WeixinAutoHandler.record));
 
         AccessibilityNodeInfo root = getRootInActiveWindow();
         if(root==null) return;
-        System.out.println("--->"+event.getEventType()+"--"+JSON.toJSONString(event.getText())+"-"+"true".equals(zc2)+"-"+WeixinAutoHandler.record);
+        System.out.println("--->"+event.getEventType());
 
         if(AutoUtil.checkAction(WeixinAutoHandler.record,"wx注册成功")||AutoUtil.checkAction(WeixinAutoHandler.record,"wx登录成功")){
             if("true".equals(zc2)){//写个性签名
@@ -314,5 +324,23 @@ public class MyService extends AccessibilityService {
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    private List<String[]> get008Datas(){
+        List<String> list =  FileUtil.read008Data("/sdcard/A_hyj_008data/008data.txt");
+        List<String[]> newList = new ArrayList<String[]>();
+        for(String s:list){
+            newList.add(JSONObject.parseObject(s,String[].class));
+        }
+        return newList;
+    }
+    private Map<String,String>  getWxAccounts(){
+        Map<String,String> accounts = new HashMap<String,String>();
+        List<String[]> list =   FileUtil.readConfFile("/sdcard/A_hyj_008data/wxAccounts.txt");
+        for(String[] str:list){
+            accounts.put(str[0],str[1]);
+        }
+        System.out.println("currentAccount-->"+accounts);
+        return accounts;
     }
 }
