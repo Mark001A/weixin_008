@@ -34,16 +34,15 @@
             android:layout_height="wrap_content"/>
     </LinearLayout>
 
-    <!--<TextView
-        android:text="开始登录账号"
-        android:textSize="20sp"
-        android:textColor="#000000"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    <EditText
-        android:id="@+id/startLoginAccount"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />-->
+    <CheckBox
+        android:id="@+id/addSpFr"
+        android:textColor="#2E2E2E"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="添加指定好友"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
     <TextView
         android:text="VPN序号"
         android:textSize="20sp"

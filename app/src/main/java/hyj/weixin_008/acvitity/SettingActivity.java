@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -30,6 +32,8 @@ public class SettingActivity extends AppCompatActivity {
     private TextView startLoginAccount ;
     private Spinner spinner;
     private ArrayAdapter<String> adapter;
+
+    CheckBox addSpFr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +62,16 @@ public class SettingActivity extends AppCompatActivity {
         //设置默认值
         spinner.setVisibility(View.VISIBLE);
 
+        addSpFr = (CheckBox)this.findViewById(R.id.addSpFr);
+
+        addSpFr.setChecked(sharedPreferences.getString("addSpFr","").equals("true")?true:false);
+
     }
     private void saveParams(){
         SharedPreferences.Editor editor= sharedPreferences.edit();
         editor.putString("startLoginAccount",startLoginAccount.getText()+"");
         editor.putString("vpnIndex",vpnIndex.getText()+"");
+        editor.putString("addSpFr",addSpFr.isChecked()+"");
         editor.commit();
     }
     //使用数组形式操作

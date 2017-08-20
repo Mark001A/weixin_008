@@ -10,6 +10,7 @@ public class PhoneApi {
     private String pjId;
     private String token;
     private String phone;
+    private String regSuccessphone;
     private String validCode;
 
     private int waitValicodeTime;
@@ -24,6 +25,14 @@ public class PhoneApi {
         this.zcPwd = zcPwd;
         this.pjId = pjId;
 
+    }
+
+    public String getRegSuccessphone() {
+        return regSuccessphone;
+    }
+
+    public void setRegSuccessphone(String regSuccessphone) {
+        this.regSuccessphone = regSuccessphone;
     }
 
     public int getWaitValicodeTime() {

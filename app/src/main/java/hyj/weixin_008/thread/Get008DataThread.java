@@ -49,29 +49,41 @@ public class Get008DataThread implements Runnable {
                     System.out.println("--->历史记录为空");
                     continue;
                 }
-                if(phoneList.size()>tempdata.getCurrentIndex()){
-                    AccessibilityNodeInfo phoneNode = phoneList.get(tempdata.getCurrentIndex());
-                    tempdata.setCurrentPhone(phoneNode.getText().toString());
-                    tempdata.setCurrentIndex(tempdata.getCurrentIndex()+1);
-                    AutoUtil.performClick(phoneNode,tempdata.getRecord(),"点击号码",400);
+                AccessibilityNodeInfo phoneNode = getPhoneNodeByPhone(phoneList,tempdata.getPoneByThisIndex());
+                if(phoneNode==null){
+                    AutoUtil.performScroll(phoneList.get(0),tempdata.getRecord(),"下滚");
+                    AutoUtil.recordAndLog(tempdata.getRecord(),"点击历史记录");
+                    continue;
                 }
+                tempdata.setCurrentPhone(phoneNode.getText().toString());
+                tempdata.setCurrentIndex(tempdata.getCurrentIndex()+1);
+                AutoUtil.performClick(phoneNode,tempdata.getRecord(),"点击号码",400);
                 continue;
             }
             if(AutoUtil.checkAction(tempdata.getRecord(),"点击号码")){
                 AccessibilityNodeInfo list = AutoUtil.findNodeInfosById(root,"com.soft.apk008v:id/set_value_con");
-                String[] str = new String[list.getChildCount()+1];
                 if(list!=null&&list.getChildCount()>90){
+                    String[] str = new String[list.getChildCount()+1];
                     for(int i=0;i<list.getChildCount();i++){
                         str[i]=list.getChild(i).getText()+"";
                         System.out.println("data--> "+i+" "+str[i]);
                     }
                     str[list.getChildCount()]= tempdata.getCurrentPhone();
+                    //LogUtil.log008(JSON.toJSONString(str));
+                    System.out.println("json-->"+JSON.toJSONString(str));
+                    AutoUtil.recordAndLog(tempdata.getRecord(),"历史记录按钮界面");
+                    AutoUtil.sleep(1000);
                 }
-                LogUtil.log008(JSON.toJSONString(str));
-                System.out.println("json-->"+JSON.toJSONString(str));
-                AutoUtil.recordAndLog(tempdata.getRecord(),"历史记录按钮界面");
-                AutoUtil.sleep(1000);
             }
         }
         }
+    private AccessibilityNodeInfo getPhoneNodeByPhone(List<AccessibilityNodeInfo> phoneList,String phone){
+        if(phoneList==null||phoneList.size()==0) return null;
+        for(int i=0,l=phoneList.size();i<l;i++){
+            if(phone.equals(phoneList.get(i).getText()+"")){
+                return phoneList.get(i);
+            }
+        }
+        return null;
+    }
 }

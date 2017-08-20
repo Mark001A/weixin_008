@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.provider.Settings;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import java.util.ArrayList;
@@ -141,6 +142,7 @@ public class RegisterService implements Runnable{
             AutoUtil.clickXY(61,1863);
             AutoUtil.sleep(1500);
             AutoUtil.recordAndLog(record,"wx点击悬浮框");
+            AutoUtil.sleep(800);
             return;
         }else {
             adbService.clickXYByWindow("确认手机号码",818,1192,"wx确认手机号码",2000);
@@ -159,7 +161,7 @@ public class RegisterService implements Runnable{
             return;
         }
         AccessibilityNodeInfo textNode1 = AutoUtil.findNodeInfosByText(root,ConstantWxId.REGMSG1);
-        if(textNode1!=null&&!AutoUtil.checkAction(record,"wx点击注册2")){
+        if(textNode1!=null&&!AutoUtil.checkAction(record,"wx点击注册2")&&pa.isPhoneIsAvailavle()){
             AccessibilityNodeInfo textNode2 = AutoUtil.findNodeInfosByText(root,"注册");
             AccessibilityNodeInfo textNode3 = AutoUtil.findNodeInfosByText(root,"昵称");
             AccessibilityNodeInfo textNode4 = root.findAccessibilityNodeInfosByText("手机号").get(1);
@@ -167,6 +169,7 @@ public class RegisterService implements Runnable{
             AutoUtil.performSetText(textNode3.getParent().getChild(1),String.valueOf(System.currentTimeMillis()).substring(10),record,"wx输入昵称");
             AutoUtil.performSetText(textNode4.getParent().getChild(1),pa.getPhone(),record,"wx手机号");
             AutoUtil.performSetText(textNode5.getParent().getChild(1),pa.getZcPwd(),record,"wx输入密码");
+            AutoUtil.sleep(2000);
             AutoUtil.performClick(textNode2,record,"wx点击注册2");
             return;
         }
@@ -177,7 +180,7 @@ public class RegisterService implements Runnable{
         }
         if(AutoUtil.checkAction(record,"wx确认手机号码")){
             if(AutoUtil.findNodeInfosByText(root,ConstantWxId.REGMSG2)!=null&&!pa.isValidCodeIsAvailavle()){
-                if(pa.getWaitValicodeTime()==20){
+                if(pa.getWaitValicodeTime()==30){
                     pa.setWaitValicodeTime(0);
                     AutoUtil.recordAndLog(record,"008登录异常");
                 }
@@ -187,7 +190,9 @@ public class RegisterService implements Runnable{
             }
         }
         if(AutoUtil.checkAction(record,"wx不是我的，继续注册")){
-            if(AutoUtil.findNodeInfosByText(root,ConstantWxId.REGMSG6)!=null||AutoUtil.findNodeInfosByText(root,ConstantWxId.REGMSG8)!=null){
+            if(AutoUtil.findNodeInfosByText(root,ConstantWxId.REGMSG6)!=null
+                    ||AutoUtil.findNodeInfosByText(root,ConstantWxId.REGMSG8)!=null
+                    ||AutoUtil.findNodeInfosByText(root,ConstantWxId.REGMSG9)!=null){
                 AutoUtil.recordAndLog(record,"008登录异常");
                 return;
             }
@@ -208,6 +213,9 @@ public class RegisterService implements Runnable{
                 LogUtil.reg("reg",pa.getPhone()+"-"+pa.getZcPwd());
                 AutoUtil.showToastByRunnable(context,"注册成功");
                 AutoUtil.recordAndLog(record,"wx注册成功");
+                pa.setRegSuccessphone(pa.getPhone());
+                pa.setPhoneIsAvailavle(false);
+                pa.setValidCodeIsAvailavle(false);
                 AutoUtil.sleep(3000);
                 AutoUtil.clickXY(946,1833);//点我
             }
@@ -242,6 +250,33 @@ public class RegisterService implements Runnable{
 
     private void do008(AccessibilityNodeInfo root){
 
+        if(AutoUtil.checkAction(record,"008注册处理完成")){
+            AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
+            AutoUtil.recordAndLog(record,"008注册处理完成-启动008");
+            AutoUtil.sleep(2000);
+            return;
+        }
+        if(AutoUtil.checkAction(record,"008注册处理完成-启动008")||AutoUtil.checkAction(record,"008获取写入数据失败")){
+            AccessibilityNodeInfo list = AutoUtil.findNodeInfosById(root,"com.soft.apk008v:id/set_value_con");
+            if(list!=null&&list.getChildCount()>90){
+                String[] str = new String[list.getChildCount()+2];
+                for(int i=0;i<list.getChildCount();i++){
+                    str[i]=list.getChild(i).getText()+"";
+                    System.out.println("data--> "+i+" "+str[i]);
+                }
+                str[list.getChildCount()]= pa.getZcPwd();
+                str[list.getChildCount()+1]= pa.getRegSuccessphone();
+                LogUtil.log008(JSON.toJSONString(str));
+                System.out.println("json-->"+JSON.toJSONString(str));
+                AutoUtil.recordAndLog(record,"008写入成功注册数据完成");
+                AutoUtil.sleep(1000);
+            }else {
+                AutoUtil.recordAndLog(record,"008获取写入数据失败");
+                AutoUtil.sleep(2000);
+                return;
+            }
+        }
+
        if(AutoUtil.checkAction(record,Constants.CHAT_LISTENING)){
            adbService.clickXYByWindow("工具箱",373,422,"008点击图片",2000);
        }
@@ -251,17 +286,20 @@ public class RegisterService implements Runnable{
         if(AutoUtil.checkAction(record,"008一键操作")) {
             set008Data(root);
         }
-        if(AutoUtil.checkAction(record,"008登录成功")||AutoUtil.checkAction(record,"008登录异常")){
+        if(AutoUtil.checkAction(record,"008登录异常")){
+            pa.setPhoneIsAvailavle(false);
+            pa.setValidCodeIsAvailavle(false);
             AutoUtil.showToastByRunnable(GlobalApplication.getContext().getApplicationContext(),"启动008");
             AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
             AutoUtil.recordAndLog(record,"008启动008");
             AutoUtil.sleep(2000);
         }
-
+        //开始注册前和注册完成执行清除数据
         if(list!=null&&!AutoUtil.checkAction(record,"st写入数据")){
             AutoUtil.clickXY(61,1863);
-            AutoUtil.sleep(1500);
+            //AutoUtil.sleep(1500);
             AutoUtil.recordAndLog(record,"008点击悬浮框");
+            AutoUtil.sleep(2500);
             return;
         }
 
@@ -269,7 +307,7 @@ public class RegisterService implements Runnable{
         if(node1!=null){
             AutoUtil.clickXY(518,918);
             AutoUtil.recordAndLog(record,"008一键操作");
-            AutoUtil.sleep(4000);
+            AutoUtil.sleep(5000);
         }
     }
     private void set008Data(AccessibilityNodeInfo root){
@@ -278,7 +316,7 @@ public class RegisterService implements Runnable{
             AccessibilityNodeInfo generate =AutoUtil.findNodeInfosByText(root,"随机生成");
             AccessibilityNodeInfo save =AutoUtil.findNodeInfosByText(root,"保存");
             AutoUtil.performClick(generate,record,"008随机生成",1000);
-            AutoUtil.performClick(save,record,"008保存",1000);
+            AutoUtil.performClick(save,record,"008保存",2000);
             AutoUtil.recordAndLog(record,"st写入数据");
         }
     }

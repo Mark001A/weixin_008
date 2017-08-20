@@ -26,6 +26,7 @@ import hyj.weixin_008.model.Get008Data;
 import hyj.weixin_008.model.PhoneApi;
 import hyj.weixin_008.model.RegObj;
 import hyj.weixin_008.service.ADBClickService;
+import hyj.weixin_008.thread.AddFriendThread;
 import hyj.weixin_008.thread.Get008DataThread;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
@@ -70,16 +71,14 @@ public class MyService extends AccessibilityService {
         String apiPwd = sharedPreferences.getString("apiPwd","");
         String apiPjId = sharedPreferences.getString("apiPjId","");
         String zcPwd = sharedPreferences.getString("wxPwd","");
+        String addSpFr = sharedPreferences.getString("addSpFr","");
         zc1 = sharedPreferences.getString("zc1","");
         zc2 = sharedPreferences.getString("zc2","");
         zc3 = sharedPreferences.getString("zc3","");
         yh = sharedPreferences.getString("yh","");
-        System.out.println("zc1-->"+zc1);
-        System.out.println("zc2-->"+zc2);
-        System.out.println("zc3-->"+zc3);
 
         PhoneApi pa = new PhoneApi(apiId,apiPwd,apiPjId,zcPwd);
-        regObj = new RegObj(get008Datas(),getWxAccounts());
+        regObj = new RegObj(get008Datas(),getWxAccounts(),zc2,zc3,addSpFr);
 
        if("true".equals(zc1)){
             new Thread(new RegisterService(this,WeixinAutoHandler.record,pa)).start();
@@ -87,7 +86,9 @@ public class MyService extends AccessibilityService {
         }else if("true".equals(yh)){
             new Thread(new Set008DataService(this,WeixinAutoHandler.record,regObj)).start();
         }
+
         //new Thread(new Get008DataThread(this,new Get008Data())).start();
+
 
 
         AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
@@ -96,7 +97,6 @@ public class MyService extends AccessibilityService {
     }
     private String getFlowMsg(RegObj regObj,Map<String,String> record){
         String msg = "总数："+regObj.getTotalNum()+" 序号："+regObj.getCurrentIndex()
-                    +" 成功："+regObj.getLoginSuccessNum()+" 失败："+regObj.getLoginFailNum()
                     +"\n"+record.get("recordAction");
         return msg;
     }
@@ -120,6 +120,7 @@ public class MyService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         MyWindowManager.updateFlowMsg(getFlowMsg(regObj,WeixinAutoHandler.record));
+        if(WeixinAutoHandler.IS_PAUSE) return;
 
         AccessibilityNodeInfo root = getRootInActiveWindow();
         if(root==null) return;
@@ -151,11 +152,16 @@ public class MyService extends AccessibilityService {
             AutoUtil.performSetText(node10,System.currentTimeMillis()+"",WeixinAutoHandler.record,"pyq输入朋友圈内容");
             AutoUtil.performClick(node7,WeixinAutoHandler.record,"pyq发送",1000);
             if(AutoUtil.checkAction(WeixinAutoHandler.record,"pyq发送")){
+                AutoUtil.sleep(2000);
                 AccessibilityNodeInfo node8 = AutoUtil.findNodeInfosById(root,ConstantWxId.REGID3);
                 AutoUtil.performClick(node8,WeixinAutoHandler.record,"pyq点赞1");
             }
             AccessibilityNodeInfo node9 = AutoUtil.findNodeInfosByText(root,"赞");
             AutoUtil.performClick(node9,WeixinAutoHandler.record,"pyq点赞2");
+            if(AutoUtil.checkAction(WeixinAutoHandler.record,"pyq点赞2")){
+                AutoUtil.sleep(2500);
+                AutoUtil.recordAndLog(WeixinAutoHandler.record,"008注册处理完成");
+            }
         }
     }
     private void setQm(AccessibilityNodeInfo root){
@@ -164,6 +170,14 @@ public class MyService extends AccessibilityService {
             AccessibilityNodeInfo node = AutoUtil.findNodeInfosById(root,ConstantWxId.REGID1);
             AccessibilityNodeInfo node2 = AutoUtil.findNodeInfosByText(root,"个性签名");
             AccessibilityNodeInfo node4 = AutoUtil.findNodeInfosByText(root,"保存");
+
+            if(AutoUtil.checkAction(WeixinAutoHandler.record,"qm个性签名")&&node4!=null){
+                adbService.setTextByWindow("保存",469,311,System.currentTimeMillis()+"","qm输入签名",1500);
+                AutoUtil.recordAndLog(WeixinAutoHandler.record,"qm输入签名");
+            }
+            if(AutoUtil.checkAction(WeixinAutoHandler.record,"qm输入签名")){
+                AutoUtil.performClick(node4,WeixinAutoHandler.record,"qm保存个性签名",500);
+            }
 
             if(AutoUtil.checkAction(WeixinAutoHandler.record,"qm保存个性签名")||AutoUtil.checkAction(WeixinAutoHandler.record,"qm返回")){
                 if(AutoUtil.findNodeInfosByText(root,"我")!=null){
@@ -184,14 +198,12 @@ public class MyService extends AccessibilityService {
             if(!AutoUtil.checkAction(WeixinAutoHandler.record,"qm保存个性签名")){
                 AutoUtil.performClick(node2,WeixinAutoHandler.record,"qm个性签名",500);
             }
-            if(AutoUtil.checkAction(WeixinAutoHandler.record,"qm个性签名")){
+           /* if(AutoUtil.checkAction(WeixinAutoHandler.record,"qm个性签名")){
                 AccessibilityNodeInfo node3 = AutoUtil.findNodeInfosById(root,ConstantWxId.REGID2);
-                if(node3!=null&&node3.getText()==null&&node3.getContentDescription()==null)
+                if(node3!=null&&node3.getText()==null&&node3.getContentDescription()==null){
                     AutoUtil.performSetText(node3,"456",WeixinAutoHandler.record,"qm输入签名");
-            }
-            if(AutoUtil.checkAction(WeixinAutoHandler.record,"qm输入签名")){
-                AutoUtil.performClick(node4,WeixinAutoHandler.record,"qm保存个性签名",500);
-            }
+                }
+            }*/
         }
     }
     public  static void getChild(AccessibilityNodeInfo node){
