@@ -114,7 +114,7 @@ public class Set008DataService implements Runnable{
         }
     }
     private void loginNext(){
-        AutoUtil.recordAndLog(record,Constants.CHAT_LISTENING);
+        AutoUtil.recordAndLog(record,"008登录异常");
         AutoUtil.showToastByRunnable(GlobalApplication.getContext().getApplicationContext(),"启动008");
         AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
         WeixinAutoHandler.IS_NEXT_NONE = false;
