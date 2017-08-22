@@ -3,6 +3,7 @@ package hyj.weixin_008;
 import android.accessibilityservice.AccessibilityService;
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.icu.text.LocaleDisplayNames;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.accessibility.AccessibilityEvent;
@@ -11,6 +12,8 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+
+import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,6 +24,7 @@ import java.util.Timer;
 
 import hyj.weixin_008.common.ConstantWxId;
 import hyj.weixin_008.common.WeixinAutoHandler;
+import hyj.weixin_008.daoModel.Wx008Data;
 import hyj.weixin_008.flowWindow.MyWindowManager;
 import hyj.weixin_008.model.Get008Data;
 import hyj.weixin_008.model.PhoneApi;
@@ -38,7 +42,7 @@ public class MyService extends AccessibilityService {
         //new Thread(new MyThread()).start();
     }
     Map<String,String> record = new HashMap<String,String>();
-    List<String[]> str;
+    //List<String[]> str;
     String vpnIndex;
     String ipAddress;
     String zc1;
@@ -52,17 +56,15 @@ public class MyService extends AccessibilityService {
         ipAddress = AutoUtil.getIPAddress(this);
         AutoUtil.showToastByRunnable(this,"当前IP："+ipAddress);
         AutoUtil.sleep(1000);
-        str= FileUtil.readConfFile("/sdcard/注册成功微信号.txt");
-        LogUtil.d("myService","读取账号："+str);
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("url",MODE_PRIVATE);
         String startLoginAccount = sharedPreferences.getString("startLoginAccount","");
         vpnIndex = sharedPreferences.getString("vpnIndex","");
         if(vpnIndex==null||"".equals(vpnIndex)){
             vpnIndex = "1";
         }
-        if(startLoginAccount!=null&&!"".equals(startLoginAccount)&&!"null".equals(startLoginAccount)){
+        /*if(startLoginAccount!=null&&!"".equals(startLoginAccount)&&!"null".equals(startLoginAccount)){
             str = removeAct(startLoginAccount);
-        }
+        }*/
         AutoUtil.recordAndLog(WeixinAutoHandler.record,Constants.CHAT_LISTENING);
         super.onServiceConnected();
 
@@ -72,22 +74,26 @@ public class MyService extends AccessibilityService {
         String apiPjId = sharedPreferences.getString("apiPjId","");
         String zcPwd = sharedPreferences.getString("wxPwd","");
         String addSpFr = sharedPreferences.getString("addSpFr","");
+        String get008Data = sharedPreferences.getString("get008Data","");
         zc1 = sharedPreferences.getString("zc1","");
         zc2 = sharedPreferences.getString("zc2","");
         zc3 = sharedPreferences.getString("zc3","");
         yh = sharedPreferences.getString("yh","");
 
         PhoneApi pa = new PhoneApi(apiId,apiPwd,apiPjId,zcPwd);
-        regObj = new RegObj(get008Datas(),getWxAccounts(),zc2,zc3,addSpFr);
+        List<Wx008Data> wx008Datas = DataSupport.findAll(Wx008Data.class);
+        LogUtil.d("008data","读取数据库信息成功，总长度："+wx008Datas.size());
+        regObj = new RegObj(zc2,zc3,addSpFr,wx008Datas);
 
        if("true".equals(zc1)){
-            new Thread(new RegisterService(this,WeixinAutoHandler.record,pa)).start();
+            new Thread(new RegisterService(this,WeixinAutoHandler.record,pa,regObj)).start();
             new Thread(new GetPhoneAndValidCodeThread(pa)).start();
         }else if("true".equals(yh)){
             new Thread(new Set008DataService(this,WeixinAutoHandler.record,regObj)).start();
-        }
-
-        //new Thread(new Get008DataThread(this,new Get008Data())).start();
+        }else if("true".equals(get008Data)){
+           new Thread(new Get008DataThread(this,new Get008Data())).start();
+       }
+        System.out.println("get008Data-->"+get008Data);
 
 
 
@@ -100,7 +106,7 @@ public class MyService extends AccessibilityService {
                     +"\n"+record.get("recordAction");
         return msg;
     }
-    private List<String[]> removeAct(String startLoginAccount){
+   /* private List<String[]> removeAct(String startLoginAccount){
         boolean flag = false;
         List<String[]> newStr = new ArrayList<String[]>();
         for(int i = str.size()-1;i>0;i--){
@@ -115,7 +121,7 @@ public class MyService extends AccessibilityService {
         }
         Collections.reverse(newStr);
         return newStr;
-    }
+    }*/
     ADBClickService adbService  = new ADBClickService(this,record);
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
@@ -224,7 +230,7 @@ public class MyService extends AccessibilityService {
 
     static String[] account={"12345608111","3333"};
     static String get008Phone="";
-    class MyThread implements Runnable{
+   /* class MyThread implements Runnable{
         @Override
         public void run() {
             while (true){
@@ -296,7 +302,7 @@ public class MyService extends AccessibilityService {
 
         }
         }
-    }
+    }*/
     private void save008Data(AccessibilityNodeInfo root){
         AccessibilityNodeInfo list = AutoUtil.findNodeInfosById(root,"com.soft.apk008v:id/set_value_con");
         String[] str = new String[93];

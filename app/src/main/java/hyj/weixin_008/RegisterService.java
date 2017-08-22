@@ -16,6 +16,7 @@ import java.util.Map;
 import hyj.weixin_008.common.ConstantWxId;
 import hyj.weixin_008.common.WeixinAutoHandler;
 import hyj.weixin_008.model.PhoneApi;
+import hyj.weixin_008.model.RegObj;
 import hyj.weixin_008.service.ADBClickService;
 import hyj.weixin_008.service.PhoneNumberAPIService;
 import hyj.weixin_008.util.FileUtil;
@@ -36,11 +37,13 @@ public class RegisterService implements Runnable{
     Map<String,String> record;
     ADBClickService adbService;
     int currentIndex;
+    RegObj regObj;
     PhoneApi pa;
-    public RegisterService(AccessibilityService context, Map<String,String> record,PhoneApi pa){
+    public RegisterService(AccessibilityService context, Map<String,String> record,PhoneApi pa,RegObj regObj){
         this.context = context;
         this.record = record;
         this.pa = pa;
+        this.regObj = regObj;
         adbService = new ADBClickService(context,record);
         datas = get008Datas();
         accounts = getWxAccounts();
@@ -218,6 +221,9 @@ public class RegisterService implements Runnable{
                 pa.setValidCodeIsAvailavle(false);
                 AutoUtil.sleep(3000);
                 AutoUtil.clickXY(946,1833);//点我
+                if(!regObj.getZc2().equals("true")&&!regObj.getZc3().equals(true)){
+                    AutoUtil.recordAndLog(record,"008注册处理完成");
+                }
             }
             return;
         }
@@ -283,7 +289,7 @@ public class RegisterService implements Runnable{
 
         AccessibilityNodeInfo list = AutoUtil.findNodeInfosById(root,"com.soft.apk008v:id/set_value_con");
 
-        if(AutoUtil.checkAction(record,"008一键操作")) {
+        if(AutoUtil.checkAction(record,"008一键操作")||AutoUtil.checkAction(record,"008没有可用号码")) {
             set008Data(root);
         }
         if(AutoUtil.checkAction(record,"008登录异常")){
@@ -295,7 +301,7 @@ public class RegisterService implements Runnable{
             AutoUtil.sleep(2000);
         }
         //开始注册前和注册完成执行清除数据
-        if(list!=null&&!AutoUtil.checkAction(record,"st写入数据")){
+        if(list!=null&&!AutoUtil.checkAction(record,"st写入数据")&&!AutoUtil.checkAction(record,"008没有可用号码")){
             AutoUtil.clickXY(61,1863);
             //AutoUtil.sleep(1500);
             AutoUtil.recordAndLog(record,"008点击悬浮框");
@@ -315,9 +321,23 @@ public class RegisterService implements Runnable{
         if(list!=null&&list.getChildCount()>90){
             AccessibilityNodeInfo generate =AutoUtil.findNodeInfosByText(root,"随机生成");
             AccessibilityNodeInfo save =AutoUtil.findNodeInfosByText(root,"保存");
-            AutoUtil.performClick(generate,record,"008随机生成",1000);
-            AutoUtil.performClick(save,record,"008保存",2000);
-            AutoUtil.recordAndLog(record,"st写入数据");
+
+            if(pa.isPhoneIsAvailavle()){
+                AutoUtil.performClick(generate,record,"008随机生成",1000);
+
+                AutoUtil.performSetText(list.getChild(6),pa.getPhone(),record,"008写入"+pa.getPhone());
+                AutoUtil.performSetText(list.getChild(36),"6.0",record,"008写入6.0");
+                AutoUtil.performSetText(list.getChild(38),"23",record,"008写入23");
+
+                AutoUtil.performClick(save,record,"008保存",2000);
+                AutoUtil.recordAndLog(record,"st写入数据");
+            }else{
+                AutoUtil.recordAndLog(record,"008没有可用号码");
+                AutoUtil.sleep(1000);
+                return;
+            }
+
+
         }
     }
     String vpnIndex="1";

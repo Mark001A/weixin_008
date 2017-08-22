@@ -1,15 +1,21 @@
 package hyj.weixin_008.model;
 
+import com.alibaba.fastjson.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import hyj.weixin_008.daoModel.Wx008Data;
 
 /**
  * Created by Administrator on 2017/8/18.
  */
 
 public class RegObj {
-    private List<String[]> datas;
-    private Map<String,String> accounts;
+    private List<String[]> datas;//原存在txt数据
+    private List<Wx008Data> wx008Datas;//数据库数据
+
     private String currentAccount;
     private int currentIndex=0;
     private int totalNum;
@@ -19,13 +25,41 @@ public class RegObj {
     private String zc2;
     private String zc3;
     private String addSpFr;
+    private String get008Data;//是否提取008数据
 
-    public RegObj(List<String[]> datas, Map<String, String> accounts,String zc2,String zc3,String addSpFr) {
-        this.datas = datas;
-        this.accounts = accounts;
+
+
+    public RegObj(String zc2,String zc3,String addSpFr,List<Wx008Data> wx008Datas) {
         this.zc2 = zc2;
         this.zc3 = zc3;
         this.addSpFr = addSpFr;
+        this.wx008Datas = wx008Datas;
+
+       //兼容旧数据
+        datas = new ArrayList<String[]>();
+        for(Wx008Data data:wx008Datas){
+            datas.add(JSONObject.parseObject(data.getDatas(),String[].class));
+        }
+    }
+
+    public Wx008Data getCurrentWx008Data(){
+        return wx008Datas.get(this.currentIndex);
+    }
+
+    public List<Wx008Data> getWx008Datas() {
+        return wx008Datas;
+    }
+
+    public void setWx008Datas(List<Wx008Data> wx008Datas) {
+        this.wx008Datas = wx008Datas;
+    }
+
+    public String getGet008Data() {
+        return get008Data;
+    }
+
+    public void setGet008Data(String get008Data) {
+        this.get008Data = get008Data;
     }
 
     public String getAddSpFr() {
@@ -64,13 +98,6 @@ public class RegObj {
         this.datas = datas;
     }
 
-    public Map<String, String> getAccounts() {
-        return accounts;
-    }
-
-    public void setAccounts(Map<String, String> accounts) {
-        this.accounts = accounts;
-    }
 
     public String getCurrentAccount() {
         return currentAccount;

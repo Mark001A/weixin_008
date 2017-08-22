@@ -63,7 +63,7 @@ public class Set008DataService implements Runnable{
             if(WeixinAutoHandler.IS_NEXT_NONE){
                 System.out.println("----跳转下一个");
                 loginNext();
-                LogUtil.login("exception", regObj.getCurrentAccount()+"-跳转下一个");
+                LogUtil.login(regObj.getCurrentIndex()+" exception", regObj.getCurrentAccount()+"-跳转下一个");
                 continue;
             }
 
@@ -96,7 +96,7 @@ public class Set008DataService implements Runnable{
                 System.out.println("countLongin-->"+countLongin);
                 if(countLongin>5){
                     loginNext();
-                    LogUtil.login("exception",regObj.getCurrentAccount()+"-登录失败（0，5）");
+                    LogUtil.login(regObj.getCurrentIndex()+" exception",regObj.getCurrentAccount()+"-登录失败（0，5）");
                 }
             }
 
@@ -133,9 +133,8 @@ public class Set008DataService implements Runnable{
             }
             adbService.clickXYByWindow("用微信号/QQ号/邮箱登录",540,1115,"wx下一步",2000);
         }
-        System.out.println("密码---》"+regObj.getAccounts().get(regObj.getCurrentAccount()));
         if(AutoUtil.checkAction(record,"wx下一步"))
-            adbService.setTextByWindow("用短信验证码登录",538,691,regObj.getAccounts().get(regObj.getCurrentAccount())==null?"www12345":regObj.getAccounts().get(regObj.getCurrentAccount()),"wx输入密码",2000);
+            adbService.setTextByWindow("用短信验证码登录",538,691,regObj.getCurrentWx008Data().getWxPwd(),"wx输入密码",2000);
         if(adbService.clickXYByWindow("用短信验证码登录",563,995,"wx登录2",2000)) return;
         adbService.clickXYByWindow("是&否",625,1190,"wx不推荐通讯录",3000);
         if(AutoUtil.checkAction(record,"wx不推荐通讯录")){
@@ -148,7 +147,7 @@ public class Set008DataService implements Runnable{
             AccessibilityNodeInfo node5 = AutoUtil.findNodeInfosByText(root,"群聊");
             if(node1!=null||node3!=null||node4!=null||node5!=null){
                 countLongin =0;
-                LogUtil.login("success",regObj.getCurrentAccount()+"-"+regObj.getAccounts().get(regObj.getCurrentAccount()));
+                LogUtil.login(regObj.getCurrentIndex()+" success",regObj.getCurrentAccount()+"-"+regObj.getCurrentWx008Data().getPhone()+" "+regObj.getCurrentWx008Data().getWxId());
                 AutoUtil.showToastByRunnable(context,"登录成功");
                 AutoUtil.recordAndLog(record,"008登录成功");
                 if("true".equals(regObj.getZc2())){//写个性签名
@@ -170,14 +169,14 @@ public class Set008DataService implements Runnable{
         if(!AutoUtil.checkAction(record,"wx登录2")) return;
         AccessibilityNodeInfo node = AutoUtil.findNodeInfosByText(root,Constants.wx_Exception1);
         if(node!=null){
-            LogUtil.login("exception",regObj.getCurrentAccount()+"-"+regObj.getAccounts().get(regObj.getCurrentAccount())+"-"+Constants.wx_Exception1);
+            LogUtil.login(regObj.getCurrentIndex()+" exception",regObj.getCurrentAccount()+"-"+regObj.getCurrentWx008Data().getPhone()+" "+regObj.getCurrentWx008Data().getWxId()+"-"+Constants.wx_Exception1);
             LogUtil.d("exception",Constants.wx_Exception1);
             AutoUtil.recordAndLog(record,"008登录异常");
         }
 
         AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosByText(root,ConstantWxId.REGMSG10);
         if(node1!=null){
-            LogUtil.login("exception",regObj.getCurrentAccount()+"-"+regObj.getAccounts().get(regObj.getCurrentAccount())+"-"+ConstantWxId.REGMSG10);
+            LogUtil.login(regObj.getCurrentIndex()+" exception",regObj.getCurrentAccount()+"-"+regObj.getCurrentWx008Data().getPhone()+" "+regObj.getCurrentWx008Data().getWxId()+"-"+ConstantWxId.REGMSG10);
             LogUtil.d("exception",ConstantWxId.REGMSG10);
             AutoUtil.recordAndLog(record,"008登录异常");
         }
@@ -195,7 +194,7 @@ public class Set008DataService implements Runnable{
                 errMsg = "手机不在身边？";
             }
             LogUtil.d("exception",errMsg);
-            LogUtil.login("exception",regObj.getCurrentAccount()+"-"+regObj.getAccounts().get(regObj.getCurrentAccount())+"-"+errMsg);
+            LogUtil.login(regObj.getCurrentIndex()+"exception",regObj.getCurrentAccount()+"-"+regObj.getCurrentWx008Data().getPhone()+" "+regObj.getCurrentWx008Data().getWxId()+"-"+errMsg);
         }
     }
 
