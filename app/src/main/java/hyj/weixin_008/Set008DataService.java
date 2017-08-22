@@ -55,6 +55,11 @@ public class Set008DataService implements Runnable{
             AutoUtil.sleep(500);
             LogUtil.d("myService","-->养号线程运行..."+Thread.currentThread().getName()+record);
 
+            if(regObj.getWx008Datas().size()==0){
+                AutoUtil.recordAndLog(record,"没有008数据");
+                return;
+            }
+
             if(WeixinAutoHandler.IS_PAUSE){
                 LogUtil.d("autoChat","暂停服务");
                 AutoUtil.sleep(3000);
@@ -63,7 +68,7 @@ public class Set008DataService implements Runnable{
             if(WeixinAutoHandler.IS_NEXT_NONE){
                 System.out.println("----跳转下一个");
                 loginNext();
-                LogUtil.login(regObj.getCurrentIndex()+" exception", regObj.getCurrentAccount()+"-跳转下一个");
+                LogUtil.login(regObj.getCurrentIndex()+" exception", regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone()+"-"+regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId()+"-跳转下一个");
                 continue;
             }
 
@@ -96,7 +101,7 @@ public class Set008DataService implements Runnable{
                 System.out.println("countLongin-->"+countLongin);
                 if(countLongin>5){
                     loginNext();
-                    LogUtil.login(regObj.getCurrentIndex()+" exception",regObj.getCurrentAccount()+"-登录失败（0，5）");
+                    LogUtil.login(regObj.getCurrentIndex()+" exception",regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone()+"-"+regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId()+"-登录失败（0，5）");
                 }
             }
 
@@ -125,16 +130,16 @@ public class Set008DataService implements Runnable{
         if(!AutoUtil.checkAction(record,"wx登录2"))
             adbService.clickXYByWindow("登录&注册",255,1790,"wx点击登录1",500);
         if(!AutoUtil.checkAction(record,"wx输入手机号")&&!AutoUtil.checkAction(record,"wx下一步")){
-            adbService.setTextByWindow("用微信号/QQ号/邮箱登录",540,720,regObj.getCurrentAccount(),"wx输入手机号",0);
+            adbService.setTextByWindow("用微信号/QQ号/邮箱登录",540,720,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone(),"wx输入手机号",0);
         }
-        if(AutoUtil.findNodeInfosByText(root,regObj.getCurrentAccount())!=null){
+        if(AutoUtil.findNodeInfosByText(root,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone())!=null){
             if(!AutoUtil.checkAction(record,"wx下一步")){
                 AutoUtil.sleep(5000);
             }
             adbService.clickXYByWindow("用微信号/QQ号/邮箱登录",540,1115,"wx下一步",2000);
         }
         if(AutoUtil.checkAction(record,"wx下一步"))
-            adbService.setTextByWindow("用短信验证码登录",538,691,regObj.getCurrentWx008Data().getWxPwd(),"wx输入密码",2000);
+            adbService.setTextByWindow("用短信验证码登录",538,691,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxPwd(),"wx输入密码",2000);
         if(adbService.clickXYByWindow("用短信验证码登录",563,995,"wx登录2",2000)) return;
         adbService.clickXYByWindow("是&否",625,1190,"wx不推荐通讯录",3000);
         if(AutoUtil.checkAction(record,"wx不推荐通讯录")){
@@ -147,7 +152,7 @@ public class Set008DataService implements Runnable{
             AccessibilityNodeInfo node5 = AutoUtil.findNodeInfosByText(root,"群聊");
             if(node1!=null||node3!=null||node4!=null||node5!=null){
                 countLongin =0;
-                LogUtil.login(regObj.getCurrentIndex()+" success",regObj.getCurrentAccount()+"-"+regObj.getCurrentWx008Data().getPhone()+" "+regObj.getCurrentWx008Data().getWxId());
+                LogUtil.login(regObj.getCurrentIndex()+" success",regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone()+" "+regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId());
                 AutoUtil.showToastByRunnable(context,"登录成功");
                 AutoUtil.recordAndLog(record,"008登录成功");
                 if("true".equals(regObj.getZc2())){//写个性签名
@@ -169,14 +174,14 @@ public class Set008DataService implements Runnable{
         if(!AutoUtil.checkAction(record,"wx登录2")) return;
         AccessibilityNodeInfo node = AutoUtil.findNodeInfosByText(root,Constants.wx_Exception1);
         if(node!=null){
-            LogUtil.login(regObj.getCurrentIndex()+" exception",regObj.getCurrentAccount()+"-"+regObj.getCurrentWx008Data().getPhone()+" "+regObj.getCurrentWx008Data().getWxId()+"-"+Constants.wx_Exception1);
+            LogUtil.login(regObj.getCurrentIndex()+" exception",regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone()+" "+regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId()+"-"+Constants.wx_Exception1);
             LogUtil.d("exception",Constants.wx_Exception1);
             AutoUtil.recordAndLog(record,"008登录异常");
         }
 
         AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosByText(root,ConstantWxId.REGMSG10);
         if(node1!=null){
-            LogUtil.login(regObj.getCurrentIndex()+" exception",regObj.getCurrentAccount()+"-"+regObj.getCurrentWx008Data().getPhone()+" "+regObj.getCurrentWx008Data().getWxId()+"-"+ConstantWxId.REGMSG10);
+            LogUtil.login(regObj.getCurrentIndex()+" exception",regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone()+" "+regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId()+"-"+ConstantWxId.REGMSG10);
             LogUtil.d("exception",ConstantWxId.REGMSG10);
             AutoUtil.recordAndLog(record,"008登录异常");
         }
@@ -194,7 +199,7 @@ public class Set008DataService implements Runnable{
                 errMsg = "手机不在身边？";
             }
             LogUtil.d("exception",errMsg);
-            LogUtil.login(regObj.getCurrentIndex()+"exception",regObj.getCurrentAccount()+"-"+regObj.getCurrentWx008Data().getPhone()+" "+regObj.getCurrentWx008Data().getWxId()+"-"+errMsg);
+            LogUtil.login(regObj.getCurrentIndex()+" exception",regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone()+" "+regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId()+"-"+errMsg);
         }
     }
 
@@ -210,6 +215,12 @@ public class Set008DataService implements Runnable{
             set008Data(root);
         }
         if(AutoUtil.checkAction(record,"008登录成功")||AutoUtil.checkAction(record,"008登录异常")||AutoUtil.checkAction(record,"008注册处理完成")){
+            if(regObj.getCurrentIndex()<regObj.getDatas().size()-1){
+                regObj.setCurrentIndex(regObj.getCurrentIndex()+1);
+            }else {
+
+            }
+
             AutoUtil.showToastByRunnable(GlobalApplication.getContext().getApplicationContext(),"启动008");
             AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
             AutoUtil.recordAndLog(record,"008启动008");
@@ -256,12 +267,6 @@ public class Set008DataService implements Runnable{
                 AccessibilityNodeInfo save =AutoUtil.findNodeInfosByText(root,"保存");
                 AutoUtil.performClick(save,record,"st保存",2500);
                 AutoUtil.recordAndLog(record,"st写入数据");
-                regObj.setCurrentAccount(regObj.getDatas().get(regObj.getCurrentIndex())[regObj.getDatas().get(regObj.getCurrentIndex()).length-1]);
-                if(regObj.getCurrentIndex()<regObj.getDatas().size()-1){
-                    regObj.setCurrentIndex(regObj.getCurrentIndex()+1);
-                }else {
-
-                }
             }
 
         }

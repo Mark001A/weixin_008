@@ -16,7 +16,7 @@ public class RegObj {
     private List<String[]> datas;//原存在txt数据
     private List<Wx008Data> wx008Datas;//数据库数据
 
-    private String currentAccount;
+    //private String currentAccount;
     private int currentIndex=0;
     private int totalNum;
     private int loginSuccessNum=0;
@@ -42,9 +42,9 @@ public class RegObj {
         }
     }
 
-    public Wx008Data getCurrentWx008Data(){
+   /* public Wx008Data getCurrentWx008Data(){
         return wx008Datas.get(this.currentIndex);
-    }
+    }*/
 
     public List<Wx008Data> getWx008Datas() {
         return wx008Datas;
@@ -99,13 +99,13 @@ public class RegObj {
     }
 
 
-    public String getCurrentAccount() {
+   /* public String getCurrentAccount() {
         return currentAccount;
     }
 
     public void setCurrentAccount(String currentAccount) {
         this.currentAccount = currentAccount;
-    }
+    }*/
 
     public int getCurrentIndex() {
         return currentIndex;

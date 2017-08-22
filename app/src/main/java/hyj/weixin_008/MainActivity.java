@@ -122,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
         yhSetting.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                save2Db();
                 startActivity(new Intent(MainActivity.this,SettingActivity.class));
             }
         });
@@ -174,10 +175,8 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("strs008-->"+strs008.size());
         Map<String,String> accounts = getWxAccounts();
 
-        DataSupport.deleteAll(Wx008Data.class);
 
-
-        for(String[] str:strs008){
+       /* for(String[] str:strs008){
             Wx008Data wx008Data = new Wx008Data();
             wx008Data.setDatas(JSON.toJSONString(str));
             wx008Data.setPhone(str[str.length-1]);
@@ -191,9 +190,12 @@ public class MainActivity extends AppCompatActivity {
             wx008Data.save();
             AutoUtil.sleep(100);
             System.out.println("--->"+str[str.length-1]);
-        }
+        }*/
         List<Wx008Data> datas = DataSupport.findAll(Wx008Data.class);
+        for(Wx008Data da:datas){
+            System.out.println("--->"+JSON.toJSONString(da));
+        }
         System.out.println("datas size--->"+datas.size());
-        System.out.println("datas--->"+JSON.toJSONString(datas));
+        //System.out.println("datas--->"+JSON.toJSONString(datas));
     }
 }

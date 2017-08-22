@@ -15,12 +15,15 @@ import android.widget.TextView;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import org.litepal.crud.DataSupport;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 import hyj.weixin_008.GlobalApplication;
 import hyj.weixin_008.R;
+import hyj.weixin_008.daoModel.Wx008Data;
 import hyj.weixin_008.util.FileUtil;
 
 public class SettingActivity extends AppCompatActivity {
@@ -97,13 +100,19 @@ public class SettingActivity extends AppCompatActivity {
         return phones.toArray(new String[phones.size()]);
     }*/
     private String[] getAllPhoneList(){
-        List<String> list =  FileUtil.read008Data("/sdcard/A_hyj_008data/008data.txt");
+        /*List<String> list =  FileUtil.read008Data("/sdcard/A_hyj_008data/008data.txt");
         List<String> newList = new ArrayList<String>();
         for(int i=0,l=list.size();i<l;i++){
             String[] str = JSONObject.parseObject(list.get(i),String[].class);
             newList.add(i+"-"+str[str.length-1]);
+        }*/
+        List<Wx008Data> wx008Datas = DataSupport.findAll(Wx008Data.class);
+        List<String> datas = new ArrayList<String>();
+        for(int i=0,l=wx008Datas.size();i<l;i++){
+            datas.add(i+"-"+wx008Datas.get(i).getPhone());
         }
-        return newList.toArray(new String[newList.size()]);
+
+        return datas.toArray(new String[datas.size()]);
     }
 
     @Override
