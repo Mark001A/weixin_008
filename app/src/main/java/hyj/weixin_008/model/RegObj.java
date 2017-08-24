@@ -25,15 +25,19 @@ public class RegObj {
     private String zc2;
     private String zc3;
     private String addSpFr;
+    private String airplane;
     private String get008Data;//是否提取008数据
 
+    private String currentIP;
 
 
-    public RegObj(String zc2,String zc3,String addSpFr,List<Wx008Data> wx008Datas) {
+
+    public RegObj(String airplane,String zc2,String zc3,String addSpFr,List<Wx008Data> wx008Datas) {
         this.zc2 = zc2;
         this.zc3 = zc3;
         this.addSpFr = addSpFr;
         this.wx008Datas = wx008Datas;
+        this.airplane = airplane;
 
        //兼容旧数据
         datas = new ArrayList<String[]>();
@@ -48,6 +52,22 @@ public class RegObj {
 
     public List<Wx008Data> getWx008Datas() {
         return wx008Datas;
+    }
+
+    public String getCurrentIP() {
+        return currentIP;
+    }
+
+    public void setCurrentIP(String currentIP) {
+        this.currentIP = currentIP;
+    }
+
+    public String getAirplane() {
+        return airplane;
+    }
+
+    public void setAirplane(String airplane) {
+        this.airplane = airplane;
     }
 
     public void setWx008Datas(List<Wx008Data> wx008Datas) {

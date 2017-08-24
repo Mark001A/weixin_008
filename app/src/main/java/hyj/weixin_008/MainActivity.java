@@ -2,6 +2,7 @@ package hyj.weixin_008;
 
 import android.app.ActivityManager;
 import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -122,7 +123,9 @@ public class MainActivity extends AppCompatActivity {
         yhSetting.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                save2Db();
+                //save2Db();
+                //del();
+                //update();
                 startActivity(new Intent(MainActivity.this,SettingActivity.class));
             }
         });
@@ -175,27 +178,91 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("strs008-->"+strs008.size());
         Map<String,String> accounts = getWxAccounts();
 
-
-       /* for(String[] str:strs008){
-            Wx008Data wx008Data = new Wx008Data();
-            wx008Data.setDatas(JSON.toJSONString(str));
-            wx008Data.setPhone(str[str.length-1]);
-            wx008Data.setCreateTime(new Date());
-            if(str[1].equals("序列号")){
-                wx008Data.setWxPwd(str[str.length-2]);
-            }else{
-                String pwd =accounts.get(str[str.length-1]);
-                wx008Data.setWxPwd(pwd);
-            }
-            wx008Data.save();
-            AutoUtil.sleep(100);
-            System.out.println("--->"+str[str.length-1]);
-        }*/
         List<Wx008Data> datas = DataSupport.findAll(Wx008Data.class);
-        for(Wx008Data da:datas){
-            System.out.println("--->"+JSON.toJSONString(da));
+        System.out.println("datas size1--->"+datas.size());
+
+       int index=0;
+      /* for(String[] str:strs008){
+           if(index>186){
+               Wx008Data wx008Data = new Wx008Data();
+               wx008Data.setDatas(JSON.toJSONString(str));
+               wx008Data.setPhone(str[str.length-1]);
+               wx008Data.setCreateTime(new Date());
+               if(str[1].equals("序列号")){
+                   wx008Data.setWxPwd(str[str.length-2]);
+               }else{
+                   String pwd =accounts.get(str[str.length-1]);
+                   wx008Data.setWxPwd(pwd);
+               }
+               wx008Data.save();
+               AutoUtil.sleep(100);
+               System.out.println("--->"+str[str.length-1]);
+           }
+           index = index+1;
+        }*/
+        List<Wx008Data> datas2 = DataSupport.findAll(Wx008Data.class);
+        System.out.println("datas size2--->"+datas2.size());
+        for(Wx008Data wx:datas2){
+            System.out.println("wx-->"+JSON.toJSONString(wx));
         }
-        System.out.println("datas size--->"+datas.size());
-        //System.out.println("datas--->"+JSON.toJSONString(datas));
+
+    }
+    private void del(){
+        List<Wx008Data> datas = DataSupport.findAll(Wx008Data.class);
+        System.out.println("datas size1--->"+datas.size());
+
+        List<String> phones = new ArrayList<String>();
+        phones.add("15211688524");
+        phones.add("15274634534");
+        phones.add("15907486524");
+        phones.add("15874692484");
+
+        phones.add("13469363224");
+        phones.add("13467487634");
+        phones.add("15907464014");
+        phones.add("15874689484");
+
+        phones.add("15874617354");
+        phones.add("13574686994");
+        phones.add("13487484604");
+        phones.add("15907466054");
+
+        phones.add("15897489654");
+        phones.add("13469388384");
+        phones.add("15869952304");
+        phones.add("13467491824");
+
+        phones.add("15116677604");
+        phones.add("13487486974");
+        phones.add("13467499704");
+        phones.add("13467494340");
+
+        for(String phone:phones){
+            DataSupport.deleteAll(Wx008Data.class,"phone=?",phone);
+        }
+        List<Wx008Data> datas2 = DataSupport.findAll(Wx008Data.class);
+        System.out.println("datas size2--->"+datas2.size());
+    }
+    private void update(){
+        Wx008Data wx1 = new Wx008Data();
+        wx1.setWxPwd("www89484");
+        int count = wx1.updateAll("phone=?","15874689484");
+        System.out.println("update count--->"+count);
+
+        wx1.setWxPwd("www85954");
+        wx1.updateAll("phone=?","13787685954");
+
+        wx1.setWxPwd("www17354");
+        wx1.updateAll("phone=?","15874617354");
+
+        wx1.setWxPwd("www86994");
+        wx1.updateAll("phone=?","13574686994");
+
+        wx1.setWxPwd("www84604");
+        wx1.updateAll("phone=?","13487484604");
+
+        wx1.setWxPwd("www66054");
+        wx1.updateAll("phone=?","15907466054");
+
     }
 }

@@ -9,12 +9,14 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import hyj.weixin_008.common.ConstantWxId;
 import hyj.weixin_008.common.WeixinAutoHandler;
+import hyj.weixin_008.daoModel.Wx008Data;
 import hyj.weixin_008.model.PhoneApi;
 import hyj.weixin_008.model.RegObj;
 import hyj.weixin_008.service.ADBClickService;
@@ -171,6 +173,7 @@ public class RegisterService implements Runnable{
             AccessibilityNodeInfo textNode5 = AutoUtil.findNodeInfosByText(root,"密码");
             AutoUtil.performSetText(textNode3.getParent().getChild(1),String.valueOf(System.currentTimeMillis()).substring(10),record,"wx输入昵称");
             AutoUtil.performSetText(textNode4.getParent().getChild(1),pa.getPhone(),record,"wx手机号");
+            pa.setZcPwd("www"+pa.getPhone().substring(6));
             AutoUtil.performSetText(textNode5.getParent().getChild(1),pa.getZcPwd(),record,"wx输入密码");
             AutoUtil.sleep(2000);
             AutoUtil.performClick(textNode2,record,"wx点击注册2");
@@ -272,8 +275,19 @@ public class RegisterService implements Runnable{
                 }
                 str[list.getChildCount()]= pa.getZcPwd();
                 str[list.getChildCount()+1]= pa.getRegSuccessphone();
-                LogUtil.log008(JSON.toJSONString(str));
-                System.out.println("json-->"+JSON.toJSONString(str));
+                String jsonStr = JSON.toJSONString(str);
+
+                Wx008Data wx008Data = new Wx008Data();
+                wx008Data.setDatas(jsonStr);
+                wx008Data.setPhone(pa.getRegSuccessphone());
+                wx008Data.setWxPwd(pa.getZcPwd());
+                wx008Data.setCreateTime(new Date());
+                if(wx008Data.save()){
+                    LogUtil.d("RegisterService","写入数据库:"+JSON.toJSONString(wx008Data));
+                }
+
+                LogUtil.log008(jsonStr);
+                LogUtil.d("RegisterService","写入txt:"+jsonStr);
                 AutoUtil.recordAndLog(record,"008写入成功注册数据完成");
                 AutoUtil.sleep(1000);
             }else {

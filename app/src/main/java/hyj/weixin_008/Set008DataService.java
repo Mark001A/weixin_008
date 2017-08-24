@@ -96,7 +96,7 @@ public class Set008DataService implements Runnable{
                 continue;
             }
 
-            if(AutoUtil.checkAction(record,"wx登录2")){
+            if(AutoUtil.checkAction(record,"wx登录2")&&AutoUtil.findNodeInfosByText(root,"用短信验证码登录")!=null){
                 countLongin = countLongin+1;
                 System.out.println("countLongin-->"+countLongin);
                 if(countLongin>5){
@@ -107,8 +107,12 @@ public class Set008DataService implements Runnable{
 
             if(record.get("recordAction").contains("008")||AutoUtil.checkAction(record,Constants.CHAT_LISTENING))
                 do008(root);
-            if(record.get("recordAction").contains("st"))
-                doVPN(root);
+            if(record.get("recordAction").contains("st")){
+                if("true".equals(regObj.getAirplane()))
+                    doAirplane(root);
+                else
+                    doVPN(root);
+            }
             if(record.get("recordAction").contains("wx"))
                 doWxLogin(root);
         }
@@ -142,9 +146,13 @@ public class Set008DataService implements Runnable{
             adbService.setTextByWindow("用短信验证码登录",538,691,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxPwd(),"wx输入密码",2000);
         if(adbService.clickXYByWindow("用短信验证码登录",563,995,"wx登录2",2000)) return;
         adbService.clickXYByWindow("是&否",625,1190,"wx不推荐通讯录",3000);
-        if(AutoUtil.checkAction(record,"wx不推荐通讯录")){
-            AutoUtil.clickXY(400,1845);
-            System.out.println("---->切换");
+        if(AutoUtil.checkAction(record,"wx不推荐通讯录")||AutoUtil.checkAction(record,"wx登录2")){
+            AccessibilityNodeInfo loginNode = AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"登录");
+            if(loginNode==null){
+                AutoUtil.clickXY(400,1845);
+                AutoUtil.sleep(2000);
+                System.out.println("---->切换");
+            }
             AutoUtil.performClick(AutoUtil.findNodeInfosByText(root,"忽略"),record,"wx不推荐通讯录");
             AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosByText(root,"微信团队");
             AccessibilityNodeInfo node3 = AutoUtil.findNodeInfosByText(root,"应急联系人");
@@ -166,7 +174,6 @@ public class Set008DataService implements Runnable{
                     new Thread(new AddFriendThread(context)).start();
                 }
             }
-            return;
         }
         wxException(root);
     }
@@ -340,7 +347,39 @@ public class Set008DataService implements Runnable{
             }
         }
     }
+    private void doAirplane(AccessibilityNodeInfo root) {
+        if (AutoUtil.checkAction(record, "st写入数据")) {
+            AutoUtil.recordAndLog(record, "st设置VPN");
+            AutoUtil.opentActivity(Settings.ACTION_AIRPLANE_MODE_SETTINGS);
+            AutoUtil.sleep(500);
+        }
+        if(AutoUtil.findNodeInfosByText(root,"无线和网络")!=null){
+            AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosById(root,"android:id/checkbox");
+            String ip1 = AutoUtil.getIPAddress(GlobalApplication.getContext());
+            System.out.println("ip1-->"+ip1);
+            if(AutoUtil.checkAction(record,"st设置VPN")){
+                regObj.setCurrentIP(ip1);
+                if(!node1.isChecked()){
+                    clickTextXY1(960,270,"st开启飞行模式","miui:id/action_bar_title","无线和网络",2000);
+                    return;
+                }
+            }
+            if(node1.isChecked()&&AutoUtil.checkAction(record,"st开启飞行模式")&&ip1==null){
+                clickTextXY1(960,270,"st关闭飞行模式","miui:id/action_bar_title","无线和网络",5000);
+                return;
+            }
+            if(AutoUtil.checkAction(record,"st关闭飞行模式")){
+                if(ip1!=null&&!ip1.equals(regObj.getCurrentIP())){
+                    System.out.println("ip2-->"+ip1);
+                    AutoUtil.recordAndLog(record,"wx连接成功");
+                    regObj.setCurrentIP(ip1);
+                }
+                return;
+            }
 
+        }
+
+    }
     //先判断所在页面，在点击操作
     private void clickTextXY1(int x,int y,String action,String titleId,String title,int milliSeconds){
         AccessibilityNodeInfo root = context.getRootInActiveWindow();

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.icu.text.LocaleDisplayNames;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.Settings;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
@@ -74,6 +75,7 @@ public class MyService extends AccessibilityService {
         String apiPjId = sharedPreferences.getString("apiPjId","");
         String zcPwd = sharedPreferences.getString("wxPwd","");
         String addSpFr = sharedPreferences.getString("addSpFr","");
+        String airplane = sharedPreferences.getString("airplane","");
         String get008Data = sharedPreferences.getString("get008Data","");
         zc1 = sharedPreferences.getString("zc1","");
         zc2 = sharedPreferences.getString("zc2","");
@@ -83,7 +85,7 @@ public class MyService extends AccessibilityService {
         PhoneApi pa = new PhoneApi(apiId,apiPwd,apiPjId,zcPwd);
         List<Wx008Data> wx008Datas = DataSupport.findAll(Wx008Data.class);
         LogUtil.d("008data","读取数据库信息成功，总长度："+wx008Datas.size());
-        regObj = new RegObj(zc2,zc3,addSpFr,wx008Datas);
+        regObj = new RegObj(airplane,zc2,zc3,addSpFr,wx008Datas);
 
        if("true".equals(zc1)){
             new Thread(new RegisterService(this,WeixinAutoHandler.record,pa,regObj)).start();
@@ -93,9 +95,6 @@ public class MyService extends AccessibilityService {
         }else if("true".equals(get008Data)){
            new Thread(new Get008DataThread(this,new Get008Data())).start();
        }
-        System.out.println("get008Data-->"+get008Data);
-
-
 
         AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
         AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
@@ -106,22 +105,7 @@ public class MyService extends AccessibilityService {
                     +"\n"+record.get("recordAction");
         return msg;
     }
-   /* private List<String[]> removeAct(String startLoginAccount){
-        boolean flag = false;
-        List<String[]> newStr = new ArrayList<String[]>();
-        for(int i = str.size()-1;i>0;i--){
-            if(flag||str.get(i)[0].equals(startLoginAccount)){
-                newStr.add(str.get(i));
-                flag = true;
-            }
-        }
-        if(!flag){
-            LogUtil.d("myservice","没有找到开始登录账号："+startLoginAccount);
-            AutoUtil.showToastByRunnable(this,"没有找到开始登录账号："+startLoginAccount);
-        }
-        Collections.reverse(newStr);
-        return newStr;
-    }*/
+
     ADBClickService adbService  = new ADBClickService(this,record);
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {

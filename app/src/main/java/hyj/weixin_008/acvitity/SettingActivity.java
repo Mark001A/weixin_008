@@ -1,6 +1,8 @@
 package hyj.weixin_008.acvitity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -22,9 +25,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import hyj.weixin_008.GlobalApplication;
+import hyj.weixin_008.MainActivity;
 import hyj.weixin_008.R;
+import hyj.weixin_008.common.WeixinAutoHandler;
 import hyj.weixin_008.daoModel.Wx008Data;
+import hyj.weixin_008.flowWindow.MyWindowManager;
 import hyj.weixin_008.util.FileUtil;
+import hyj.weixin_008.util.LogUtil;
 
 public class SettingActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
@@ -37,6 +44,7 @@ public class SettingActivity extends AppCompatActivity {
     private ArrayAdapter<String> adapter;
 
     CheckBox addSpFr;
+    CheckBox airplane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +74,38 @@ public class SettingActivity extends AppCompatActivity {
         spinner.setVisibility(View.VISIBLE);
 
         addSpFr = (CheckBox)this.findViewById(R.id.addSpFr);
-
+        airplane = (CheckBox)this.findViewById(R.id.airplane);
         addSpFr.setChecked(sharedPreferences.getString("addSpFr","").equals("true")?true:false);
+        airplane.setChecked(sharedPreferences.getString("airplane","").equals("true")?true:false);
+
+        Button export = (Button)this.findViewById(R.id.export);
+        Button importBakData = (Button)this.findViewById(R.id.importBakData);
+        export.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                List<Wx008Data> datas = DataSupport.findAll(Wx008Data.class);
+                LogUtil.export("/sdcard/A_hyj_008data/","bakData.txt",JSON.toJSONString(datas));
+                Toast.makeText(SettingActivity.this, "已导出数据："+datas.size()+"条", Toast.LENGTH_LONG).show();
+            }
+        });
+        importBakData.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                String str = FileUtil.readAll("/sdcard/A_hyj_008data/bakData.txt");
+                List<Wx008Data> datas = JSON.parseArray(str,Wx008Data.class);
+                int successCount=0;
+                for(Wx008Data data:datas){
+                    List<Wx008Data> getData = DataSupport.where("phone=?",data.getPhone()).find(Wx008Data.class);
+                    if(getData==null||getData.size()==0){
+                        if(data.save()){
+                            MyWindowManager.updateFlowMsg("已导入数据条数："+successCount);
+                            successCount = successCount+1;
+                        }
+                    }
+                }
+                Toast.makeText(SettingActivity.this, "已导入数据："+successCount+"条", Toast.LENGTH_LONG).show();
+            }
+        });
 
     }
     private void saveParams(){
@@ -75,6 +113,7 @@ public class SettingActivity extends AppCompatActivity {
         editor.putString("startLoginAccount",startLoginAccount.getText()+"");
         editor.putString("vpnIndex",vpnIndex.getText()+"");
         editor.putString("addSpFr",addSpFr.isChecked()+"");
+        editor.putString("airplane",airplane.isChecked()+"");
         editor.commit();
     }
     //使用数组形式操作
@@ -106,7 +145,8 @@ public class SettingActivity extends AppCompatActivity {
             String[] str = JSONObject.parseObject(list.get(i),String[].class);
             newList.add(i+"-"+str[str.length-1]);
         }*/
-        List<Wx008Data> wx008Datas = DataSupport.findAll(Wx008Data.class);
+        List<Wx008Data> wx008Datas = DataSupport.order("createTime asc").find(Wx008Data.class);
+
         List<String> datas = new ArrayList<String>();
         for(int i=0,l=wx008Datas.size();i<l;i++){
             datas.add(i+"-"+wx008Datas.get(i).getPhone());
