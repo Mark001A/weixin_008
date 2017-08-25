@@ -14,7 +14,7 @@ public class Wx008Data extends DataSupport {
     private String wxId;
     private String wxPwd;//属性名称为pwd无法保存？
     private String expMsg;
-    private int dieFlag;//0正常 2 登录失败 3死亡 4 已买
+    private int dieFlag;//0正常 1账号异常 2 操作频率过快 3 登录环境异常 长期未登录  批量注册 4手机不在身边
     private Date createTime;
 
     public Wx008Data() {

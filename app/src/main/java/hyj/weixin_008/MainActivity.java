@@ -12,6 +12,7 @@ import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -125,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //save2Db();
                 //del();
-                //update();
+                update();
                 startActivity(new Intent(MainActivity.this,SettingActivity.class));
             }
         });
@@ -245,24 +246,17 @@ public class MainActivity extends AppCompatActivity {
     }
     private void update(){
         Wx008Data wx1 = new Wx008Data();
-        wx1.setWxPwd("www89484");
-        int count = wx1.updateAll("phone=?","15874689484");
+        wx1.setWxId("uyh222");
+        int count = wx1.updateAll("phone=?","18213590295");
         System.out.println("update count--->"+count);
 
-        wx1.setWxPwd("www85954");
-        wx1.updateAll("phone=?","13787685954");
+        wx1.setWxId("ifk222");
+        wx1.updateAll("phone=?","18213407225");
 
-        wx1.setWxPwd("www17354");
-        wx1.updateAll("phone=?","15874617354");
+        wx1.setWxId("ehg222");
+        wx1.updateAll("phone=?","18288224236");
 
-        wx1.setWxPwd("www86994");
-        wx1.updateAll("phone=?","13574686994");
-
-        wx1.setWxPwd("www84604");
-        wx1.updateAll("phone=?","13487484604");
-
-        wx1.setWxPwd("www66054");
-        wx1.updateAll("phone=?","15907466054");
-
+        wx1.setWxId("ehg333");
+        wx1.updateAll("phone=?","18213869856");
     }
 }

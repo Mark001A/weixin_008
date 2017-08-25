@@ -18,6 +18,7 @@ import java.util.Map;
 
 import hyj.weixin_008.common.ConstantWxId;
 import hyj.weixin_008.common.WeixinAutoHandler;
+import hyj.weixin_008.daoModel.Wx008Data;
 import hyj.weixin_008.flowWindow.MyWindowManager;
 import hyj.weixin_008.model.RegObj;
 import hyj.weixin_008.service.ADBClickService;
@@ -134,8 +135,17 @@ public class Set008DataService implements Runnable{
         if(!AutoUtil.checkAction(record,"wx登录2"))
             adbService.clickXYByWindow("登录&注册",255,1790,"wx点击登录1",500);
         if(!AutoUtil.checkAction(record,"wx输入手机号")&&!AutoUtil.checkAction(record,"wx下一步")){
-            adbService.setTextByWindow("用微信号/QQ号/邮箱登录",540,720,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone(),"wx输入手机号",0);
+            if(regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId()==null){
+                adbService.setTextByWindow("用微信号/QQ号/邮箱登录",540,720,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone(),"wx输入手机号",0);
+            }else {
+                adbService.clickXYByWindow("用微信号/QQ号/邮箱登录",348,895,"wx用微信号登录",2000);
+            }
         }
+        if(!AutoUtil.checkAction(record,"wx登录2")){
+            adbService.setTextByWindow("用手机号登录",545,566,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId(),"wx输入微信号",2000);
+            adbService.setTextByWindow("用手机号登录",545,676,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxPwd(),"wx输入密码",3000);
+        }
+        adbService.clickXYByWindow("用手机号登录",540,1120,"wx登录2",2000);
         if(AutoUtil.findNodeInfosByText(root,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone())!=null){
             if(!AutoUtil.checkAction(record,"wx下一步")){
                 AutoUtil.sleep(5000);
@@ -179,34 +189,46 @@ public class Set008DataService implements Runnable{
     }
     private void wxException(AccessibilityNodeInfo root){
         if(!AutoUtil.checkAction(record,"wx登录2")) return;
+        String phone = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone();
+        String wxId = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId();
+        Wx008Data wx008Data = new Wx008Data();
+        int index = regObj.getCurrentIndex();
         AccessibilityNodeInfo node = AutoUtil.findNodeInfosByText(root,Constants.wx_Exception1);
         if(node!=null){
-            LogUtil.login(regObj.getCurrentIndex()+" exception",regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone()+" "+regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId()+"-"+Constants.wx_Exception1);
+            LogUtil.login(index+" exception",phone+" "+wxId+"-"+Constants.wx_Exception1);
             LogUtil.d("exception",Constants.wx_Exception1);
             AutoUtil.recordAndLog(record,"008登录异常");
+            wx008Data.setExpMsg(Constants.wx_Exception1);
+            wx008Data.setDieFlag(1);
         }
 
         AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosByText(root,ConstantWxId.REGMSG10);
         if(node1!=null){
-            LogUtil.login(regObj.getCurrentIndex()+" exception",regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone()+" "+regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId()+"-"+ConstantWxId.REGMSG10);
+            LogUtil.login(index+" exception",phone+" "+wxId+"-"+ConstantWxId.REGMSG10);
             LogUtil.d("exception",ConstantWxId.REGMSG10);
             AutoUtil.recordAndLog(record,"008登录异常");
+            wx008Data.setExpMsg(ConstantWxId.REGMSG10);
+            wx008Data.setDieFlag(2);
         }
 
         AccessibilityNodeInfo loginNode = AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"登录");
-        if(loginNode!=null){
+        if(loginNode!=null&&wxId==null){
             String errMsg = "登录错误（0，5）";
             AutoUtil.recordAndLog(record,"008登录异常");
             AccessibilityNodeInfo expNode = AutoUtil.findNodeInfosById(context.getRootInActiveWindow(),ConstantWxId.EXPMSG);
             if(expNode!=null){
                 errMsg = expNode.getText().toString();
+                wx008Data.setDieFlag(3);
             }
             AccessibilityNodeInfo expNode1 = AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"手机不在身边？");
             if(expNode1!=null){
                 errMsg = "手机不在身边？";
+                wx008Data.setDieFlag(4);
             }
             LogUtil.d("exception",errMsg);
-            LogUtil.login(regObj.getCurrentIndex()+" exception",regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone()+" "+regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId()+"-"+errMsg);
+            LogUtil.login(index+" exception",phone+" "+wxId+"-"+errMsg);
+            wx008Data.setExpMsg(errMsg);
+            wx008Data.updateAll("phone=? or wxId=?",phone,wxId);
         }
     }
 

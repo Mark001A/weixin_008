@@ -13,8 +13,7 @@ public class AddFrObj {
     private boolean isBdPhone;
     public AddFrObj(){
         wxList.add("cba4871");
-        wxList.add("zhjj520366");
-        wxList.add("mm77375");
+        wxList.add("nnk4869");
     }
 
     public boolean isBdPhone() {
