@@ -1,12 +1,14 @@
 package hyj.weixin_008.service;
 
 import android.accessibilityservice.AccessibilityService;
+import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import java.util.Map;
 
 import hyj.weixin_008.AutoUtil;
 import hyj.weixin_008.util.LogUtil;
+import hyj.weixin_008.util.RootShellCmd;
 
 /**
  * Created by asus on 2017/8/5.

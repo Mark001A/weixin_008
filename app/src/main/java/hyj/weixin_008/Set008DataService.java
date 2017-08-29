@@ -81,6 +81,14 @@ public class Set008DataService implements Runnable{
                 continue;
             }
 
+           if(AutoUtil.findNodeInfosByText(root,"SIM卡工具包")!=null){
+                context.performGlobalAction(context.GLOBAL_ACTION_BACK);
+                System.out.println("----SIM卡工具包1-->back");
+                AutoUtil.sleep(2000);
+                AutoUtil.recordAndLog(record,"wx连接成功");
+                continue;
+            }
+
             AccessibilityNodeInfo node4 = AutoUtil.findNodeInfosById(root,ConstantWxId.TIPS);
             if(node4!=null){
                 String tips = node4.getText().toString();
@@ -154,7 +162,11 @@ public class Set008DataService implements Runnable{
         }
         if(AutoUtil.checkAction(record,"wx下一步"))
             adbService.setTextByWindow("用短信验证码登录",538,691,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxPwd(),"wx输入密码",2000);
-        if(adbService.clickXYByWindow("用短信验证码登录",563,995,"wx登录2",2000)) return;
+        //if(adbService.clickXYByWindow("用短信验证码登录",563,995,"wx登录2",2000)) return;
+        if(AutoUtil.findNodeInfosByText(root,"用短信验证码登录")!=null){
+            AutoUtil.performClick(root.findAccessibilityNodeInfosByText("登录").get(2),record,"wx登录2",2000);
+            return;
+        }
         adbService.clickXYByWindow("是&否",625,1190,"wx不推荐通讯录",3000);
         if(AutoUtil.checkAction(record,"wx不推荐通讯录")||AutoUtil.checkAction(record,"wx登录2")){
             AccessibilityNodeInfo loginNode = AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"登录");
@@ -370,6 +382,7 @@ public class Set008DataService implements Runnable{
         }
     }
     private void doAirplane(AccessibilityNodeInfo root) {
+
         if (AutoUtil.checkAction(record, "st写入数据")) {
             AutoUtil.recordAndLog(record, "st设置VPN");
             AutoUtil.opentActivity(Settings.ACTION_AIRPLANE_MODE_SETTINGS);
@@ -393,7 +406,6 @@ public class Set008DataService implements Runnable{
             if(AutoUtil.checkAction(record,"st关闭飞行模式")){
                 if(ip1!=null&&!ip1.equals(regObj.getCurrentIP())){
                     System.out.println("ip2-->"+ip1);
-                    AutoUtil.recordAndLog(record,"wx连接成功");
                     regObj.setCurrentIP(ip1);
                 }
                 return;
