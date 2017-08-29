@@ -266,6 +266,7 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("update count--->"+wx1.updateAll("phone=?","14747223426"));
         wx1.setWxId("w777wt");
         System.out.println("update count--->"+wx1.updateAll("phone=?","14747281548"));
+        //tt
 
     }
 }
