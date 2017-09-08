@@ -83,7 +83,8 @@ public class MyService extends AccessibilityService {
         yh = sharedPreferences.getString("yh","");
 
         PhoneApi pa = new PhoneApi(apiId,apiPwd,apiPjId,zcPwd);
-        List<Wx008Data> wx008Datas = DataSupport.findAll(Wx008Data.class);
+        //List<Wx008Data> wx008Datas = DataSupport.findAll(Wx008Data.class);
+        List<Wx008Data> wx008Datas = DataSupport.where("expMsg  not like ? or expMsg is null","%被限制登录%").order("createTime asc").find(Wx008Data.class);
         LogUtil.d("008data","读取数据库信息成功，总长度："+wx008Datas.size());
         regObj = new RegObj(airplane,zc2,zc3,addSpFr,wx008Datas);
 
@@ -109,6 +110,7 @@ public class MyService extends AccessibilityService {
     ADBClickService adbService  = new ADBClickService(this,record);
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
+
         MyWindowManager.updateFlowMsg(getFlowMsg(regObj,WeixinAutoHandler.record));
         if(WeixinAutoHandler.IS_PAUSE) return;
 

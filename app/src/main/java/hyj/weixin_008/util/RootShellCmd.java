@@ -28,14 +28,10 @@ public class RootShellCmd {
         }
     }
 
-    /**
-     * 通过keyCode模拟点击
-     *
-     * @param keyCode
-     */
     public static void simulateKey(int keyCode) {
         exec("input keyevent " + keyCode + "\n");
     }
+
 
     /**
      * 通过坐标模拟点击

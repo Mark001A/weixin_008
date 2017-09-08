@@ -92,6 +92,7 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String str = FileUtil.readAll("/sdcard/A_hyj_008data/bakData.txt");
+                System.out.println("str-->"+str);
                 List<Wx008Data> datas = JSON.parseArray(str,Wx008Data.class);
                 int successCount=0;
                 for(Wx008Data data:datas){
@@ -145,7 +146,7 @@ public class SettingActivity extends AppCompatActivity {
             String[] str = JSONObject.parseObject(list.get(i),String[].class);
             newList.add(i+"-"+str[str.length-1]);
         }*/
-        List<Wx008Data> wx008Datas = DataSupport.order("createTime asc").find(Wx008Data.class);
+        List<Wx008Data> wx008Datas = DataSupport.where("expMsg  not like ? or expMsg is null","%被限制登录%").order("createTime asc").find(Wx008Data.class);
 
         List<String> datas = new ArrayList<String>();
         for(int i=0,l=wx008Datas.size();i<l;i++){
