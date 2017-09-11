@@ -12,8 +12,10 @@ public class AddFrObj {
     private List<String> wxList = new ArrayList<String>();
     private boolean isBdPhone;
     public AddFrObj(){
-        wxList.add("cba4871");
-        wxList.add("nnk4869");
+        /*wxList.add("cba4871");
+        wxList.add("nnk4869");*/
+        wxList.add("hyj5690");
+        wxList.add("zhjj520366");
     }
 
     public boolean isBdPhone() {

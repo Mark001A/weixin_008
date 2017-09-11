@@ -415,6 +415,8 @@ public class RegisterService implements Runnable{
                 AutoUtil.clickXY(756,1792);
                 AutoUtil.recordAndLog(record,"st断开");
                 AutoUtil.sleep(1000);
+                System.out.println("--->断开连接等待");
+                AutoUtil.sleep(9000);
             }
             if(AutoUtil.checkAction(record,"st断开")){
                 AutoUtil.clickXY(522,738);

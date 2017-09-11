@@ -1,6 +1,7 @@
 package hyj.weixin_008;
 
 import hyj.weixin_008.model.PhoneApi;
+import hyj.weixin_008.service.AlzPhoneNumberAPIService;
 import hyj.weixin_008.service.PhoneNumberAPIService;
 import hyj.weixin_008.util.LogUtil;
 
@@ -9,7 +10,8 @@ import hyj.weixin_008.util.LogUtil;
  */
 
 public class GetPhoneAndValidCodeThread  implements Runnable{
-    PhoneNumberAPIService phoneService = new PhoneNumberAPIService();
+    // PhoneNumberAPIService phoneService = new PhoneNumberAPIService();
+    AlzPhoneNumberAPIService phoneService = new AlzPhoneNumberAPIService();
     PhoneApi pa;
     public GetPhoneAndValidCodeThread(PhoneApi pa){
         this.pa = pa;

@@ -246,27 +246,9 @@ public class MainActivity extends AppCompatActivity {
     }
     private void update(){
         Wx008Data wx1 = new Wx008Data();
-        wx1.setWxId("w444wc");
-        int count = wx1.updateAll("phone=?","14747121825");
-        System.out.println("update count--->"+count);
 
-        wx1.setWxId("w666wc");
-        System.out.println("update count--->"+wx1.updateAll("phone=?","14747223317"));
-
-        wx1.setWxId("w777wc");
-        System.out.println("update count--->"+wx1.updateAll("phone=?","14794925383"));
-
-        wx1.setWxId("w222wt");
-        System.out.println("update count--->"+wx1.updateAll("phone=?","14747281672"));
-        wx1.setWxId("w444wt");
-        System.out.println("update count--->"+wx1.updateAll("phone=?","14747259868"));
-        wx1.setWxId("w555hb");
-        System.out.println("update count--->"+wx1.updateAll("phone=?","14794822909"));
-        wx1.setWxId("w555wt");
-        System.out.println("update count--->"+wx1.updateAll("phone=?","14747223426"));
-        wx1.setWxId("w777wt");
-        System.out.println("update count--->"+wx1.updateAll("phone=?","14747281548"));
-        //tt
+        wx1.setWxId("w333wc");
+        System.out.println("update count--->"+wx1.updateAll("phone=?","14747220254"));
 
     }
 }

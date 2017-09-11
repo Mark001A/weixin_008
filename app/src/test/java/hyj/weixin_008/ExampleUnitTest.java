@@ -5,6 +5,9 @@ import com.alibaba.fastjson.JSONObject;
 
 import org.junit.Test;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import hyj.weixin_008.service.PhoneNumberAPIService;
 
 import static org.junit.Assert.*;
@@ -17,10 +20,23 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() throws Exception {
-        PhoneNumberAPIService service = new PhoneNumberAPIService();
-        String token = service.login("52922-akx","aa105105");
-        System.out.println("token-->"+token);
-        String phone = service.getPhone("52922-akx",token,"1289");
-        System.out.println("phone-->"+phone);
+        String s = regString("nisd是625698的是的","[\\d]{6}",0);
+        System.out.println("--->"+s);
+    }
+
+
+    public static Matcher createMatcher(String matchStr, String reg) {
+        Pattern p = Pattern.compile(reg);
+        Matcher m = p.matcher(matchStr);
+        return m;
+    }
+
+    public static String regString(String str, String reg, int groupNum) {
+        String resultString = "";
+        Matcher m = createMatcher(str, reg);
+        if (m.find()) {
+            resultString = m.group(groupNum);
+        }
+        return resultString;
     }
 }
