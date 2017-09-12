@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //save2Db();
                 //del();
-                //update();
+                update();
                 startActivity(new Intent(MainActivity.this,SettingActivity.class));
             }
         });
@@ -245,10 +245,20 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("datas size2--->"+datas2.size());
     }
     private void update(){
-        Wx008Data wx1 = new Wx008Data();
+       Wx008Data wx1 = new Wx008Data();
 
-        wx1.setWxId("w333wc");
-        System.out.println("update count--->"+wx1.updateAll("phone=?","14747220254"));
+        wx1.setWxId("fnxh7363");
+        System.out.println("update count--->"+wx1.updateAll("phone=?","17193682843"));
+        wx1.setWxId("dqeR7133");
+        System.out.println("update count--->"+wx1.updateAll("phone=?","17193687184"));
+       /* List<Wx008Data> datas2 = DataSupport.findAll(Wx008Data.class);
+        System.out.println("datas size2--->"+datas2.size());
+        for(Wx008Data data:datas2){
+            if(data.getWxPwd().equals("系统默认")){
+                data.setWxPwd("www12345");
+                System.out.println("-update->"+data.updateAll("phone=?",data.getPhone()));
+            }
+        }*/
 
     }
 }

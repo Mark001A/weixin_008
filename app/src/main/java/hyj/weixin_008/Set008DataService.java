@@ -160,8 +160,10 @@ public class Set008DataService implements Runnable{
             }
             adbService.clickXYByWindow("用微信号/QQ号/邮箱登录",540,1115,"wx下一步",2000);
         }
-        if(AutoUtil.checkAction(record,"wx下一步"))
-            adbService.setTextByWindow("用短信验证码登录",538,691,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxPwd(),"wx输入密码",2000);
+        if(AutoUtil.checkAction(record,"wx下一步")){
+            String pwd = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxPwd();
+            adbService.setTextByWindow("用短信验证码登录",538,691,pwd.equals("系统默认")?"www12345":pwd,"wx输入密码",2000);
+        }
         //if(adbService.clickXYByWindow("用短信验证码登录",563,995,"wx登录2",2000)) return;
         if(AutoUtil.findNodeInfosByText(root,"用短信验证码登录")!=null){
             AutoUtil.performClick(root.findAccessibilityNodeInfosByText("登录").get(2),record,"wx登录2",2000);
