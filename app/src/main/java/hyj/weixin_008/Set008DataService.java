@@ -392,6 +392,7 @@ public class Set008DataService implements Runnable{
         }
         if(AutoUtil.findNodeInfosByText(root,"无线和网络")!=null){
             AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosById(root,"android:id/checkbox");
+            if(node1==null) return;
             String ip1 = AutoUtil.getIPAddress(GlobalApplication.getContext());
             System.out.println("ip1-->"+ip1);
             if(AutoUtil.checkAction(record,"st设置VPN")){

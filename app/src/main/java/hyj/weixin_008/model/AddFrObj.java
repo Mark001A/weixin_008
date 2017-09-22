@@ -16,7 +16,7 @@ public class AddFrObj {
         wxList.add("nnk4869");*/
         /*wxList.add("hyj5690");
         wxList.add("zhjj520366");*/
-/*
+
         wxList.add("w666mb");
         wxList.add("w777mb");
         wxList.add("w888mb");
@@ -24,7 +24,7 @@ public class AddFrObj {
         wxList.add("w222mb");
         wxList.add("w333wc");
         wxList.add("w444wc");
-        wxList.add("w666wc");
+       /* wxList.add("w666wc");
         wxList.add("w777wc");
         wxList.add("w222wt");*/
     }
