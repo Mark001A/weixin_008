@@ -28,16 +28,19 @@ public class RegObj {
     private String airplane;
     private String get008Data;//是否提取008数据
 
+    private int airplaneChangeIpNum;//飞行模式换ip数
+
     private String currentIP;
 
 
 
-    public RegObj(String airplane,String zc2,String zc3,String addSpFr,List<Wx008Data> wx008Datas) {
+    public RegObj(String airplane,String zc2,String zc3,String addSpFr,List<Wx008Data> wx008Datas,int airplaneChangeIpNum) {
         this.zc2 = zc2;
         this.zc3 = zc3;
         this.addSpFr = addSpFr;
         this.wx008Datas = wx008Datas;
         this.airplane = airplane;
+        this.airplaneChangeIpNum = airplaneChangeIpNum;
 
        //兼容旧数据
         datas = new ArrayList<String[]>();
@@ -49,6 +52,14 @@ public class RegObj {
    /* public Wx008Data getCurrentWx008Data(){
         return wx008Datas.get(this.currentIndex);
     }*/
+
+    public int getAirplaneChangeIpNum() {
+        return airplaneChangeIpNum;
+    }
+
+    public void setAirplaneChangeIpNum(int airplaneChangeIpNum) {
+        this.airplaneChangeIpNum = airplaneChangeIpNum;
+    }
 
     public List<Wx008Data> getWx008Datas() {
         return wx008Datas;

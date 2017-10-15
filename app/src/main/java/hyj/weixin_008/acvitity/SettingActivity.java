@@ -45,6 +45,7 @@ public class SettingActivity extends AppCompatActivity {
 
     CheckBox addSpFr;
     CheckBox airplane;
+    EditText airplaneChangeIpNumEdit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +78,10 @@ public class SettingActivity extends AppCompatActivity {
         airplane = (CheckBox)this.findViewById(R.id.airplane);
         addSpFr.setChecked(sharedPreferences.getString("addSpFr","").equals("true")?true:false);
         airplane.setChecked(sharedPreferences.getString("airplane","").equals("true")?true:false);
+
+        airplaneChangeIpNumEdit =  (EditText)findViewById(R.id.airplaneChangeIpNum);
+        String getAirplaneChangeIpNum = sharedPreferences.getString("airplaneChangeIpNum","1");
+        airplaneChangeIpNumEdit.setText(getAirplaneChangeIpNum.equals("")?"1":getAirplaneChangeIpNum);
 
         Button export = (Button)this.findViewById(R.id.export);
         Button importBakData = (Button)this.findViewById(R.id.importBakData);
@@ -115,6 +120,7 @@ public class SettingActivity extends AppCompatActivity {
         editor.putString("vpnIndex",vpnIndex.getText()+"");
         editor.putString("addSpFr",addSpFr.isChecked()+"");
         editor.putString("airplane",airplane.isChecked()+"");
+        editor.putString("airplaneChangeIpNum",airplaneChangeIpNumEdit.getText()+"");
         editor.commit();
     }
     //使用数组形式操作

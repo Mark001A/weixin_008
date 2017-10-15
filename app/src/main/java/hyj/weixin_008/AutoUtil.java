@@ -63,8 +63,6 @@ public class AutoUtil {
         if(nodeInfo.isClickable()) {
             nodeInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK);
             recordAndLog(record,recordAction);
-            //record.put("recordAction",recordAction);
-            //System.out.println("------>"+record);
             sleep(ms);
         } else {
             performClick(nodeInfo.getParent(),record,recordAction,ms);

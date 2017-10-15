@@ -23,6 +23,7 @@ import hyj.weixin_008.flowWindow.MyWindowManager;
 import hyj.weixin_008.model.RegObj;
 import hyj.weixin_008.service.ADBClickService;
 import hyj.weixin_008.thread.AddFriendThread;
+import hyj.weixin_008.thread.AutoChatThread;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
 
@@ -105,7 +106,7 @@ public class Set008DataService implements Runnable{
                 continue;
             }
 
-            if(AutoUtil.checkAction(record,"wx登录2")&&AutoUtil.findNodeInfosByText(root,"用短信验证码登录")!=null){
+            if(AutoUtil.checkAction(record,"wx登录2")&&(AutoUtil.findNodeInfosByText(root,"用短信验证码登录")!=null)||AutoUtil.findNodeInfosByText(root,"用手机号登录")!=null){
                 countLongin = countLongin+1;
                 System.out.println("countLongin-->"+countLongin);
                 if(countLongin>5){
@@ -117,10 +118,23 @@ public class Set008DataService implements Runnable{
             if(record.get("recordAction").contains("008")||AutoUtil.checkAction(record,Constants.CHAT_LISTENING))
                 do008(root);
             if(record.get("recordAction").contains("st")){
-                if("true".equals(regObj.getAirplane()))
-                    doAirplane(root);
-                else
+                if("true".equals(regObj.getAirplane())){
+                    if(regObj.getAirplaneChangeIpNum()==0){
+                        LogUtil.d("getAirplaneChangeIpNum","0跳过飞行模式");
+                        AutoUtil.recordAndLog(record,"wx连接成功");
+                    }else{
+                        if(regObj.getCurrentIndex()%regObj.getAirplaneChangeIpNum()==0){
+                            doAirplane(root);
+                        }else {
+                            LogUtil.d("getAirplaneChangeIpNum",regObj.getCurrentIndex()+"跳过飞行模式");
+                            AutoUtil.recordAndLog(record,"wx连接成功");
+                        }
+
+                    }
+
+                }else{
                     doVPN(root);
+                }
             }
             if(record.get("recordAction").contains("wx"))
                 doWxLogin(root);
@@ -170,7 +184,9 @@ public class Set008DataService implements Runnable{
             return;
         }
         adbService.clickXYByWindow("是&否",625,1190,"wx不推荐通讯录",3000);
-        if(AutoUtil.checkAction(record,"wx不推荐通讯录")||AutoUtil.checkAction(record,"wx登录2")){
+        adbService.clickXYByWindow("了解更多",795,1190,"wx了解更多",1000);
+        adbService.clickXYByWindow("同意",985,1840,"wx同意",1000);
+        if(AutoUtil.checkAction(record,"wx不推荐通讯录")||AutoUtil.checkAction(record,"wx登录2")||AutoUtil.checkAction(record,"wx同意")){
             AccessibilityNodeInfo loginNode = AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"登录");
             if(loginNode==null){
                 AutoUtil.clickXY(400,1845);
@@ -195,7 +211,8 @@ public class Set008DataService implements Runnable{
                 AutoUtil.sleep(1000);
                 if("true".equals(regObj.getAddSpFr())){
                     AutoUtil.recordAndLog(record,"登录成功添加好友");
-                    new Thread(new AddFriendThread(context)).start();
+                    //new Thread(new AddFriendThread(context)).start();
+                    new Thread(new AutoChatThread(context)).start();
                 }
             }
         }

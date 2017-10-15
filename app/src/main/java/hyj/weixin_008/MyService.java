@@ -32,6 +32,7 @@ import hyj.weixin_008.model.PhoneApi;
 import hyj.weixin_008.model.RegObj;
 import hyj.weixin_008.service.ADBClickService;
 import hyj.weixin_008.thread.AddFriendThread;
+import hyj.weixin_008.thread.AutoChatThread;
 import hyj.weixin_008.thread.Get008DataThread;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
@@ -77,6 +78,7 @@ public class MyService extends AccessibilityService {
         String addSpFr = sharedPreferences.getString("addSpFr","");
         String airplane = sharedPreferences.getString("airplane","");
         String get008Data = sharedPreferences.getString("get008Data","");
+        int airplaneChangeIpNum = Integer.parseInt(sharedPreferences.getString("airplaneChangeIpNum","1"));
         zc1 = sharedPreferences.getString("zc1","");
         zc2 = sharedPreferences.getString("zc2","");
         zc3 = sharedPreferences.getString("zc3","");
@@ -86,7 +88,7 @@ public class MyService extends AccessibilityService {
         //List<Wx008Data> wx008Datas = DataSupport.findAll(Wx008Data.class);
         List<Wx008Data> wx008Datas = DataSupport.where("expMsg  not like ? or expMsg is null","%被限制登录%").order("createTime asc").find(Wx008Data.class);
         LogUtil.d("008data","读取数据库信息成功，总长度："+wx008Datas.size());
-        regObj = new RegObj(airplane,zc2,zc3,addSpFr,wx008Datas);
+        regObj = new RegObj(airplane,zc2,zc3,addSpFr,wx008Datas,airplaneChangeIpNum);
 
        if("true".equals(zc1)){
             new Thread(new RegisterService(this,WeixinAutoHandler.record,pa,regObj)).start();
@@ -115,7 +117,10 @@ public class MyService extends AccessibilityService {
         if(WeixinAutoHandler.IS_PAUSE) return;
 
         AccessibilityNodeInfo root = getRootInActiveWindow();
-        if(root==null) return;
+        if(root==null){
+            System.out.println("--->main root is null");
+            return;
+        }
         System.out.println("--->"+event.getEventType());
 
         if(AutoUtil.checkAction(WeixinAutoHandler.record,"wx注册成功")||AutoUtil.checkAction(WeixinAutoHandler.record,"wx登录成功")){
@@ -128,7 +133,10 @@ public class MyService extends AccessibilityService {
         }
         setQm(root);
         sentFr(root);
+
     }
+
+
     private void sentFr(AccessibilityNodeInfo root){
         if("true".equals(zc3)&&AutoUtil.actionContains(WeixinAutoHandler.record,"pyq")){
             AccessibilityNodeInfo node5 = AutoUtil.findNodeInfosByText(root,"朋友圈");
