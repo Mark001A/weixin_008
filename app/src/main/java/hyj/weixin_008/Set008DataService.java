@@ -164,10 +164,22 @@ public class Set008DataService implements Runnable{
             }
         }
         if(!AutoUtil.checkAction(record,"wx登录2")){
-            adbService.setTextByWindow("用手机号登录",545,566,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId(),"wx输入微信号",2000);
-            adbService.setTextByWindow("用手机号登录",545,676,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxPwd(),"wx输入密码",3000);
+            //adbService.setTextByWindow("用手机号登录",545,566,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId(),"wx输入微信号",2000);
+            //adbService.setTextByWindow("用手机号登录",545,676,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxPwd(),"wx输入密码",3000);
+            AccessibilityNodeInfo root1 = context.getRootInActiveWindow();
+            if(root1==null){
+                LogUtil.d("root","账号密码root is null");
+            }else {
+                if(AutoUtil.findNodeInfosByText(root,"用手机号登录")!=null){
+                    AccessibilityNodeInfo node2 =AutoUtil.findNodeInfosByText(root,"密码");
+                    AutoUtil.performSetText(node2.getParent().getParent().getChild(1).getChild(1),regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId(),record,"wx输入微信号");
+                    AutoUtil.performSetText(node2.getParent().getChild(1),regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxPwd(),record,"wx输入密码");
+                    AutoUtil.performClick(node2.getParent().getParent().getChild(4),record,"wx登录2",5000);
+                    return;
+                }
+            }
         }
-        adbService.clickXYByWindow("用手机号登录",540,1120,"wx登录2",2000);
+        //adbService.clickXYByWindow("用手机号登录",540,1120,"wx登录2",2000);
         if(AutoUtil.findNodeInfosByText(root,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone())!=null){
             if(!AutoUtil.checkAction(record,"wx下一步")){
                 AutoUtil.sleep(5000);

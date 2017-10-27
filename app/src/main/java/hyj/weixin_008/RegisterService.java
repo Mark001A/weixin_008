@@ -113,7 +113,8 @@ public class RegisterService implements Runnable{
             if(record.get("recordAction").contains("008")||AutoUtil.checkAction(record,Constants.CHAT_LISTENING))
                 do008(root);
             if(record.get("recordAction").contains("st"))
-                doVPN(root);
+                //doVPN(root);
+                AutoUtil.recordAndLog(record,"wx连接成功");
             if(record.get("recordAction").contains("wx"))
                 doWxRegister(root);
         }
@@ -135,9 +136,10 @@ public class RegisterService implements Runnable{
         if(!AutoUtil.checkAction(record,"wx一键操作"))
             adbService.clickXYByWindow("登录&注册",255,1790,"wx点击登录1",500);
         if(!AutoUtil.checkAction(record,"wx输入手机号")){
-            adbService.setTextByWindow("用微信号/QQ号/邮箱登录",540,720,pa.getPhone(),"wx输入手机号",0);
+            //adbService.setTextByWindow("用微信号/QQ号/邮箱登录",540,720,pa.getPhone(),"wx输入手机号",0);
+            adbService.setTextByWindow("用微信号/QQ号/邮箱登录",540,720,"12569521584","wx输入手机号",0);
         }
-        if(AutoUtil.findNodeInfosByText(root,pa.getPhone())!=null)
+        //if(AutoUtil.findNodeInfosByText(root,pa.getPhone())!=null)
             adbService.clickXYByWindow("用微信号/QQ号/邮箱登录",540,1115,"wx下一步",1000);
         if(AutoUtil.checkAction(record,"wx下一步"))
             adbService.clickXYByWindow("用短信验证码登录",267,885,"wx点击短信验证码登录",500);
@@ -180,8 +182,12 @@ public class RegisterService implements Runnable{
             return;
         }
 
-        if(pa.isValidCodeIsAvailavle()){
+        /*if(pa.isValidCodeIsAvailavle()){
             if(adbService.setTextByWindow(ConstantWxId.REGMSG2,550,600,pa.getValidCode(),"wx输入验证码",1500))
+                if(adbService.clickXYByWindow(ConstantWxId.REGMSG2,550,950,"wx输入验证码下一步",2000)) return;
+        }*/
+        if(1==1){
+            if(adbService.setTextByWindow(ConstantWxId.REGMSG2,550,600,"152654","wx输入验证码",1500))
                 if(adbService.clickXYByWindow(ConstantWxId.REGMSG2,550,950,"wx输入验证码下一步",2000)) return;
         }
         if(AutoUtil.checkAction(record,"wx确认手机号码")){
@@ -335,8 +341,8 @@ public class RegisterService implements Runnable{
         if(list!=null&&list.getChildCount()>90){
             AccessibilityNodeInfo generate =AutoUtil.findNodeInfosByText(root,"随机生成");
             AccessibilityNodeInfo save =AutoUtil.findNodeInfosByText(root,"保存");
-
-            if(pa.isPhoneIsAvailavle()){
+            if(true){
+            //if(pa.isPhoneIsAvailavle()){
                 AutoUtil.performClick(generate,record,"008随机生成",1000);
 
                 AutoUtil.performSetText(list.getChild(6),pa.getPhone(),record,"008写入"+pa.getPhone());

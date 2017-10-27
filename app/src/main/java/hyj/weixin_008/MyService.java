@@ -123,6 +123,14 @@ public class MyService extends AccessibilityService {
         }
         System.out.println("--->"+event.getEventType());
 
+        //---test start---------
+       /* AccessibilityNodeInfo node2 =AutoUtil.findNodeInfosByText(root,"密码");
+        getChild(node2.getParent().getParent().getChild(1).getChild(1));
+        AutoUtil.performSetText(node2.getParent().getParent().getChild(1).getChild(1),"22",record,"shur222u");
+        AutoUtil.performSetText(node2.getParent().getChild(1),"45222226",record,"shuru");
+        AutoUtil.performClick(node2.getParent().getParent().getChild(3),record,"wx登录2",12000);*/
+        //---test end ----------
+
         if(AutoUtil.checkAction(WeixinAutoHandler.record,"wx注册成功")||AutoUtil.checkAction(WeixinAutoHandler.record,"wx登录成功")){
             if("true".equals(zc2)){//写个性签名
                 AutoUtil.recordAndLog(WeixinAutoHandler.record,"qm");
