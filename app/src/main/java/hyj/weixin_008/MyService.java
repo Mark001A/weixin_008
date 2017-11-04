@@ -36,6 +36,7 @@ import hyj.weixin_008.thread.AutoChatThread;
 import hyj.weixin_008.thread.Get008DataThread;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
+import hyj.weixin_008.util.ParseRootUtil;
 
 import static hyj.weixin_008.GlobalApplication.getContext;
 
@@ -90,7 +91,7 @@ public class MyService extends AccessibilityService {
         LogUtil.d("008data","读取数据库信息成功，总长度："+wx008Datas.size());
         regObj = new RegObj(airplane,zc2,zc3,addSpFr,wx008Datas,airplaneChangeIpNum);
 
-       if("true".equals(zc1)){
+    if("true".equals(zc1)){
             new Thread(new RegisterService(this,WeixinAutoHandler.record,pa,regObj)).start();
             new Thread(new GetPhoneAndValidCodeThread(pa)).start();
         }else if("true".equals(yh)){
@@ -102,6 +103,7 @@ public class MyService extends AccessibilityService {
         AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
         AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
         AutoUtil.sleep(1000);
+        //new Thread(new GetPhoneAndValidCodeThread(pa)).start();
     }
     private String getFlowMsg(RegObj regObj,Map<String,String> record){
         String msg = "总数："+regObj.getTotalNum()+" 序号："+regObj.getCurrentIndex()
@@ -124,11 +126,8 @@ public class MyService extends AccessibilityService {
         System.out.println("--->"+event.getEventType());
 
         //---test start---------
-       /* AccessibilityNodeInfo node2 =AutoUtil.findNodeInfosByText(root,"密码");
-        getChild(node2.getParent().getParent().getChild(1).getChild(1));
-        AutoUtil.performSetText(node2.getParent().getParent().getChild(1).getChild(1),"22",record,"shur222u");
-        AutoUtil.performSetText(node2.getParent().getChild(1),"45222226",record,"shuru");
-        AutoUtil.performClick(node2.getParent().getParent().getChild(3),record,"wx登录2",12000);*/
+
+        //ParseRootUtil.debugRoot(root);
         //---test end ----------
 
         if(AutoUtil.checkAction(WeixinAutoHandler.record,"wx注册成功")||AutoUtil.checkAction(WeixinAutoHandler.record,"wx登录成功")){

@@ -23,6 +23,7 @@ import hyj.weixin_008.service.ADBClickService;
 import hyj.weixin_008.service.PhoneNumberAPIService;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
+import hyj.weixin_008.util.ParseRootUtil;
 
 import static android.content.Context.MODE_PRIVATE;
 import static hyj.weixin_008.GlobalApplication.getContext;
@@ -32,6 +33,7 @@ import static hyj.weixin_008.GlobalApplication.getContext;
  */
 
 public class RegisterService implements Runnable{
+    PhoneNumberAPIService phoneService = new PhoneNumberAPIService();
     static List<String[]> datas;
     static Map<String,String> accounts;
     String currentAccount;
@@ -85,6 +87,8 @@ public class RegisterService implements Runnable{
                 continue;
             }
 
+            //ParseRootUtil.debugRoot(root);
+
             AccessibilityNodeInfo node4 = AutoUtil.findNodeInfosById(root,ConstantWxId.TIPS);
             if(node4!=null){
                 String tips = node4.getText().toString();
@@ -133,63 +137,61 @@ public class RegisterService implements Runnable{
             AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
             AutoUtil.sleep(5000);
         }
-        if(!AutoUtil.checkAction(record,"wx一键操作"))
-            adbService.clickXYByWindow("登录&注册",255,1790,"wx点击登录1",500);
-        if(!AutoUtil.checkAction(record,"wx输入手机号")){
-            //adbService.setTextByWindow("用微信号/QQ号/邮箱登录",540,720,pa.getPhone(),"wx输入手机号",0);
-            adbService.setTextByWindow("用微信号/QQ号/邮箱登录",540,720,"12569521584","wx输入手机号",0);
+
+        if(!AutoUtil.checkAction(record,"wx一键操作")){
+            adbService.clickXYByWindow("登录&注册",834,1790,"wx点击注册1",500);
         }
-        //if(AutoUtil.findNodeInfosByText(root,pa.getPhone())!=null)
-            adbService.clickXYByWindow("用微信号/QQ号/邮箱登录",540,1115,"wx下一步",1000);
-        if(AutoUtil.checkAction(record,"wx下一步"))
-            adbService.clickXYByWindow("用短信验证码登录",267,885,"wx点击短信验证码登录",500);
-            //adbService.setTextByWindow("用短信验证码登录",538,691,accounts.get(currentAccount),"wx输入密码",2000);
-        if(adbService.clickXYByWindow("获取验证码",897,723,"wx点击获取验证码",1000)) return;
-        if(!AutoUtil.checkAction(record,"wx点击注册2")&&adbService.clickXYByWindow("确认手机号码",818,1192,"wx确认手机号码",2000)){
-            AutoUtil.clickXY(61,1863);
-            AutoUtil.sleep(1500);
-            AutoUtil.recordAndLog(record,"wx点击悬浮框");
-            AutoUtil.sleep(800);
-            return;
-        }else {
-            adbService.clickXYByWindow("确认手机号码",818,1192,"wx确认手机号码",2000);
-        }
-        AccessibilityNodeInfo node008 = AutoUtil.findNodeInfosByText(root,"一键操作");
-        if(node008!=null){
-            AutoUtil.clickXY(518,918);
-            AutoUtil.recordAndLog(record,"wx一键操作");
-            AutoUtil.sleep(1000);
-            AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
-        }
-        if(AutoUtil.checkAction(record,"wx一键操作")){
-            if(!adbService.clickXYByWindow("登录&注册",834,1790,"wx点击注册1",500)){
-                AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
-            }
-            return;
-        }
+
         AccessibilityNodeInfo textNode1 = AutoUtil.findNodeInfosByText(root,ConstantWxId.REGMSG1);
-        if(textNode1!=null&&!AutoUtil.checkAction(record,"wx点击注册2")&&pa.isPhoneIsAvailavle()){
+        if(textNode1!=null&&AutoUtil.checkAction(record,"wx点击注册1")){//&&pa.isPhoneIsAvailavle()
             AccessibilityNodeInfo textNode2 = AutoUtil.findNodeInfosByText(root,"注册");
             AccessibilityNodeInfo textNode3 = AutoUtil.findNodeInfosByText(root,"昵称");
             AccessibilityNodeInfo textNode4 = root.findAccessibilityNodeInfosByText("手机号").get(1);
             AccessibilityNodeInfo textNode5 = AutoUtil.findNodeInfosByText(root,"密码");
             AutoUtil.performSetText(textNode3.getParent().getChild(1),String.valueOf(System.currentTimeMillis()).substring(10),record,"wx输入昵称");
-            AutoUtil.performSetText(textNode4.getParent().getChild(1),pa.getPhone(),record,"wx手机号");
-            pa.setZcPwd("www"+pa.getPhone().substring(6));
+            //AutoUtil.performSetText(textNode4.getParent().getChild(1),"12365985485",record,"wx手机号");
+            //pa.setZcPwd("www"+pa.getPhone().substring(6));
+            pa.setZcPwd("www12345");
             AutoUtil.performSetText(textNode5.getParent().getChild(1),pa.getZcPwd(),record,"wx输入密码");
             AutoUtil.sleep(2000);
             AutoUtil.performClick(textNode2,record,"wx点击注册2");
             return;
+        }
+        if(AutoUtil.checkAction(record,"wx点击注册2")||AutoUtil.checkAction(record,"wx同意")){
+            adbService.clickXYByWindow("微信隐私保护指引",1006,1839,"wx同意",500);
+        }
+
+        if(AutoUtil.checkAction(record,"wx同意")){
+            AccessibilityNodeInfo node2 = ParseRootUtil.getNodePath(root,"000003");
+            AutoUtil.performClick(node2,record,"wx开始安全验证");
+        }
+
+       if(AutoUtil.checkAction(record,"wx开始安全验证")){
+            AccessibilityNodeInfo node2 = ParseRootUtil.getNodePath(root,"0026");
+            AccessibilityNodeInfo sendPhoneMsgNode = ParseRootUtil.getNodePath(root,"0022");
+            if(sendPhoneMsgNode!=null){
+                String text = sendPhoneMsgNode.getText().toString();
+                String msg = text.substring(text.length()-4);
+                pa.setSendMsg(true);
+                pa.setMsg(msg);
+                AutoUtil.performClick(node2,record,"wx发送短信",2000);
+            }
+        }
+
+        if(AutoUtil.checkAction(record,"wx发送短信")){
+            AutoUtil.showToastByRunnable(GlobalApplication.getContext().getApplicationContext(),"启动微信");
+            AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
+        }
+
+        if(AutoUtil.checkAction(record,"wx发送短信")){
+
         }
 
         /*if(pa.isValidCodeIsAvailavle()){
             if(adbService.setTextByWindow(ConstantWxId.REGMSG2,550,600,pa.getValidCode(),"wx输入验证码",1500))
                 if(adbService.clickXYByWindow(ConstantWxId.REGMSG2,550,950,"wx输入验证码下一步",2000)) return;
         }*/
-        if(1==1){
-            if(adbService.setTextByWindow(ConstantWxId.REGMSG2,550,600,"152654","wx输入验证码",1500))
-                if(adbService.clickXYByWindow(ConstantWxId.REGMSG2,550,950,"wx输入验证码下一步",2000)) return;
-        }
+
         if(AutoUtil.checkAction(record,"wx确认手机号码")){
             if(AutoUtil.findNodeInfosByText(root,ConstantWxId.REGMSG2)!=null&&!pa.isValidCodeIsAvailavle()){
                 if(pa.getWaitValicodeTime()==30){
@@ -341,10 +343,9 @@ public class RegisterService implements Runnable{
         if(list!=null&&list.getChildCount()>90){
             AccessibilityNodeInfo generate =AutoUtil.findNodeInfosByText(root,"随机生成");
             AccessibilityNodeInfo save =AutoUtil.findNodeInfosByText(root,"保存");
-            if(true){
-            //if(pa.isPhoneIsAvailavle()){
+            //if(true){
+            if(pa.isPhoneIsAvailavle()){
                 AutoUtil.performClick(generate,record,"008随机生成",1000);
-
                 AutoUtil.performSetText(list.getChild(6),pa.getPhone(),record,"008写入"+pa.getPhone());
                 AutoUtil.performSetText(list.getChild(36),"6.0",record,"008写入6.0");
                 AutoUtil.performSetText(list.getChild(38),"23",record,"008写入23");

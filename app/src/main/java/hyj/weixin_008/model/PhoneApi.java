@@ -12,12 +12,15 @@ public class PhoneApi {
     private String phone;
     private String regSuccessphone;
     private String validCode;
+    private String msg;
+    private String status;
 
     private int waitValicodeTime;
 
     private String zcPwd;
     private boolean phoneIsAvailavle=false;
     private boolean validCodeIsAvailavle=false;
+    private boolean isSendMsg=false;
 
     public PhoneApi(String apiId, String pwd, String pjId,String zcPwd) {
         this.apiId = apiId;
@@ -25,6 +28,30 @@ public class PhoneApi {
         this.zcPwd = zcPwd;
         this.pjId = pjId;
 
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public boolean isSendMsg() {
+        return isSendMsg;
+    }
+
+    public void setSendMsg(boolean sendMsg) {
+        isSendMsg = sendMsg;
     }
 
     public String getRegSuccessphone() {

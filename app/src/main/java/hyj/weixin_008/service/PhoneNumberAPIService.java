@@ -13,9 +13,10 @@ import hyj.weixin_008.util.OkHttpUtil;
 public class PhoneNumberAPIService {
     public String login(String apiId,String pwd){
         String token = "";
-        String url = "http://api.jyzszp.com/Api/index/loginIn?uid="+apiId+"&pwd="+pwd;
+        String url = "http://api.jyzszp.com/Api/index/userlogin?uid="+apiId+"&pwd="+pwd;
         String body = OkHttpUtil.okHttpGet(url);
-        //LogUtil.d("loginBody",body);
+        System.out.println("login url-->"+url);
+        System.out.println("login body-->"+body);
         String[] strs = body.split("\\|");
         if(strs.length==3&&strs[1].equals(apiId)){
             token = strs[2];
@@ -32,6 +33,25 @@ public class PhoneNumberAPIService {
             phone = strs[0];
         }
         return phone;
+    }
+    public  String sendMsg(String apiId,String token,String pjid,String phoneNum,String msg,String devId){
+        String status = "";
+        String url = "http://api.jyzszp.com/Api/index/sendSms?uid="+apiId+"&token="+token+"&pid="+pjid+"&mobile="+phoneNum+"&content="+msg+"&author_uid="+devId;
+        System.out.println("sendMsg url-->"+url);
+        String body = OkHttpUtil.okHttpGet(url);
+        System.out.println("sendMsg body-->"+body);
+        if(body.indexOf("succ")>-1){
+            status = body.substring(body.indexOf("|")+1);
+        }
+        System.out.println("sendMsg status-->"+status);
+        return status;
+    }
+    public String getSendStatus(String apiId,String token,String pjid,String phoneNum,String status){
+        String url= "http://api.jyzszp.com/Api/index/getSmsStatus?uid="+apiId+"&token="+token+"&pid="+pjid+"&mobile="+phoneNum+"&id="+status;
+        System.out.println("getSendStatus url-->"+url);
+        String body = OkHttpUtil.okHttpGet(url);
+        System.out.println("getSendStatus body-->"+body);
+        return body;
     }
     public String getValidCode(String apiId,String phone,String token,String pjId){
         String validCode = "";
