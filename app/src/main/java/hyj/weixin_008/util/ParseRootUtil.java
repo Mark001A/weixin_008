@@ -40,6 +40,7 @@ public class ParseRootUtil {
                 int childCount = levelNode.getNode().getChildCount();
                 if(childCount>0){
                     for(int i=0;i<childCount;i++){
+                        if(levelNode.getNode().getChild(i)==null) continue;
                         NodeAttr na = setFuntion(levelNode.getNode().getChild(i),i,levelNode.getChildPath());
                         nexLlevelNodes.add(na);
                     }

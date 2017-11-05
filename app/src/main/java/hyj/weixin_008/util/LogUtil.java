@@ -12,7 +12,7 @@ public class LogUtil {
     public static void d(String tab,String msg){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateTime = sdf.format(new Date());
-        String logMsg = dateTime+" "+tab+"---->"+msg;
+        String logMsg = dateTime+" "+tab+"hyj---->"+msg;
         //以天为单位生成日志文件
         System.out.println(logMsg);
         FileUtil.writeContent2File("/sdcard/A_hyj_log/","log_"+dateTime.substring(0,13)+":00.txt",logMsg);

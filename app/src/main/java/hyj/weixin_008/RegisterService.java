@@ -16,6 +16,7 @@ import java.util.Map;
 
 import hyj.weixin_008.common.ConstantWxId;
 import hyj.weixin_008.common.WeixinAutoHandler;
+import hyj.weixin_008.common.WxNickNameConstant;
 import hyj.weixin_008.daoModel.Wx008Data;
 import hyj.weixin_008.model.PhoneApi;
 import hyj.weixin_008.model.RegObj;
@@ -65,7 +66,7 @@ public class RegisterService implements Runnable{
     public void run() {
         while (true){
             AutoUtil.sleep(500);
-            LogUtil.d("myService","-->注册线程运行..."+Thread.currentThread().getName()+record);
+            LogUtil.d("myService","hyj-->注册线程运行..."+Thread.currentThread().getName()+record);
 
             if(WeixinAutoHandler.IS_PAUSE){
                 LogUtil.d("autoChat","暂停服务");
@@ -73,7 +74,7 @@ public class RegisterService implements Runnable{
                 continue;
             }
             if(WeixinAutoHandler.IS_NEXT_NONE){
-                System.out.println("----跳转下一个");
+                System.out.println("hyj----跳转下一个");
                 loginNext();
                 LogUtil.login("exception",currentAccount+"-跳转下一个");
                 continue;
@@ -82,12 +83,12 @@ public class RegisterService implements Runnable{
 
             AccessibilityNodeInfo root = context.getRootInActiveWindow();
             if(root==null){
-                System.out.println("-->root is null");
+                System.out.println("hyj-->root is null");
                 AutoUtil.sleep(500);
                 continue;
             }
 
-            //ParseRootUtil.debugRoot(root);
+            ParseRootUtil.debugRoot(root);
 
             AccessibilityNodeInfo node4 = AutoUtil.findNodeInfosById(root,ConstantWxId.TIPS);
             if(node4!=null){
@@ -100,14 +101,14 @@ public class RegisterService implements Runnable{
             AccessibilityNodeInfo node2 = AutoUtil.findNodeInfosByText(root,"正在登录...");
             AccessibilityNodeInfo node3 = AutoUtil.findNodeInfosByText(root,"请稍后...");
             if(node1!=null||node2!=null||node3!=null){
-                System.out.println("--->请稍后...");
+                System.out.println("hyj--->请稍后...");
                 AutoUtil.sleep(500);
                 continue;
             }
 
             if(AutoUtil.checkAction(record,"wx登录2")){
                 countLongin = countLongin+1;
-                System.out.println("countLongin-->"+countLongin);
+                System.out.println("countLongin hyj-->"+countLongin);
                 if(countLongin>5){
                     loginNext();
                     LogUtil.login("exception",currentAccount+"-登录失败（0，5）");
@@ -117,8 +118,8 @@ public class RegisterService implements Runnable{
             if(record.get("recordAction").contains("008")||AutoUtil.checkAction(record,Constants.CHAT_LISTENING))
                 do008(root);
             if(record.get("recordAction").contains("st"))
-                //doVPN(root);
-                AutoUtil.recordAndLog(record,"wx连接成功");
+                doVPN(root);
+                //AutoUtil.recordAndLog(record,"wx连接成功");
             if(record.get("recordAction").contains("wx"))
                 doWxRegister(root);
         }
@@ -138,7 +139,7 @@ public class RegisterService implements Runnable{
             AutoUtil.sleep(5000);
         }
 
-        if(!AutoUtil.checkAction(record,"wx一键操作")){
+        if(AutoUtil.checkAction(record,"wx连接成功")||AutoUtil.checkAction(record,"wx点击注册1")){
             adbService.clickXYByWindow("登录&注册",834,1790,"wx点击注册1",500);
         }
 
@@ -148,7 +149,7 @@ public class RegisterService implements Runnable{
             AccessibilityNodeInfo textNode3 = AutoUtil.findNodeInfosByText(root,"昵称");
             AccessibilityNodeInfo textNode4 = root.findAccessibilityNodeInfosByText("手机号").get(1);
             AccessibilityNodeInfo textNode5 = AutoUtil.findNodeInfosByText(root,"密码");
-            AutoUtil.performSetText(textNode3.getParent().getChild(1),String.valueOf(System.currentTimeMillis()).substring(10),record,"wx输入昵称");
+            AutoUtil.performSetText(textNode3.getParent().getChild(1),WxNickNameConstant.getName1(),record,"wx输入昵称");
             //AutoUtil.performSetText(textNode4.getParent().getChild(1),"12365985485",record,"wx手机号");
             //pa.setZcPwd("www"+pa.getPhone().substring(6));
             pa.setZcPwd("www12345");
@@ -178,19 +179,27 @@ public class RegisterService implements Runnable{
             }
         }
 
-        if(AutoUtil.checkAction(record,"wx发送短信")){
+        if(AutoUtil.checkAction(record,"wx发送短信")||AutoUtil.checkAction(record,"wx发送yzm下一步")){
             AutoUtil.showToastByRunnable(GlobalApplication.getContext().getApplicationContext(),"启动微信");
             AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
+            AutoUtil.recordAndLog(record,"wx返回微信");
+        }
+        //处理返回微信了仍停留在发送短信节目
+        if(AutoUtil.checkAction(record,"wx返回微信")){
+            AccessibilityNodeInfo node = ParseRootUtil.getNodePath(root,"00");
+            if(node!=null&&"返回短信列表".equals(node.getContentDescription()+"")){
+                System.out.println("----hyj-->再次返回");
+                AutoUtil.performBack(context,record,"wx返回微信");
+                AutoUtil.sleep(1000);
+            }
         }
 
-        if(AutoUtil.checkAction(record,"wx发送短信")){
-
+        if(AutoUtil.checkAction(record,"wx返回微信")||AutoUtil.checkAction(record,"wx发送yzm下一步")){
+            AccessibilityNodeInfo nextNode0 = AutoUtil.findNodeInfosByText(root,"再试一次");
+            AccessibilityNodeInfo nextNode1 = AutoUtil.findNodeInfosByText(root,"下一步");
+            AutoUtil.performClick(nextNode0,record,"wx发送yzm下一步");
+            AutoUtil.performClick(nextNode1,record,"wx发送yzm下一步");
         }
-
-        /*if(pa.isValidCodeIsAvailavle()){
-            if(adbService.setTextByWindow(ConstantWxId.REGMSG2,550,600,pa.getValidCode(),"wx输入验证码",1500))
-                if(adbService.clickXYByWindow(ConstantWxId.REGMSG2,550,950,"wx输入验证码下一步",2000)) return;
-        }*/
 
         if(AutoUtil.checkAction(record,"wx确认手机号码")){
             if(AutoUtil.findNodeInfosByText(root,ConstantWxId.REGMSG2)!=null&&!pa.isValidCodeIsAvailavle()){
@@ -216,13 +225,16 @@ public class RegisterService implements Runnable{
         if(adbService.clickXYByWindow(ConstantWxId.REGMSG4,540,1800,"wx以后再说",1000)) return;
 
         //adbService.clickXYByWindow("是&否",625,1190,"wx不推荐通讯录",3000);
-        if(AutoUtil.checkAction(record,"wx以后再说")||AutoUtil.checkAction(record,"wx不是我的，继续注册")){
-            AutoUtil.clickXY(400,1845);
-            System.out.println("---->切换");
+        if(AutoUtil.checkAction(record,"wx以后再说")||AutoUtil.checkAction(record,"wx不是我的，继续注册")
+                ||AutoUtil.checkAction(record,"wx发送yzm下一步")||AutoUtil.checkAction(record,"wx发送短信")||AutoUtil.checkAction(record,"wx返回微信")){
+            //AutoUtil.clickXY(400,1845);
+            System.out.println("hyj---->切换");
             AutoUtil.performClick(AutoUtil.findNodeInfosByText(root,"忽略"),record,"wx不推荐通讯录");
             AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosByText(root,"微信团队");
             AccessibilityNodeInfo node3 = AutoUtil.findNodeInfosByText(root,"应急联系人");
-            if(node1!=null||node3!=null){
+            AccessibilityNodeInfo node4 = AutoUtil.findNodeInfosByText(root,"朋友圈");
+            AccessibilityNodeInfo node5 = AutoUtil.findNodeInfosByText(root,"通讯录");
+            if(node1!=null||node3!=null||node4!=null||node5!=null){
                 countLongin =0;
                 LogUtil.reg("reg",pa.getPhone()+"-"+pa.getZcPwd());
                 AutoUtil.showToastByRunnable(context,"注册成功");
@@ -279,7 +291,7 @@ public class RegisterService implements Runnable{
                 String[] str = new String[list.getChildCount()+2];
                 for(int i=0;i<list.getChildCount();i++){
                     str[i]=list.getChild(i).getText()+"";
-                    System.out.println("data--> "+i+" "+str[i]);
+                    System.out.println("data hyj--> "+i+" "+str[i]);
                 }
                 str[list.getChildCount()]= pa.getZcPwd();
                 str[list.getChildCount()+1]= pa.getRegSuccessphone();
@@ -308,6 +320,13 @@ public class RegisterService implements Runnable{
        if(AutoUtil.checkAction(record,Constants.CHAT_LISTENING)){
            adbService.clickXYByWindow("工具箱",373,422,"008点击图片",2000);
        }
+
+        //处理008弹出 【找回时间】
+        AccessibilityNodeInfo shNode = ParseRootUtil.getNodePath(root,"04");
+        if(shNode!=null){
+            System.out.println("---hyj-->处理008弹出 【找回时间】");
+            AutoUtil.performClick(shNode,record,Constants.CHAT_LISTENING);
+        }
 
         AccessibilityNodeInfo list = AutoUtil.findNodeInfosById(root,"com.soft.apk008v:id/set_value_con");
 
@@ -372,7 +391,7 @@ public class RegisterService implements Runnable{
         AccessibilityNodeInfo linkText = AutoUtil.findNodeInfosById(context.getRootInActiveWindow(),"android:id/summary");
         if(linkText!=null&&linkText.getText().toString().equals("正在连接...")){
             AutoUtil.showToastByRunnable(GlobalApplication.getContext(),"正在连接...");
-            System.out.println("--->正在连接..");
+            System.out.println("hyj--->正在连接..");
             AutoUtil.sleep(1000);
             return;
         }
@@ -422,7 +441,7 @@ public class RegisterService implements Runnable{
                 AutoUtil.clickXY(756,1792);
                 AutoUtil.recordAndLog(record,"st断开");
                 AutoUtil.sleep(1000);
-                System.out.println("--->断开连接等待");
+                System.out.println("hyj--->断开连接等待");
                 AutoUtil.sleep(9000);
             }
             if(AutoUtil.checkAction(record,"st断开")){

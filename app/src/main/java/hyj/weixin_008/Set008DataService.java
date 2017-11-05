@@ -26,6 +26,7 @@ import hyj.weixin_008.thread.AddFriendThread;
 import hyj.weixin_008.thread.AutoChatThread;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
+import hyj.weixin_008.util.ParseRootUtil;
 
 import static android.content.Context.MODE_PRIVATE;
 import static hyj.weixin_008.GlobalApplication.getContext;
@@ -81,6 +82,7 @@ public class Set008DataService implements Runnable{
                 AutoUtil.sleep(500);
                 continue;
             }
+            ParseRootUtil.debugRoot(root);
 
            if(AutoUtil.findNodeInfosByText(root,"SIM卡工具包")!=null){
                 context.performGlobalAction(context.GLOBAL_ACTION_BACK);
@@ -158,7 +160,9 @@ public class Set008DataService implements Runnable{
             adbService.clickXYByWindow("登录&注册",255,1790,"wx点击登录1",500);
         if(!AutoUtil.checkAction(record,"wx输入手机号")&&!AutoUtil.checkAction(record,"wx下一步")){
             if(regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId()==null){
-                adbService.setTextByWindow("用微信号/QQ号/邮箱登录",540,720,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone(),"wx输入手机号",0);
+                AccessibilityNodeInfo phoneNumNode = ParseRootUtil.getNodePath(root,"00321");
+                AutoUtil.performSetText(phoneNumNode,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone(),record,"wx输入手机号");
+                //adbService.setTextByWindow("用微信号/QQ号/邮箱登录",540,720,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone(),"wx输入手机号",0);
             }else {
                 adbService.clickXYByWindow("用微信号/QQ号/邮箱登录",348,895,"wx用微信号登录",2000);
             }
@@ -187,8 +191,11 @@ public class Set008DataService implements Runnable{
             adbService.clickXYByWindow("用微信号/QQ号/邮箱登录",540,1115,"wx下一步",2000);
         }
         if(AutoUtil.checkAction(record,"wx下一步")){
+            AccessibilityNodeInfo pwdNode = ParseRootUtil.getNodePath(root,"00331");
             String pwd = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxPwd();
-            adbService.setTextByWindow("用短信验证码登录",538,691,pwd.equals("系统默认")?"www12345":pwd,"wx输入密码",2000);
+            AutoUtil.performSetText(pwdNode,pwd.equals("系统默认")?"www12345":pwd,record,"wx输入密码");
+            AutoUtil.sleep(1000);
+            //adbService.setTextByWindow("用短信验证码登录",538,691,pwd.equals("系统默认")?"www12345":pwd,"wx输入密码",2000);
         }
         //if(adbService.clickXYByWindow("用短信验证码登录",563,995,"wx登录2",2000)) return;
         if(AutoUtil.findNodeInfosByText(root,"用短信验证码登录")!=null){
@@ -236,6 +243,8 @@ public class Set008DataService implements Runnable{
         String wxId = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId();
         Wx008Data wx008Data = new Wx008Data();
         int index = regObj.getCurrentIndex();
+
+        //处理账号异常
         AccessibilityNodeInfo node = AutoUtil.findNodeInfosByText(root,Constants.wx_Exception1);
         if(node!=null){
             LogUtil.login(index+" exception",phone+" "+wxId+"-"+Constants.wx_Exception1);
@@ -245,6 +254,7 @@ public class Set008DataService implements Runnable{
             wx008Data.setDieFlag(1);
         }
 
+        //处理操作频繁
         AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosByText(root,ConstantWxId.REGMSG10);
         if(node1!=null){
             LogUtil.login(index+" exception",phone+" "+wxId+"-"+ConstantWxId.REGMSG10);
@@ -258,11 +268,18 @@ public class Set008DataService implements Runnable{
         if(loginNode!=null&&wxId==null){
             String errMsg = "登录错误（0，5）";
             AutoUtil.recordAndLog(record,"008登录异常");
-            AccessibilityNodeInfo expNode = AutoUtil.findNodeInfosById(context.getRootInActiveWindow(),ConstantWxId.EXPMSG);
+
+            //获取弹出框文本节点
+            AccessibilityNodeInfo expNode = ParseRootUtil.getNodePath(root,"00");
             if(expNode!=null){
-                errMsg = expNode.getText().toString();
-                wx008Data.setDieFlag(3);
+                String text = expNode.getText()+"";
+                System.out.println("hyj-->"+text);
+                if(text.indexOf("限制登录")>-1){
+                    errMsg = expNode.getText().toString();
+                    wx008Data.setDieFlag(3);
+                }
             }
+            //处理手机不住身边
             AccessibilityNodeInfo expNode1 = AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"手机不在身边？");
             if(expNode1!=null){
                 errMsg = "手机不在身边？";
@@ -271,7 +288,8 @@ public class Set008DataService implements Runnable{
             LogUtil.d("exception",errMsg);
             LogUtil.login(index+" exception",phone+" "+wxId+"-"+errMsg);
             wx008Data.setExpMsg(errMsg);
-            wx008Data.updateAll("phone=? or wxId=?",phone,wxId);
+            int countdel = wx008Data.updateAll("phone=? or wxId=?",phone,wxId);
+            System.out.println(countdel+"hyj-->"+JSON.toJSONString(wx008Data));
         }
     }
 
@@ -280,6 +298,13 @@ public class Set008DataService implements Runnable{
        if(AutoUtil.checkAction(record,Constants.CHAT_LISTENING)){
            adbService.clickXYByWindow("工具箱",373,422,"008点击图片",2000);
        }
+
+        //处理008弹出 【找回时间】
+        AccessibilityNodeInfo shNode = ParseRootUtil.getNodePath(root,"04");
+        if(shNode!=null){
+            System.out.println("---hyj-->处理008弹出 【找回时间】");
+            AutoUtil.performClick(shNode,record,Constants.CHAT_LISTENING);
+        }
 
         AccessibilityNodeInfo list = AutoUtil.findNodeInfosById(root,"com.soft.apk008v:id/set_value_con");
 
