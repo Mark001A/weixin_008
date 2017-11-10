@@ -42,8 +42,19 @@ public class DrapImageThread implements Runnable {
             //方块处理
       if(1==1||AutoUtil.checkAction(record,"wx开始安全验证")){
             AccessibilityNodeInfo fkNode = ParseRootUtil.getNodePath(root,"0000000000");
+            AccessibilityNodeInfo errorNode = ParseRootUtil.getNodePath(root,"0000000003");
+           if(AutoUtil.checkAction(record,"wx拖动方块")){
+               if(errorNode!=null&&"请控制拼图块对齐缺口".equals(errorNode.getText()+"")){
+                   AccessibilityNodeInfo refreshNode = ParseRootUtil.getNodePath(root,"0030");
+                   AutoUtil.performClick(refreshNode,record,"wx刷新方块");
+                   LogUtil.d("DrapImageThread","wx刷新方块");
+               }else{
+                   LogUtil.d("DrapImageThread","等待拖动结果");
+                   continue;
+               }
+           }
             if(fkNode!=null&&"拖动下方滑块完成拼图".equals(fkNode.getContentDescription().toString())){
-                AutoUtil.sleep(3000);
+                AutoUtil.sleep(2000);
                 String  path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/Screenshots";
                 LogUtil.d("DrapImageThread","path-->"+path);
                 File file = new File(path);
@@ -67,8 +78,7 @@ public class DrapImageThread implements Runnable {
                         int distance = DragImageUtil.getDragDistance(path+"/"+file2.getName());
                         LogUtil.d("DrapImageThread","distance-->"+distance);
                         AutoUtil.execShell("input swipe 232 1040 "+distance+" 1040");
-                        AutoUtil.sleep(2000);
-
+                        AutoUtil.recordAndLog(record,"wx拖动方块");
                     }
                 }
 
