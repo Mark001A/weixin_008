@@ -7,8 +7,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.annotation.Dimension;
+import android.support.constraint.solver.widgets.Rectangle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -24,6 +29,11 @@ import com.alibaba.fastjson.JSONObject;
 
 import org.litepal.crud.DataSupport;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,6 +45,7 @@ import hyj.weixin_008.acvitity.SettingActivity;
 import hyj.weixin_008.common.WeixinAutoHandler;
 import hyj.weixin_008.daoModel.Wx008Data;
 import hyj.weixin_008.flowWindow.MyWindowManager;
+import hyj.weixin_008.util.DragImageUtil;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.GetPermissionUtil;
 import hyj.weixin_008.util.LogUtil;
@@ -89,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
         apiSettingBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                testPic();
                 startActivity(new Intent(MainActivity.this, ApiSettingActivity.class));
             }
         });
@@ -138,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
 
     private void saveParams(){
         SharedPreferences.Editor editor= sharedPreferences.edit();
@@ -264,6 +277,18 @@ public class MainActivity extends AppCompatActivity {
 
         //System.out.println("del--->"+DataSupport.deleteAll(Wx008Data.class,"phone=?","14747236374"));
 
+    }
+
+    public void testPic(){
+        //AutoUtil.execShell("input keyevent 120");
+        String  path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/Screenshots";
+        System.out.println("path-->"+path);
+        File file = new File(path);
+        File[] files = file.listFiles();
+        for(File f:files){
+            int distance = DragImageUtil.getDragDistance(path+"/"+f.getName());
+            System.out.println("name-->"+f.getName()+"  size:"+f.length()+"  distance:"+distance);
+        }
 
     }
 }

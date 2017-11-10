@@ -33,6 +33,7 @@ import hyj.weixin_008.model.RegObj;
 import hyj.weixin_008.service.ADBClickService;
 import hyj.weixin_008.thread.AddFriendThread;
 import hyj.weixin_008.thread.AutoChatThread;
+import hyj.weixin_008.thread.DrapImageThread;
 import hyj.weixin_008.thread.Get008DataThread;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
@@ -94,6 +95,7 @@ public class MyService extends AccessibilityService {
     if("true".equals(zc1)){
             new Thread(new RegisterService(this,WeixinAutoHandler.record,pa,regObj)).start();
             new Thread(new GetPhoneAndValidCodeThread(pa)).start();
+            new Thread(new DrapImageThread(this,WeixinAutoHandler.record)).start();
         }else if("true".equals(yh)){
             new Thread(new Set008DataService(this,WeixinAutoHandler.record,regObj)).start();
         }else if("true".equals(get008Data)){

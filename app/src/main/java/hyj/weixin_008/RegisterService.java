@@ -2,12 +2,16 @@ package hyj.weixin_008;
 
 import android.accessibilityservice.AccessibilityService;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.provider.Settings;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,6 +26,7 @@ import hyj.weixin_008.model.PhoneApi;
 import hyj.weixin_008.model.RegObj;
 import hyj.weixin_008.service.ADBClickService;
 import hyj.weixin_008.service.PhoneNumberAPIService;
+import hyj.weixin_008.util.DragImageUtil;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
 import hyj.weixin_008.util.ParseRootUtil;
@@ -166,6 +171,39 @@ public class RegisterService implements Runnable{
             AccessibilityNodeInfo node2 = ParseRootUtil.getNodePath(root,"000003");
             AutoUtil.performClick(node2,record,"wx开始安全验证");
         }
+
+        //方块处理
+     /*   if(AutoUtil.checkAction(record,"wx开始安全验证")){
+            AccessibilityNodeInfo fkNode = ParseRootUtil.getNodePath(root,"0000000000");
+            if(fkNode!=null&&"拖动下方滑块完成拼图".equals(fkNode.getContentDescription().toString())){
+                AutoUtil.sleep(3000);
+                String  path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/Screenshots";
+                System.out.println("path-->"+path);
+                File file = new File(path);
+                File[] files = file.listFiles();
+                //清空文件
+                if(files!=null&&files.length>0){
+                    for(File f:files){
+                        f.delete();
+                    }
+                }
+                //截图
+                AutoUtil.execShell("input keyevent 120");
+                AutoUtil.sleep(2000);
+
+                File file1 = new File(path);
+                File[] files1 = file1.listFiles();
+                if(files1!=null&&files1.length>0){
+                    String picPath = path+"/"+files1[0].getName();
+                    int distance = DragImageUtil.getDragDistance(picPath);
+                    System.out.println("distance--->"+distance);
+                    AutoUtil.execShell("input swipe 232 1040 "+distance+" 1040");
+                    AutoUtil.sleep(2000);
+                }
+
+            }
+        }*/
+
 
        if(AutoUtil.checkAction(record,"wx开始安全验证")){
             AccessibilityNodeInfo node2 = ParseRootUtil.getNodePath(root,"0026");
