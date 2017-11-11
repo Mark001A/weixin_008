@@ -45,6 +45,14 @@ public class DrapImageThread implements Runnable {
                 continue;
             }
 
+            //等待加载
+            AccessibilityNodeInfo loadNode = ParseRootUtil.getNodePath(root,"000001");
+            if(loadNode!=null&&(loadNode.getContentDescription()+"").indexOf("加载中")>-1){
+                LogUtil.d("DrapImageThread","DrapImageThread root is 加载中...");
+                AutoUtil.sleep(500);
+                continue;
+            }
+
             //方块处理
       if(1==1||AutoUtil.checkAction(record,"wx开始安全验证")){
             AccessibilityNodeInfo fkNode = ParseRootUtil.getNodePath(root,"0000000000");
@@ -59,6 +67,7 @@ public class DrapImageThread implements Runnable {
                        AutoUtil.clickXY(987,1175);
                        AutoUtil.recordAndLog(record,"wx刷新方块");
                        LogUtil.d("DrapImageThread","wx刷新方块"+refreshNode);
+                       continue;
                    }else if((errorNode.getContentDescription()+"").indexOf("只用了")>-1){
                        AutoUtil.recordAndLog(record,"wx方块拖动成功");
                        continue;
@@ -93,13 +102,25 @@ public class DrapImageThread implements Runnable {
                 String picPath = path+"/"+picFile.getName();
                 LogUtil.d("DrapImageThread","picPath:"+picPath);
                 Bitmap bi = BitmapFactory.decodeFile(picPath);
-                while (bi==null){
-                    AutoUtil.sleep(500);
-                    bi = BitmapFactory.decodeFile(picPath);
-                    LogUtil.d("DrapImageThread","等待获取bitmap");
+                picFile.delete();
+                if(bi ==null){
+                    LogUtil.d("DrapImageThread","等待bitmap生成");
+                    continue;
                 }
                 String dragStr = DragImageUtil.dragPoint(bi);
+
+                //判断计算的是否空白图片距离
+                String x2 = dragStr.split(" ")[2];
+                LogUtil.d("DrapImageThread","x2:"+x2);
+                if(Integer.parseInt(x2)>950){
+                    AutoUtil.recordAndLog(record,"wx计算距离无效");
+                    AutoUtil.recordAndLog(record,"wx拖动方块");
+                    continue;
+                }
+
+                LogUtil.d("DrapImageThread","开始拖动");
                 AutoUtil.execShell("input swipe "+dragStr);
+                LogUtil.d("DrapImageThread","结束拖动");
                 AutoUtil.recordAndLog(record,"wx拖动方块");
                 AutoUtil.sleep(1000);
 

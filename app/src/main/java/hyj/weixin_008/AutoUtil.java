@@ -231,13 +231,14 @@ public class AutoUtil {
             dataOutputStream.flush();
             dataOutputStream.close();
             outputStream.close();
-            try {
+           /* try {
                 process.waitFor();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }finally {
                 process.destroy();
-            }
+            }*/
+
         } catch (IOException e) {
             e.printStackTrace();
         }
