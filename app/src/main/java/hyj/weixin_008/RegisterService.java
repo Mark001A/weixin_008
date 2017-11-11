@@ -93,7 +93,7 @@ public class RegisterService implements Runnable{
                 continue;
             }
 
-            ParseRootUtil.debugRoot(root);
+            //ParseRootUtil.debugRoot(root);
 
             AccessibilityNodeInfo node4 = AutoUtil.findNodeInfosById(root,ConstantWxId.TIPS);
             if(node4!=null){
@@ -172,40 +172,14 @@ public class RegisterService implements Runnable{
             AutoUtil.performClick(node2,record,"wx开始安全验证");
         }
 
-        //方块处理
-     /*   if(AutoUtil.checkAction(record,"wx开始安全验证")){
-            AccessibilityNodeInfo fkNode = ParseRootUtil.getNodePath(root,"0000000000");
-            if(fkNode!=null&&"拖动下方滑块完成拼图".equals(fkNode.getContentDescription().toString())){
-                AutoUtil.sleep(3000);
-                String  path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/Screenshots";
-                System.out.println("path-->"+path);
-                File file = new File(path);
-                File[] files = file.listFiles();
-                //清空文件
-                if(files!=null&&files.length>0){
-                    for(File f:files){
-                        f.delete();
-                    }
-                }
-                //截图
-                AutoUtil.execShell("input keyevent 120");
-                AutoUtil.sleep(2000);
-
-                File file1 = new File(path);
-                File[] files1 = file1.listFiles();
-                if(files1!=null&&files1.length>0){
-                    String picPath = path+"/"+files1[0].getName();
-                    int distance = DragImageUtil.getDragDistance(picPath);
-                    System.out.println("distance--->"+distance);
-                    AutoUtil.execShell("input swipe 232 1040 "+distance+" 1040");
-                    AutoUtil.sleep(2000);
-                }
-
-            }
-        }*/
+        //判断是否需好友辅助
+        AccessibilityNodeInfo checkAssitNode = ParseRootUtil.getNodePath(root,"000000");
+        if(checkAssitNode!=null&&(checkAssitNode.getContentDescription()+"").indexOf("联系符合")>-1){
+            AutoUtil.recordAndLog(record,"008登录异常");
+        }
 
 
-       if(AutoUtil.checkAction(record,"wx开始安全验证")){
+       if(AutoUtil.checkAction(record,"wx开始安全验证")||AutoUtil.checkAction(record,"wx拖动方块")||AutoUtil.checkAction(record,"wx方块拖动成功")){
             AccessibilityNodeInfo node2 = ParseRootUtil.getNodePath(root,"0026");
             AccessibilityNodeInfo sendPhoneMsgNode = ParseRootUtil.getNodePath(root,"0022");
             if(sendPhoneMsgNode!=null){

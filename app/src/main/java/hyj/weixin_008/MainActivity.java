@@ -281,14 +281,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void testPic(){
         //AutoUtil.execShell("input keyevent 120");
-        String  path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/Screenshots";
+       /* String  path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/Screenshots";
         System.out.println("path-->"+path);
         File file = new File(path);
         File[] files = file.listFiles();
         for(File f:files){
             int distance = DragImageUtil.getDragDistance(path+"/"+f.getName());
             System.out.println("name-->"+f.getName()+"  size:"+f.length()+"  distance:"+distance);
-        }
+        }*/
 
     }
 }

@@ -26,10 +26,21 @@ public class DragImageUtil {
     private static final int num2=7;// 颜色差值位数
     private static final int num1=7;// 颜色差值位数
 
-    public static int getDragDistance(String picPath){
-        Bitmap bi = BitmapFactory.decodeFile(picPath);
+    private static final int DragImageStartx= 232;
+    private static final int DragImageStarty= 1042;
+
+    public static String dragPoint(Bitmap bi){
+        int distance = getDragDistance(bi);
+        int dragtoX = DragImageStartx+(distance-154);//应拖动到的目标x位置
+        String ponitStr = DragImageStartx+" "+DragImageStarty+" "+dragtoX+" "+DragImageStarty;
+        LogUtil.d("DrapImageThread","("+DragImageStartx+","+DragImageStarty+")->("+dragtoX+","+DragImageStarty+")");
+        return ponitStr;
+    }
+
+    public static int getDragDistance(Bitmap bi){
         int findIndexY = getLocYofFirstRect(bi);
-        int distance = getLocOfSecondRect(bi,findIndexY);
+        int distance = getLocOfSecondRect(bi,findIndexY);//右边方块起始距离
+        LogUtil.d("DrapImageThread","distance:"+distance);
         return distance;
     }
 
