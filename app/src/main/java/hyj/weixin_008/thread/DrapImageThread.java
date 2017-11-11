@@ -81,17 +81,17 @@ public class DrapImageThread implements Runnable {
                 AutoUtil.sleep(1000);
                 String  path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/Screenshots";
                 LogUtil.d("DrapImageThread","path-->"+path);
-                File file = new File(path);
-                File[] files = file.listFiles();
                 //清空文件
-                if(files!=null&&files.length>0){
+               /*  File file = new File(path);
+                   File[] files = file.listFiles();
+                   if(files!=null&&files.length>0){
                     LogUtil.d("DrapImageThread","file length-->"+files.length);
                     for(File f:files){
                         LogUtil.d("DrapImageThread","删除："+f.getName());
                         f.delete();
                         LogUtil.d("DrapImageThread","删除完："+f.getName());
                     }
-                }
+                }*/
                 //截图
                 AutoUtil.execShell("input keyevent 120");
                 LogUtil.d("DrapImageThread","截图");
@@ -102,7 +102,6 @@ public class DrapImageThread implements Runnable {
                 String picPath = path+"/"+picFile.getName();
                 LogUtil.d("DrapImageThread","picPath:"+picPath);
                 Bitmap bi = BitmapFactory.decodeFile(picPath);
-                picFile.delete();
                 if(bi ==null){
                     LogUtil.d("DrapImageThread","等待bitmap生成");
                     continue;
@@ -136,7 +135,7 @@ public class DrapImageThread implements Runnable {
         while (picFile==null){
             File[] files = new File(path).listFiles();
             if(files!=null&&files.length>0){
-                picFile = files[0];
+                picFile = files[files.length-1];
             }else{
                 AutoUtil.sleep(1000);
                 LogUtil.d("DrapImageThread","等待截图生成");
