@@ -90,8 +90,12 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 List<Wx008Data> datas = DataSupport.findAll(Wx008Data.class);
-                LogUtil.export("/sdcard/A_hyj_008data/","bakData.txt",JSON.toJSONString(datas));
-                Toast.makeText(SettingActivity.this, "已导出数据："+datas.size()+"条", Toast.LENGTH_LONG).show();
+                if(datas!=null&&datas.size()>0){
+                    LogUtil.export("/sdcard/A_hyj_008data/","bakData.txt",JSON.toJSONString(datas));
+                    Toast.makeText(SettingActivity.this, "已导出数据："+datas.size()+"条", Toast.LENGTH_LONG).show();
+                }else {
+                    Toast.makeText(SettingActivity.this, "没有可导出数据", Toast.LENGTH_LONG).show();
+                }
             }
         });
         importBakData.setOnClickListener(new View.OnClickListener(){

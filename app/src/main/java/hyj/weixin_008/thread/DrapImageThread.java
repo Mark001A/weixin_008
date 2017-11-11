@@ -30,7 +30,7 @@ public class DrapImageThread implements Runnable {
     @Override
     public void run() {
         while (true){
-            AutoUtil.sleep(500);
+            AutoUtil.sleep(1000);
             LogUtil.d("DrapImageThread","拖动方块DrapImageThread..."+Thread.currentThread().getName()+" ");
             AccessibilityNodeInfo root = context.getRootInActiveWindow();
             if(root==null){
@@ -44,13 +44,15 @@ public class DrapImageThread implements Runnable {
             AccessibilityNodeInfo fkNode = ParseRootUtil.getNodePath(root,"0000000000");
             AccessibilityNodeInfo errorNode = ParseRootUtil.getNodePath(root,"0000000003");
            if(AutoUtil.checkAction(record,"wx拖动方块")){
-               if(errorNode!=null&&"请控制拼图块对齐缺口".equals(errorNode.getText()+"")){
+               if(errorNode!=null&&"请控制拼图块对齐缺口".equals(errorNode.getContentDescription()+"")){
                    AccessibilityNodeInfo refreshNode = ParseRootUtil.getNodePath(root,"0030");
-                   AutoUtil.performClick(refreshNode,record,"wx刷新方块");
-                   LogUtil.d("DrapImageThread","wx刷新方块");
+                   //AutoUtil.performClick(refreshNode,record,"wx刷新方块");
+                   AutoUtil.clickXY(987,1175);
+                   AutoUtil.recordAndLog(record,"wx刷新方块");
+                   LogUtil.d("DrapImageThread","wx刷新方块"+refreshNode);
                }else{
                    LogUtil.d("DrapImageThread","等待拖动结果");
-                   continue;
+                   //continue;
                }
            }
             if(fkNode!=null&&"拖动下方滑块完成拼图".equals(fkNode.getContentDescription().toString())){
