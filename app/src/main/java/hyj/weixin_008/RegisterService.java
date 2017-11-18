@@ -127,6 +127,8 @@ public class RegisterService implements Runnable{
                if(errorNode2!=null){
                    errorNode2.performAction(AccessibilityNodeInfo.ACTION_CLICK);
                    LogUtil.d("error","操作太频繁");
+                   pa.setPhoneIsAvailavle(false);
+                   AutoUtil.recordAndLog(record,"008登录异常");
                }
             }
 
@@ -185,6 +187,7 @@ public class RegisterService implements Runnable{
         //判断是否需好友辅助
         AccessibilityNodeInfo checkAssitNode = ParseRootUtil.getNodePath(root,"000000");
         if(checkAssitNode!=null&&(checkAssitNode.getContentDescription()+"").indexOf("联系符合")>-1){
+            pa.setPhoneIsAvailavle(false);
             AutoUtil.recordAndLog(record,"008登录异常");
         }
 

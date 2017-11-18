@@ -22,9 +22,9 @@ public class GetPhoneAndValidCodeThread  implements Runnable{
             AutoUtil.sleep(4000);
             LogUtil.d("GetPhoneAndValidCodeThread","-->获取号码线程运行..."+Thread.currentThread().getName()+" phone:"+pa.isPhoneIsAvailavle()+" validCode:"+pa.isValidCodeIsAvailavle()+" isSendMsg:"+pa.isSendMsg());
             if(pa.getToken()==null){
-                pa.setApiId("52922-akx");
+                /*pa.setApiId("52922-akx");
                 pa.setPwd("aa105105");
-                pa.setPjId("1296");
+                pa.setPjId("1296");*/
                 String token = phoneService.login(pa.getApiId(),pa.getPwd());
                 pa.setToken(token);
                 LogUtil.d("GetPhoneAndValidCodeThread","token获取成功："+token);
