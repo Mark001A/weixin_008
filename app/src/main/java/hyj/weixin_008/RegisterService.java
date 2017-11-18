@@ -121,14 +121,14 @@ public class RegisterService implements Runnable{
             }
 
             //操作评分弹出窗口
-            AccessibilityNodeInfo errorNode1 = ParseRootUtil.getNodePath(root,"00");
+           /* AccessibilityNodeInfo errorNode1 = ParseRootUtil.getNodePath(root,"00");
             AccessibilityNodeInfo errorNode2 = ParseRootUtil.getNodePath(root,"01");
             if(errorNode1!=null&&(errorNode1.getText()+"").indexOf("操作太频繁")>-1){
                if(errorNode2!=null){
                    errorNode2.performAction(AccessibilityNodeInfo.ACTION_CLICK);
                    LogUtil.d("error","操作太频繁");
                }
-            }
+            }*/
 
             if(record.get("recordAction").contains("008")||AutoUtil.checkAction(record,Constants.CHAT_LISTENING))
                 do008(root);
