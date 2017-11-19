@@ -1,5 +1,7 @@
 package hyj.weixin_008.service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,10 +28,45 @@ public class XmhPhoneNumberAPIService {
         }
         return token;
     }
+    public Map<String,String> cnMap(){
+        Map<String,String> map = new HashMap<String,String>();
+
+        map.put("1","CA");//加拿大-CA
+        map.put("57","CO");//哥伦比亚-CO
+        map.put("20","EG");//埃及-EG
+        map.put("852","HK");//中国香港-HK
+        map.put("62","ID");//印度尼西亚-ID
+        map.put("91","IN");//印度-IN
+        map.put("855","KH");//柬埔寨-KH
+        map.put("266","LS");//莱索托-LS
+
+        map.put("261","MG");//马达加斯加-MG
+        map.put("95","MM");//缅甸-MM
+        map.put("853","MO");//中国澳门-MO
+        map.put("60","MY");//马来西亚-MY
+        map.put("507","PA");//巴拿马-PA
+        map.put("63","PH");//菲律宾-PH
+
+        map.put("7","RU");//俄罗斯-RU
+        map.put("66","TH");//泰国-TH
+        map.put("1","US");//美国-US
+        map.put("84","VN");//越南VN
+        map.put("27","ZA");//南非-ZA
+        return map;
+    }
+    /**
+     *     目前仅支持加拿大-CA;哥伦比亚-CO;埃及-EG;中国香港-HK;印度尼西亚-ID;印度-IN;柬埔寨-KH;莱索托-LS;
+     *      马达加斯加-MG;缅甸-MM;中国澳门-MO;马来西亚-MY;巴拿马-PA;菲律宾-PH;俄罗斯-RU;泰国-TH;美国-US;越南VN;南非-ZA
+     * @param apiId
+     * @param token
+     * @param pjId
+     * @param cnNum
+     * @return
+     */
     public String getPhone(String apiId,String token,String pjId,String cnNum){
-        if("62".equals(cnNum)){
-            cnNum = "ID";
-        }
+        Map<String,String> map = cnMap();
+        cnNum = map.get(cnNum);
+
         String phone = "";
         String url = mainUrl+"?action=getPhone&sid="+pjId+"&token="+token+"&filterCc="+cnNum;
         String phones = OkHttpUtil.okHttpGet(url);

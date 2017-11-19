@@ -14,6 +14,7 @@ import hyj.weixin_008.GlobalApplication;
 import hyj.weixin_008.MainActivity;
 import hyj.weixin_008.R;
 import hyj.weixin_008.service.PhoneNumberAPIService;
+import hyj.weixin_008.service.XmhPhoneNumberAPIService;
 
 public class ApiSettingActivity extends AppCompatActivity {
 
@@ -45,15 +46,17 @@ public class ApiSettingActivity extends AppCompatActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        PhoneNumberAPIService service = new PhoneNumberAPIService();
+                        //PhoneNumberAPIService service = new PhoneNumberAPIService();
+                        String mainUrl ="http://www.ximahuang.com/alz/api";
+                        XmhPhoneNumberAPIService service = new XmhPhoneNumberAPIService(mainUrl);
                         String token = service.login(apiId.getText()+"",apiPwd.getText()+"");
-                        String msg = "";
+                       /* String msg = "";
                         if(!"".equals(token)){
                             msg = "测试连接成功："+token;
                         }else{
                             msg = "失败";
-                        }
-                        AutoUtil.showToastByRunnable(ApiSettingActivity.this,msg);
+                        }*/
+                        AutoUtil.showToastByRunnable(ApiSettingActivity.this,token);
                     }
                 }).start();
             }

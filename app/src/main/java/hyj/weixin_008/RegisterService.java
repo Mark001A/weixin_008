@@ -26,6 +26,7 @@ import hyj.weixin_008.model.PhoneApi;
 import hyj.weixin_008.model.RegObj;
 import hyj.weixin_008.service.ADBClickService;
 import hyj.weixin_008.service.PhoneNumberAPIService;
+import hyj.weixin_008.util.CommonUtil;
 import hyj.weixin_008.util.DragImageUtil;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
@@ -92,6 +93,9 @@ public class RegisterService implements Runnable{
                 AutoUtil.sleep(500);
                 continue;
             }
+
+            //处理不在应在的界面
+            CommonUtil.doNotInCurrentView(root,record);
 
             ParseRootUtil.debugRoot(root);
 

@@ -124,7 +124,7 @@ public class ParseRootUtil {
             for(List<NodeAttr> levelNodes :treeNodes){
                 for(NodeAttr levelNode:levelNodes){
                     levelNode.setNode(null);
-                    System.out.println("debug--->"+ JSON.toJSONString(levelNode));
+                    System.out.println("debug:"+ JSON.toJSONString(levelNode));
                 }
             }
     }

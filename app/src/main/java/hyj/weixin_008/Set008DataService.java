@@ -24,6 +24,7 @@ import hyj.weixin_008.model.RegObj;
 import hyj.weixin_008.service.ADBClickService;
 import hyj.weixin_008.thread.AddFriendThread;
 import hyj.weixin_008.thread.AutoChatThread;
+import hyj.weixin_008.util.CommonUtil;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
 import hyj.weixin_008.util.ParseRootUtil;
@@ -40,6 +41,7 @@ public class Set008DataService implements Runnable{
     Map<String,String> record;
     ADBClickService adbService;
     RegObj regObj;
+    boolean clickFlag = false;
     public Set008DataService(AccessibilityService context, Map<String,String> record,RegObj regObj){
         this.context = context;
         this.record = record;
@@ -82,12 +84,15 @@ public class Set008DataService implements Runnable{
                 AutoUtil.sleep(500);
                 continue;
             }
+            //处理不在应在的界面
+            CommonUtil.doNotInCurrentView(root,record);
+
             ParseRootUtil.debugRoot(root);
 
            if(AutoUtil.findNodeInfosByText(root,"SIM卡工具包")!=null){
                 context.performGlobalAction(context.GLOBAL_ACTION_BACK);
                 System.out.println("----SIM卡工具包1-->back");
-                AutoUtil.sleep(2000);
+                //AutoUtil.sleep(2000);
                 AutoUtil.recordAndLog(record,"wx连接成功");
                 continue;
             }
@@ -138,8 +143,9 @@ public class Set008DataService implements Runnable{
                     doVPN(root);
                 }
             }
-            if(record.get("recordAction").contains("wx"))
+            if(record.get("recordAction").contains("wx")){
                 doWxLogin(root);
+            }
         }
     }
     private void loginNext(){
@@ -148,20 +154,58 @@ public class Set008DataService implements Runnable{
         AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
         WeixinAutoHandler.IS_NEXT_NONE = false;
     }
+    private void selsectCn(AccessibilityNodeInfo root,String cn_num){
+        if(!"86".equals(cn_num)){
+            //点击进入国家列表
+            AccessibilityNodeInfo cn1 = AutoUtil.findNodeInfosByText(root,"国家/地区");
+            if(cn1!=null){
+                AccessibilityNodeInfo cnNode1 = ParseRootUtil.getNodePath(root,"00311");
+                if(cnNode1!=null&&"中国（+86）".equals(cnNode1.getText()+"")&&!AutoUtil.checkAction(record,"wx点击国家地区")){
+                    AutoUtil.performClick(cnNode1,record,"wx点击国家地区");
+                }
+                return;
+            }
+            //国家号码遍历查找
+            if(AutoUtil.checkAction(record,"wx点击国家地区")||AutoUtil.checkAction(record,"wx下滚")){
+                if("62".equals(cn_num)&&!clickFlag){
+                    AutoUtil.clickXY(1043,1768);
+                    clickFlag = true;
+                }
+                AccessibilityNodeInfo n1 = AutoUtil.findNodeInfosByText(root,cn_num);
+                if(n1==null||(n1!=null&&!cn_num.equals(n1.getText()+""))){
+                    AccessibilityNodeInfo listViewNode = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/i9");
+                    AutoUtil.performScroll(listViewNode,record,"wx下滚");
+                    return;
+                }
+                //找到目标，点击
+                if(n1!=null&&cn_num.equals(n1.getText()+"")){
+                    AutoUtil.performClick(n1,record,"wx选择国家",3000);
+                    clickFlag = false;
+                }
+            }
+        }
+
+    }
 
     private void doWxLogin(AccessibilityNodeInfo root){
         if(AutoUtil.checkAction(record,"wx连接成功")){
             countLongin =0;
             AutoUtil.showToastByRunnable(GlobalApplication.getContext().getApplicationContext(),"启动微信");
             AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
-            AutoUtil.sleep(5000);
+            AutoUtil.sleep(1000);
         }
         if(!AutoUtil.checkAction(record,"wx登录2"))
             adbService.clickXYByWindow("登录&注册",255,1790,"wx点击登录1",500);
         if(!AutoUtil.checkAction(record,"wx输入手机号")&&!AutoUtil.checkAction(record,"wx下一步")){
             if(regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId()==null){
-                AccessibilityNodeInfo phoneNumNode = ParseRootUtil.getNodePath(root,"00321");
-                AutoUtil.performSetText(phoneNumNode,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone(),record,"wx输入手机号");
+                String cnNum = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getCnNum();
+                if(cnNum!=null&&!"86".equals(cnNum)){
+                    selsectCn(root,cnNum);
+                }
+                if(cnNum==null||AutoUtil.checkAction(record,"wx选择国家")){
+                    AccessibilityNodeInfo phoneNumNode = ParseRootUtil.getNodePath(root,"00321");
+                    AutoUtil.performSetText(phoneNumNode,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone(),record,"wx输入手机号");
+                }
                 //adbService.setTextByWindow("用微信号/QQ号/邮箱登录",540,720,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone(),"wx输入手机号",0);
             }else {
                 adbService.clickXYByWindow("用微信号/QQ号/邮箱登录",348,895,"wx用微信号登录",2000);
@@ -209,7 +253,7 @@ public class Set008DataService implements Runnable{
             AccessibilityNodeInfo loginNode = AutoUtil.findNodeInfosByText(context.getRootInActiveWindow(),"登录");
             if(loginNode==null){
                 AutoUtil.clickXY(400,1845);
-                AutoUtil.sleep(2000);
+                AutoUtil.sleep(1000);
                 System.out.println("---->切换");
             }
             AutoUtil.performClick(AutoUtil.findNodeInfosByText(root,"忽略"),record,"wx不推荐通讯录");
@@ -226,8 +270,13 @@ public class Set008DataService implements Runnable{
                     AutoUtil.recordAndLog(WeixinAutoHandler.record,"qm");
                 }else if("true".equals(regObj.getZc3())){//发朋友圈
                     AutoUtil.recordAndLog(WeixinAutoHandler.record,"pyq");
+                    AccessibilityNodeInfo fxNode = ParseRootUtil.getNodePath(root,"030");
+                    //点击发现
+                    if(fxNode!=null&&"发现".equals(fxNode.getText()+"")){
+                        AutoUtil.performClick(fxNode,WeixinAutoHandler.record,"pyq点击发现");
+                    }
                 }
-                AutoUtil.sleep(1000);
+                //AutoUtil.sleep(1000);
                 if("true".equals(regObj.getAddSpFr())){
                     AutoUtil.recordAndLog(record,"登录成功添加好友");
                     //new Thread(new AddFriendThread(context)).start();

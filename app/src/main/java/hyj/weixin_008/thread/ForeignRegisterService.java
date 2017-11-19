@@ -25,6 +25,7 @@ import hyj.weixin_008.model.PhoneApi;
 import hyj.weixin_008.model.RegObj;
 import hyj.weixin_008.service.ADBClickService;
 import hyj.weixin_008.service.PhoneNumberAPIService;
+import hyj.weixin_008.util.CommonUtil;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
 import hyj.weixin_008.util.OkHttpUtil;
@@ -93,10 +94,13 @@ public class ForeignRegisterService implements Runnable{
                 continue;
             }
 
+            //处理不在应在的界面
+            CommonUtil.doNotInCurrentView(root,record);
+
             if(AutoUtil.findNodeInfosByText(root,"SIM卡工具包")!=null){
                 context.performGlobalAction(context.GLOBAL_ACTION_BACK);
                 System.out.println("----SIM卡工具包1-->back");
-                AutoUtil.sleep(2000);
+                //AutoUtil.sleep(2000);
                 AutoUtil.recordAndLog(record,"wx连接成功");
                 continue;
             }
@@ -201,8 +205,8 @@ public class ForeignRegisterService implements Runnable{
             AccessibilityNodeInfo textNode5 = AutoUtil.findNodeInfosByText(root,"密码");
             AutoUtil.performSetText(textNode3.getParent().getChild(1),WxNickNameConstant.getName1(),record,"wx输入昵称");
             //AutoUtil.performSetText(textNode4.getParent().getChild(1),"12365985485",record,"wx手机号");
-            //pa.setZcPwd("www"+pa.getPhone().substring(6));
-            pa.setZcPwd("www12345");
+            pa.setZcPwd("www"+pa.getPhone().substring(0,5));
+            //pa.setZcPwd("www12345");
             AutoUtil.performSetText(textNode5.getParent().getChild(1),pa.getZcPwd(),record,"wx输入密码");
             AutoUtil.sleep(1000);
             AutoUtil.performClick(textNode2,record,"wx点击注册2");
@@ -237,7 +241,7 @@ public class ForeignRegisterService implements Runnable{
        //处理等待验证码超时
         if(enterValicodeNode!=null){
             if(AutoUtil.findNodeInfosByText(root,ConstantWxId.REGMSG2)!=null&&!pa.isValidCodeIsAvailavle()){
-                if(pa.getWaitValicodeTime()==30){
+                if(pa.getWaitValicodeTime()>60){
                     pa.setWaitValicodeTime(0);
                     AutoUtil.recordAndLog(record,"008登录异常");
                 }

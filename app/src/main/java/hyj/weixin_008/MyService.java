@@ -25,6 +25,7 @@ import java.util.Timer;
 
 import hyj.weixin_008.common.ConstantWxId;
 import hyj.weixin_008.common.WeixinAutoHandler;
+import hyj.weixin_008.common.WxNickNameConstant;
 import hyj.weixin_008.daoModel.Wx008Data;
 import hyj.weixin_008.flowWindow.MyWindowManager;
 import hyj.weixin_008.model.Get008Data;
@@ -151,12 +152,12 @@ public class MyService extends AccessibilityService {
             }
 
         }
-        setQm(root);
+        //setQm(root);
         sentFr(root);
         selsectCn(root);
 
     }
-
+    boolean clickFlag = false;
     private void selsectCn(AccessibilityNodeInfo root){
         if(!"86".equals(cn_num)){
             //点击进入国家列表
@@ -169,6 +170,10 @@ public class MyService extends AccessibilityService {
             }
             //国家号码遍历查找
             if(AutoUtil.checkAction(WeixinAutoHandler.record,"access点击国家地区")||AutoUtil.checkAction(WeixinAutoHandler.record,"access下滚")){
+                if("62".equals(cn_num)&&!clickFlag){
+                    AutoUtil.clickXY(1043,1768);
+                    clickFlag = true;
+                }
                 AccessibilityNodeInfo n1 = AutoUtil.findNodeInfosByText(root,cn_num);
                 if(n1==null||(n1!=null&&!cn_num.equals(n1.getText()+""))){
                     AccessibilityNodeInfo listViewNode = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/i9");
@@ -178,6 +183,7 @@ public class MyService extends AccessibilityService {
                 //找到目标，点击
                 if(n1!=null&&cn_num.equals(n1.getText()+"")){
                     AutoUtil.performClick(n1,WeixinAutoHandler.record,"wx选择国家",3000);
+                    clickFlag = false;
                 }
             }
         }
@@ -187,27 +193,51 @@ public class MyService extends AccessibilityService {
 
     private void sentFr(AccessibilityNodeInfo root){
         if("true".equals(zc3)&&AutoUtil.actionContains(WeixinAutoHandler.record,"pyq")){
+           /* AccessibilityNodeInfo node4 = ParseRootUtil.getNodePath(root,"030");
+            System.out.println("node4-->"+node4);
+            //点击发现
+            if(node4!=null&&"发现".equals(node4.getText()+"")){
+                AutoUtil.performClick(node4,WeixinAutoHandler.record,"pyq点击发现");
+            }*/
+
             AccessibilityNodeInfo node5 = AutoUtil.findNodeInfosByText(root,"朋友圈");
-            AccessibilityNodeInfo node6 = AutoUtil.findNodeInfosById(root,ConstantWxId.ID_SENDFR);
-            AccessibilityNodeInfo node7 = AutoUtil.findNodeInfosByText(root,"发送");
+            AccessibilityNodeInfo node6 = ParseRootUtil.getNodePath(root,"002");
+            System.out.println("node6-->"+node6);
             AccessibilityNodeInfo node11 = AutoUtil.findNodeInfosByText(root,"我知道了");
-            AccessibilityNodeInfo node10 = AutoUtil.findNodeInfosById(root,ConstantWxId.REGID4);
-            AutoUtil.performClick(node5,WeixinAutoHandler.record,"pyq朋友圈",1000);
-            AutoUtil.performClick(node11,WeixinAutoHandler.record,"pyq我知道了",1000);
-            if(node6!=null&&AutoUtil.checkAction(WeixinAutoHandler.record,"pyq朋友圈")){
-                node6.getParent().performAction(AccessibilityNodeInfo.ACTION_LONG_CLICK);
+            AccessibilityNodeInfo node10 = ParseRootUtil.getNodePath(root,"0000");
+            System.out.println("node10-->"+node10);
+            //点击朋友圈
+            if(AutoUtil.checkAction(WeixinAutoHandler.record,"pyq点击发现")){
+                AutoUtil.performClick(node5,WeixinAutoHandler.record,"pyq朋友圈");
             }
-            AutoUtil.performSetText(node10,System.currentTimeMillis()+"",WeixinAutoHandler.record,"pyq输入朋友圈内容");
-            AutoUtil.performClick(node7,WeixinAutoHandler.record,"pyq发送",1000);
+            //点击我知道了
+            AutoUtil.performClick(node11,WeixinAutoHandler.record,"pyq我知道了");
+            //长按右上角相机
+            if(node6!=null&&"更多功能按钮".equals(node6.getContentDescription()+"")&&
+                    (AutoUtil.checkAction(WeixinAutoHandler.record,"pyq朋友圈")||AutoUtil.checkAction(WeixinAutoHandler.record,"pyq我知道了"))){
+                node6.performAction(AccessibilityNodeInfo.ACTION_LONG_CLICK);
+            }
+            //输入发送文本
+            if(node10!=null&&"这一刻的想法...".equals(node10.getText()+"")){
+                AutoUtil.performSetText(node10, WxNickNameConstant.getName1(),WeixinAutoHandler.record,"pyq输入朋友圈内容");
+            }
+            //点击发送
+            if(AutoUtil.checkAction(WeixinAutoHandler.record,"pyq输入朋友圈内容")){
+                AccessibilityNodeInfo node7 = AutoUtil.findNodeInfosByText(root,"发送");
+                AutoUtil.performClick(node7,WeixinAutoHandler.record,"pyq发送");
+            }
+            //打开点赞小框
             if(AutoUtil.checkAction(WeixinAutoHandler.record,"pyq发送")){
                 AutoUtil.sleep(2000);
-                AccessibilityNodeInfo node8 = AutoUtil.findNodeInfosById(root,ConstantWxId.REGID3);
+                AccessibilityNodeInfo node8 = ParseRootUtil.getNodePath(root,"00016");
                 AutoUtil.performClick(node8,WeixinAutoHandler.record,"pyq点赞1");
             }
+            //点赞
             AccessibilityNodeInfo node9 = AutoUtil.findNodeInfosByText(root,"赞");
             AutoUtil.performClick(node9,WeixinAutoHandler.record,"pyq点赞2");
+
             if(AutoUtil.checkAction(WeixinAutoHandler.record,"pyq点赞2")){
-                AutoUtil.sleep(2500);
+                AutoUtil.sleep(3500);
                 AutoUtil.recordAndLog(WeixinAutoHandler.record,"008注册处理完成");
             }
         }
