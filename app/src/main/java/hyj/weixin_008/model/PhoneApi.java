@@ -14,6 +14,7 @@ public class PhoneApi {
     private String validCode;
     private String msg;
     private String status;
+    private String cnNum;
 
     private int waitValicodeTime;
 
@@ -22,12 +23,21 @@ public class PhoneApi {
     private boolean validCodeIsAvailavle=false;
     private boolean isSendMsg=false;
 
-    public PhoneApi(String apiId, String pwd, String pjId,String zcPwd) {
+    public PhoneApi(String apiId, String pwd, String pjId,String zcPwd,String cnNum) {
         this.apiId = apiId;
         this.pwd = pwd;
         this.zcPwd = zcPwd;
         this.pjId = pjId;
+        this.cnNum = cnNum;
 
+    }
+
+    public String getCnNum() {
+        return cnNum;
+    }
+
+    public void setCnNum(String cnNum) {
+        this.cnNum = cnNum;
     }
 
     public String getStatus() {

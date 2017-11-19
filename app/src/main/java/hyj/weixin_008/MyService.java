@@ -34,9 +34,12 @@ import hyj.weixin_008.service.ADBClickService;
 import hyj.weixin_008.thread.AddFriendThread;
 import hyj.weixin_008.thread.AutoChatThread;
 import hyj.weixin_008.thread.DrapImageThread;
+import hyj.weixin_008.thread.ForeignRegisterService;
 import hyj.weixin_008.thread.Get008DataThread;
+import hyj.weixin_008.thread.XmhGetPhoneAndValidCodeThread;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
+import hyj.weixin_008.util.OkHttpUtil;
 import hyj.weixin_008.util.ParseRootUtil;
 
 import static hyj.weixin_008.GlobalApplication.getContext;
@@ -53,6 +56,7 @@ public class MyService extends AccessibilityService {
     String zc2;
     String zc3;
     String yh;
+    String cn_num;
     RegObj regObj;
     @Override
     protected void onServiceConnected() {
@@ -77,6 +81,7 @@ public class MyService extends AccessibilityService {
         String apiPwd = sharedPreferences.getString("apiPwd","");
         String apiPjId = sharedPreferences.getString("apiPjId","");
         String zcPwd = sharedPreferences.getString("wxPwd","");
+        cn_num = sharedPreferences.getString("cn_num","");
         String addSpFr = sharedPreferences.getString("addSpFr","");
         String airplane = sharedPreferences.getString("airplane","");
         String get008Data = sharedPreferences.getString("get008Data","");
@@ -86,26 +91,30 @@ public class MyService extends AccessibilityService {
         zc3 = sharedPreferences.getString("zc3","");
         yh = sharedPreferences.getString("yh","");
 
-        PhoneApi pa = new PhoneApi(apiId,apiPwd,apiPjId,zcPwd);
+        PhoneApi pa = new PhoneApi(apiId,apiPwd,apiPjId,zcPwd,cn_num);
         //List<Wx008Data> wx008Datas = DataSupport.findAll(Wx008Data.class);
         List<Wx008Data> wx008Datas = DataSupport.where("expMsg  not like ? or expMsg is null","%被限制登录%").order("createTime asc").find(Wx008Data.class);
         LogUtil.d("008data","读取数据库信息成功，总长度："+wx008Datas.size());
         regObj = new RegObj(airplane,zc2,zc3,addSpFr,wx008Datas,airplaneChangeIpNum);
 
     if("true".equals(zc1)){
-            new Thread(new RegisterService(this,WeixinAutoHandler.record,pa,regObj)).start();
-            new Thread(new GetPhoneAndValidCodeThread(pa)).start();
+            if(!"86".equals(cn_num)){
+                new Thread(new ForeignRegisterService(this,WeixinAutoHandler.record,pa,regObj)).start();
+             }else {
+                new Thread(new RegisterService(this,WeixinAutoHandler.record,pa,regObj)).start();
+             }
+            //new Thread(new GetPhoneAndValidCodeThread(pa)).start();
+            new Thread(new XmhGetPhoneAndValidCodeThread(pa)).start();
             new Thread(new DrapImageThread(this,WeixinAutoHandler.record)).start();
-        }else if("true".equals(yh)){
+    }else if("true".equals(yh)){
             new Thread(new Set008DataService(this,WeixinAutoHandler.record,regObj)).start();
-        }else if("true".equals(get008Data)){
+    }else if("true".equals(get008Data)){
            new Thread(new Get008DataThread(this,new Get008Data())).start();
-       }
+    }
 
         AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
         AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
         AutoUtil.sleep(1000);
-        //new Thread(new GetPhoneAndValidCodeThread(pa)).start();
     }
     private String getFlowMsg(RegObj regObj,Map<String,String> record){
         String msg = "总数："+regObj.getTotalNum()+" 序号："+regObj.getCurrentIndex()
@@ -130,6 +139,8 @@ public class MyService extends AccessibilityService {
         //---test start---------
 
         //ParseRootUtil.debugRoot(root);
+        //AccessibilityNodeInfo n1 = ParseRootUtil.getNodePath(root,"00350");
+
         //---test end ----------
 
         if(AutoUtil.checkAction(WeixinAutoHandler.record,"wx注册成功")||AutoUtil.checkAction(WeixinAutoHandler.record,"wx登录成功")){
@@ -142,6 +153,34 @@ public class MyService extends AccessibilityService {
         }
         setQm(root);
         sentFr(root);
+        selsectCn(root);
+
+    }
+
+    private void selsectCn(AccessibilityNodeInfo root){
+        if(!"86".equals(cn_num)){
+            //点击进入国家列表
+            AccessibilityNodeInfo cn1 = AutoUtil.findNodeInfosByText(root,"国家/地区");
+            if(cn1!=null){
+                AccessibilityNodeInfo cnNode1 = ParseRootUtil.getNodePath(root,"00221");
+                if(cnNode1!=null&&"中国（+86）".equals(cnNode1.getText()+"")&&!AutoUtil.checkAction(WeixinAutoHandler.record,"access点击国家地区")){
+                    AutoUtil.performClick(cnNode1,WeixinAutoHandler.record,"access点击国家地区");
+                }
+            }
+            //国家号码遍历查找
+            if(AutoUtil.checkAction(WeixinAutoHandler.record,"access点击国家地区")||AutoUtil.checkAction(WeixinAutoHandler.record,"access下滚")){
+                AccessibilityNodeInfo n1 = AutoUtil.findNodeInfosByText(root,cn_num);
+                if(n1==null||(n1!=null&&!cn_num.equals(n1.getText()+""))){
+                    AccessibilityNodeInfo listViewNode = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/i9");
+                    AutoUtil.performScroll(listViewNode,WeixinAutoHandler.record,"access下滚");
+                    return;
+                }
+                //找到目标，点击
+                if(n1!=null&&cn_num.equals(n1.getText()+"")){
+                    AutoUtil.performClick(n1,WeixinAutoHandler.record,"wx选择国家",3000);
+                }
+            }
+        }
 
     }
 

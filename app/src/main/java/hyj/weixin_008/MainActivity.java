@@ -53,6 +53,7 @@ import hyj.weixin_008.util.LogUtil;
 public class MainActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     private EditText wxPwd;
+    private EditText cn_num;
     CheckBox zc1;
     CheckBox zc2;
     CheckBox zc3;
@@ -89,8 +90,10 @@ public class MainActivity extends AppCompatActivity {
         yh = (CheckBox)this.findViewById(R.id.yh);
         get008Data = (CheckBox)this.findViewById(R.id.get008Data);
         wxPwd = (EditText)findViewById(R.id.zc_pwd);
+        cn_num = (EditText)findViewById(R.id.cn_num);
 
         wxPwd.setText(sharedPreferences.getString("wxPwd","").trim().equals("")?"www12345":sharedPreferences.getString("wxPwd",""));
+        cn_num.setText(sharedPreferences.getString("cn_num","").trim().equals("")?"86":sharedPreferences.getString("cn_num",""));
         zc1.setChecked(sharedPreferences.getString("zc1","").equals("true")?true:false);
         zc2.setChecked(sharedPreferences.getString("zc2","").equals("true")?true:false);
         zc3.setChecked(sharedPreferences.getString("zc3","").equals("true")?true:false);
@@ -100,7 +103,8 @@ public class MainActivity extends AppCompatActivity {
         apiSettingBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                testPic();
+                //testPic();
+                //selectAllData();
                 startActivity(new Intent(MainActivity.this, ApiSettingActivity.class));
             }
         });
@@ -149,12 +153,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        delScennShotPic();
+
     }
 
 
     private void saveParams(){
         SharedPreferences.Editor editor= sharedPreferences.edit();
         editor.putString("wxPwd",wxPwd.getText()+"");
+        editor.putString("cn_num",cn_num.getText()+"");
         editor.putString("zc1",zc1.isChecked()+"");
         editor.putString("zc2",zc2.isChecked()+"");
         editor.putString("zc3",zc3.isChecked()+"");
@@ -231,25 +238,7 @@ public class MainActivity extends AppCompatActivity {
         phones.add("15907486524");
         phones.add("15874692484");
 
-        phones.add("13469363224");
-        phones.add("13467487634");
-        phones.add("15907464014");
-        phones.add("15874689484");
 
-        phones.add("15874617354");
-        phones.add("13574686994");
-        phones.add("13487484604");
-        phones.add("15907466054");
-
-        phones.add("15897489654");
-        phones.add("13469388384");
-        phones.add("15869952304");
-        phones.add("13467491824");
-
-        phones.add("15116677604");
-        phones.add("13487486974");
-        phones.add("13467499704");
-        phones.add("13467494340");
 
         for(String phone:phones){
             DataSupport.deleteAll(Wx008Data.class,"phone=?",phone);
@@ -266,17 +255,30 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("update count--->"+wx1.updateAll("phone=?","17095303459"));
         wx1.setWxId("q666xc");
         System.out.println("update count--->"+wx1.updateAll("phone=?","17095281704"));
-        wx1.setWxId("q777xc");
-        System.out.println("update count--->"+wx1.updateAll("phone=?","17095304952"));
-        wx1.setWxId("q888xc");
-        System.out.println("update count--->"+wx1.updateAll("phone=?","17056741809"));
-        wx1.setWxId("q999xc");
-        System.out.println("update count--->"+wx1.updateAll("phone=?","17056741819"));
-
-
 
         //System.out.println("del--->"+DataSupport.deleteAll(Wx008Data.class,"phone=?","14747236374"));
 
+    }
+    private void selectAllData(){
+        List<Wx008Data> datas = DataSupport.findAll(Wx008Data.class);
+        for(Wx008Data wx:datas){
+            System.out.println("wx-->"+JSON.toJSONString(wx));
+        }
+    }
+    private void delScennShotPic(){
+        String  path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/Screenshots";
+        LogUtil.d("DrapImageThread","path-->"+path);
+        //清空文件
+        File file = new File(path);
+        File[] files = file.listFiles();
+        if(files!=null&&files.length>0) {
+            LogUtil.d("DrapImageThread", "file length-->" + files.length);
+            for (File f : files) {
+                LogUtil.d("DrapImageThread", "删除：" + f.getName());
+                f.delete();
+                LogUtil.d("DrapImageThread", "删除完：" + f.getName());
+            }
+        }
     }
 
     public void testPic(){

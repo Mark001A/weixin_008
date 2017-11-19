@@ -25,6 +25,7 @@ import hyj.weixin_008.util.ParseRootUtil;
 public class DrapImageThread implements Runnable {
     AccessibilityService context;
     Map<String,String> record;
+    int countWaitDragResultNum=0;
     public DrapImageThread(AccessibilityService context, Map<String,String> record){
         this.context = context;
         this.record = record;
@@ -33,16 +34,37 @@ public class DrapImageThread implements Runnable {
     public void run() {
         while (true){
             AutoUtil.sleep(500);
-            LogUtil.d("DrapImageThread","拖动方块DrapImageThread..."+Thread.currentThread().getName()+" ");
+            LogUtil.d("DrapImageThread","【拖动方块DrapImageThread...】"+Thread.currentThread().getName()+" ");
             AccessibilityNodeInfo root = context.getRootInActiveWindow();
             if(root==null){
                 LogUtil.d("DrapImageThread","DrapImageThread root is null");
                 AutoUtil.sleep(500);
                 continue;
             }
+            //判断是否在方块界面
+            AccessibilityNodeInfo fkNode = ParseRootUtil.getNodePath(root,"0000000000");
+            if(fkNode==null||(fkNode!=null&&!"拖动下方滑块完成拼图".equals(fkNode.getContentDescription().toString()))){
+                AutoUtil.sleep(2000);
+                continue;
+            }
 
             if(AutoUtil.checkAction(record,"wx方块拖动成功")){
                 continue;
+            }
+
+
+            //等待拖动方块结果，由于执行拖动了没响应
+            if(AutoUtil.checkAction(record,"wx拖动方块")){
+                AccessibilityNodeInfo errorNode = ParseRootUtil.getNodePath(root,"0000000003");
+                if(errorNode==null||(errorNode!=null&&!"请控制拼图块对齐缺口".equals(errorNode.getContentDescription()+""))){
+                    countWaitDragResultNum = countWaitDragResultNum+1;
+                    if(countWaitDragResultNum<30){
+                        LogUtil.d("DrapImageThread","wait dragImage num:"+countWaitDragResultNum);
+                        continue;
+                    }else {
+                        countWaitDragResultNum=0;
+                    }
+                }
             }
 
             //等待加载
@@ -55,11 +77,10 @@ public class DrapImageThread implements Runnable {
 
             //方块处理
       if(1==1||AutoUtil.checkAction(record,"wx开始安全验证")){
-            AccessibilityNodeInfo fkNode = ParseRootUtil.getNodePath(root,"0000000000");
             AccessibilityNodeInfo errorNode = ParseRootUtil.getNodePath(root,"0000000003");
 
            //判断是否拖动成功
-           if(AutoUtil.checkAction(record,"wx拖动方块")){
+           if(AutoUtil.checkAction(record,"wx拖动方块")||AutoUtil.checkAction(record,"wx计算距离无效")){
                if(errorNode!=null){
                    if("请控制拼图块对齐缺口".equals(errorNode.getContentDescription()+"")){
                        AccessibilityNodeInfo refreshNode = ParseRootUtil.getNodePath(root,"0030");
@@ -113,15 +134,15 @@ public class DrapImageThread implements Runnable {
                 LogUtil.d("DrapImageThread","x2:"+x2);
                 if(Integer.parseInt(x2)>950){
                     AutoUtil.recordAndLog(record,"wx计算距离无效");
-                    AutoUtil.recordAndLog(record,"wx拖动方块");
+                    //AutoUtil.recordAndLog(record,"wx拖动方块");
                     continue;
+                }else if(Integer.parseInt(x2)>100){
+                    LogUtil.d("DrapImageThread","开始拖动");
+                    AutoUtil.execShell("input swipe "+dragStr);
+                    LogUtil.d("DrapImageThread","结束拖动");
+                    AutoUtil.recordAndLog(record,"wx拖动方块");
+                    AutoUtil.sleep(500);
                 }
-
-                LogUtil.d("DrapImageThread","开始拖动");
-                AutoUtil.execShell("input swipe "+dragStr);
-                LogUtil.d("DrapImageThread","结束拖动");
-                AutoUtil.recordAndLog(record,"wx拖动方块");
-                AutoUtil.sleep(1000);
 
             }
         }
