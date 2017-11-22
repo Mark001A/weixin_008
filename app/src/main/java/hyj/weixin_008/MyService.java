@@ -80,10 +80,10 @@ public class MyService extends AccessibilityService {
         super.onServiceConnected();
 
 
-        String apiId = sharedPreferences.getString("apiId","");
-        String apiPwd = sharedPreferences.getString("apiPwd","");
-        String apiPjId = sharedPreferences.getString("apiPjId","");
-        String zcPwd = sharedPreferences.getString("wxPwd","");
+        String apiId = sharedPreferences.getString("apiId","").trim();
+        String apiPwd = sharedPreferences.getString("apiPwd","").trim();
+        String apiPjId = sharedPreferences.getString("apiPjId","").trim();
+        String zcPwd = sharedPreferences.getString("wxPwd","").trim();
         cn_num = sharedPreferences.getString("cn_num","");
         String addSpFr = sharedPreferences.getString("addSpFr","");
         String airplane = sharedPreferences.getString("airplane","");
@@ -107,18 +107,20 @@ public class MyService extends AccessibilityService {
                 new Thread(new RegisterService(this,WeixinAutoHandler.record,pa,regObj)).start();
              }
 
+        //api平台选择 1玉米 2 爱乐赞 3 吸码 11路虎
+          String api_type = sharedPreferences.getString("api_type","").trim();
+          System.out.println("api_type-->"+api_type);
+          if("1".equals(api_type)){
+              new Thread(new GetPhoneAndValidCodeThread(pa)).start();//玉米
+          }else if("2".equals(api_type)){
 
-            //new Thread(new GetPhoneAndValidCodeThread(pa)).start();//玉米
-          if("true".equals(zc2)){
+          }else if("11".equals(api_type)){
               new Thread(new LhGetPhoneAndValidCodeThread(pa)).start();//路虎
-          }else {
+          }else if("3".equals(api_type)){
               new Thread(new XmhGetPhoneAndValidCodeThread(pa)).start();//吸码
           }
 
-            new Thread(new DieThread()).start();
-
-
-
+            new Thread(new DieThread()).start();//注册死亡开关
             new Thread(new DrapImageThread(this,WeixinAutoHandler.record)).start(); //方块拖动
 
     }else if("true".equals(yh)){

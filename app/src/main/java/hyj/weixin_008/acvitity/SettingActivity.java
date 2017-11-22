@@ -20,6 +20,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import org.litepal.crud.DataSupport;
 
+import java.io.File;
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -91,7 +92,7 @@ public class SettingActivity extends AppCompatActivity {
             public void onClick(View v) {
                 List<Wx008Data> datas = DataSupport.findAll(Wx008Data.class);
                 if(datas!=null&&datas.size()>0){
-                    LogUtil.export("/sdcard/A_hyj_008data/","bakData.txt",JSON.toJSONString(datas));
+                    LogUtil.export("/sdcard/A_hyj_008data/",JSON.toJSONString(datas));
                     Toast.makeText(SettingActivity.this, "已导出数据："+datas.size()+"条", Toast.LENGTH_LONG).show();
                 }else {
                     Toast.makeText(SettingActivity.this, "没有可导出数据", Toast.LENGTH_LONG).show();
@@ -101,7 +102,13 @@ public class SettingActivity extends AppCompatActivity {
         importBakData.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                String str = FileUtil.readAll("/sdcard/A_hyj_008data/bakData.txt");
+
+                File file = new File("/sdcard/A_hyj_008data");
+                File[] files = file.listFiles();
+                String imporFileName = files[files.length-1].getPath();//获取最新文件名
+                System.out.println("--->导入文件："+imporFileName);
+
+                String str = FileUtil.readAll(imporFileName);
                 System.out.println("str-->"+str);
                 List<Wx008Data> datas = JSON.parseArray(str,Wx008Data.class);
                 int successCount=0;

@@ -44,7 +44,10 @@ public class LogUtil {
         FileUtil.writeContent2File("/sdcard/A_hyj_008data/","008data.txt",msg);
     }
     //记录008数据到sd卡
-    public static void export(String path,String fileName,String msg){
+    public static void export(String path,String msg){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        String dateTime = sdf.format(new Date());
+        String fileName = "bakData_"+dateTime+".txt";
         FileUtil.writeContent2File(path,fileName,msg);
     }
 }

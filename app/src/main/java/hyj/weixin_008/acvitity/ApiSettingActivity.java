@@ -22,6 +22,7 @@ public class ApiSettingActivity extends AppCompatActivity {
     private EditText apiId;
     private EditText apiPwd;
     private EditText apiPjId;
+    private EditText api_type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +33,11 @@ public class ApiSettingActivity extends AppCompatActivity {
         apiId = (EditText)findViewById(R.id.api_id);
         apiPwd = (EditText)findViewById(R.id.api_pwd);
         apiPjId = (EditText)findViewById(R.id.api_project_id);
+        api_type = (EditText)findViewById(R.id.api_type);
         apiId.setText(sharedPreferences.getString("apiId",""));
         apiPwd.setText(sharedPreferences.getString("apiPwd",""));
         apiPjId.setText(sharedPreferences.getString("apiPjId",""));
+        api_type.setText(sharedPreferences.getString("api_type",""));
 
 
         Button testBtn = (Button)findViewById(R.id.api_test);
@@ -75,6 +78,7 @@ public class ApiSettingActivity extends AppCompatActivity {
         editor.putString("apiId",apiId.getText()+"");
         editor.putString("apiPwd",apiPwd.getText()+"");
         editor.putString("apiPjId",apiPjId.getText()+"");
+        editor.putString("api_type",api_type.getText()+"");
         editor.commit();
     }
 

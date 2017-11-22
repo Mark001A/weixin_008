@@ -19,7 +19,7 @@ public class XmhPhoneNumberAPIService {
     }
     public String login(String apiId,String pwd){
         String token = "";
-        String url =mainUrl+"?action=loginIn&name="+apiId+"&password="+pwd+"&developer=developer=ff40f1097dfe48849359559734e228ad";
+        String url =mainUrl+"?action=loginIn&name="+apiId+"&password="+pwd+"&developer=ff40f1097dfe48849359559734e228ad";
         LogUtil.d(" XmhGetPhoneAndValidCodeThread loginBody url",url);
         String body = OkHttpUtil.okHttpGet(url);
         LogUtil.d(" XmhGetPhoneAndValidCodeThread loginBody",body);
