@@ -54,6 +54,13 @@ public class Set008DataService implements Runnable{
         }
     }
     int countLongin=0;
+    //替补
+    public void daemonAction(AccessibilityNodeInfo root){
+        if(AutoUtil.checkAction(record,"pyq朋友圈")){
+            AccessibilityNodeInfo node5 = AutoUtil.findNodeInfosByText(root,"朋友圈");
+            AutoUtil.performClick(node5,WeixinAutoHandler.record,"pyq朋友圈");
+        }
+    }
     @Override
     public void run() {
         while (true){
@@ -84,16 +91,16 @@ public class Set008DataService implements Runnable{
                 AutoUtil.sleep(500);
                 continue;
             }
+            //替补
+            daemonAction(root);
             //处理不在应在的界面
             CommonUtil.doNotInCurrentView(root,record);
 
             ParseRootUtil.debugRoot(root);
 
-           if(AutoUtil.findNodeInfosByText(root,"SIM卡工具包")!=null){
+          if(AutoUtil.findNodeInfosByText(root,"SIM卡工具包")!=null){
                 context.performGlobalAction(context.GLOBAL_ACTION_BACK);
                 System.out.println("----SIM卡工具包1-->back");
-                //AutoUtil.sleep(2000);
-                AutoUtil.recordAndLog(record,"wx连接成功");
                 continue;
             }
 
@@ -205,6 +212,11 @@ public class Set008DataService implements Runnable{
                 if(cnNum==null||AutoUtil.checkAction(record,"wx选择国家")){
                     AccessibilityNodeInfo phoneNumNode = ParseRootUtil.getNodePath(root,"00321");
                     AutoUtil.performSetText(phoneNumNode,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone(),record,"wx输入手机号");
+
+                    AutoUtil.sleep(1000);
+                    AccessibilityNodeInfo nextNode = AutoUtil.findNodeInfosByText(root,"下一步");
+                    AutoUtil.performClick(nextNode,record,"wx下一步",500);
+
                 }
                 //adbService.setTextByWindow("用微信号/QQ号/邮箱登录",540,720,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone(),"wx输入手机号",0);
             }else {
@@ -228,12 +240,12 @@ public class Set008DataService implements Runnable{
             }
         }
         //adbService.clickXYByWindow("用手机号登录",540,1120,"wx登录2",2000);
-        if(AutoUtil.findNodeInfosByText(root,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone())!=null){
+       /* if(AutoUtil.findNodeInfosByText(root,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone())!=null){
             if(!AutoUtil.checkAction(record,"wx下一步")){
                 AutoUtil.sleep(5000);
             }
             adbService.clickXYByWindow("用微信号/QQ号/邮箱登录",540,1115,"wx下一步",2000);
-        }
+        }*/
         if(AutoUtil.checkAction(record,"wx下一步")){
             AccessibilityNodeInfo pwdNode = ParseRootUtil.getNodePath(root,"00331");
             String pwd = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxPwd();
@@ -514,7 +526,14 @@ public class Set008DataService implements Runnable{
                     System.out.println("ip2-->"+ip1);
                     regObj.setCurrentIP(ip1);
                 }
-                return;
+            }
+
+            //判断关闭飞行模式后网络是否恢复
+            if(AutoUtil.checkAction(record,"st关闭飞行模式")){
+                if(CommonUtil.getNetWorkType()!=null){
+                    AutoUtil.recordAndLog(record,"wx连接成功");
+                }
+
             }
 
         }

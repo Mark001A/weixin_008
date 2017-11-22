@@ -135,6 +135,8 @@ public class DrapImageThread implements Runnable {
                 if(Integer.parseInt(x2)>950){
                     AutoUtil.recordAndLog(record,"wx计算距离无效");
                     //AutoUtil.recordAndLog(record,"wx拖动方块");
+                    AutoUtil.clickXY(987,1175);
+                    AutoUtil.sleep(1000);
                     continue;
                 }else if(Integer.parseInt(x2)>100){
                     LogUtil.d("DrapImageThread","开始拖动");

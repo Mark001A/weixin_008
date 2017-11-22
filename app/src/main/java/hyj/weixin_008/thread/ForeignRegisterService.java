@@ -31,6 +31,7 @@ import hyj.weixin_008.util.LogUtil;
 import hyj.weixin_008.util.OkHttpUtil;
 import hyj.weixin_008.util.ParseRootUtil;
 
+import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
 import static hyj.weixin_008.GlobalApplication.getContext;
 
@@ -70,6 +71,14 @@ public class ForeignRegisterService implements Runnable{
     @Override
     public void run() {
         while (true){
+
+
+            if("OK".equals(WeixinAutoHandler.record.get("die"))){
+                LogUtil.d("die","【结束无障碍】");
+                int a = 1/0;
+                return;
+            }
+
             AutoUtil.sleep(500);
             LogUtil.d("myService","hyj-->【国外】注册线程运行..."+Thread.currentThread().getName()+record);
             //cancelAllRecv(pa.getToken());
@@ -213,6 +222,7 @@ public class ForeignRegisterService implements Runnable{
             return;
         }
         if(AutoUtil.checkAction(record,"wx点击注册2")||AutoUtil.checkAction(record,"wx同意")){
+            AutoUtil.sleep(2000);
             adbService.clickXYByWindow("微信隐私保护指引",1006,1839,"wx同意",500);
         }
 
@@ -241,7 +251,7 @@ public class ForeignRegisterService implements Runnable{
        //处理等待验证码超时
         if(enterValicodeNode!=null){
             if(AutoUtil.findNodeInfosByText(root,ConstantWxId.REGMSG2)!=null&&!pa.isValidCodeIsAvailavle()){
-                if(pa.getWaitValicodeTime()>60){
+                if(pa.getWaitValicodeTime()>120){
                     pa.setWaitValicodeTime(0);
                     AutoUtil.recordAndLog(record,"008登录异常");
                 }
@@ -282,7 +292,7 @@ public class ForeignRegisterService implements Runnable{
                 pa.setValidCodeIsAvailavle(false);
                 AutoUtil.sleep(3000);
                 AutoUtil.clickXY(946,1833);//点我
-                if(!regObj.getZc2().equals("true")&&!regObj.getZc3().equals(true)){
+                if(!regObj.getZc2().equals("true1")&&!regObj.getZc3().equals(true)){
                     AutoUtil.recordAndLog(record,"008注册处理完成");
                 }
             }

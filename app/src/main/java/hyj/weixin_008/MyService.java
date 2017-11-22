@@ -34,9 +34,11 @@ import hyj.weixin_008.model.RegObj;
 import hyj.weixin_008.service.ADBClickService;
 import hyj.weixin_008.thread.AddFriendThread;
 import hyj.weixin_008.thread.AutoChatThread;
+import hyj.weixin_008.thread.DieThread;
 import hyj.weixin_008.thread.DrapImageThread;
 import hyj.weixin_008.thread.ForeignRegisterService;
 import hyj.weixin_008.thread.Get008DataThread;
+import hyj.weixin_008.thread.LhGetPhoneAndValidCodeThread;
 import hyj.weixin_008.thread.XmhGetPhoneAndValidCodeThread;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
@@ -104,9 +106,21 @@ public class MyService extends AccessibilityService {
              }else {
                 new Thread(new RegisterService(this,WeixinAutoHandler.record,pa,regObj)).start();
              }
-            //new Thread(new GetPhoneAndValidCodeThread(pa)).start();
-            new Thread(new XmhGetPhoneAndValidCodeThread(pa)).start();
-            new Thread(new DrapImageThread(this,WeixinAutoHandler.record)).start();
+
+
+            //new Thread(new GetPhoneAndValidCodeThread(pa)).start();//玉米
+          if("true".equals(zc2)){
+              new Thread(new LhGetPhoneAndValidCodeThread(pa)).start();//路虎
+          }else {
+              new Thread(new XmhGetPhoneAndValidCodeThread(pa)).start();//吸码
+          }
+
+            new Thread(new DieThread()).start();
+
+
+
+            new Thread(new DrapImageThread(this,WeixinAutoHandler.record)).start(); //方块拖动
+
     }else if("true".equals(yh)){
             new Thread(new Set008DataService(this,WeixinAutoHandler.record,regObj)).start();
     }else if("true".equals(get008Data)){
@@ -116,6 +130,9 @@ public class MyService extends AccessibilityService {
         AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
         AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
         AutoUtil.sleep(1000);
+
+
+
     }
     private String getFlowMsg(RegObj regObj,Map<String,String> record){
         String msg = "总数："+regObj.getTotalNum()+" 序号："+regObj.getCurrentIndex()
@@ -126,6 +143,7 @@ public class MyService extends AccessibilityService {
     ADBClickService adbService  = new ADBClickService(this,record);
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
+
 
         MyWindowManager.updateFlowMsg(getFlowMsg(regObj,WeixinAutoHandler.record));
         if(WeixinAutoHandler.IS_PAUSE) return;
@@ -146,7 +164,7 @@ public class MyService extends AccessibilityService {
 
         if(AutoUtil.checkAction(WeixinAutoHandler.record,"wx注册成功")||AutoUtil.checkAction(WeixinAutoHandler.record,"wx登录成功")){
             if("true".equals(zc2)){//写个性签名
-                AutoUtil.recordAndLog(WeixinAutoHandler.record,"qm");
+                //AutoUtil.recordAndLog(WeixinAutoHandler.record,"qm");
             }else if("true".equals(zc3)){//发朋友圈
                 AutoUtil.recordAndLog(WeixinAutoHandler.record,"pyq");
             }
@@ -171,6 +189,7 @@ public class MyService extends AccessibilityService {
             //国家号码遍历查找
             if(AutoUtil.checkAction(WeixinAutoHandler.record,"access点击国家地区")||AutoUtil.checkAction(WeixinAutoHandler.record,"access下滚")){
                 if("62".equals(cn_num)&&!clickFlag){
+                    AutoUtil.sleep(1000);
                     AutoUtil.clickXY(1043,1768);
                     clickFlag = true;
                 }

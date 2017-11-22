@@ -1,11 +1,15 @@
 package hyj.weixin_008.util;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.provider.Settings;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import java.util.Map;
 
 import hyj.weixin_008.AutoUtil;
+import hyj.weixin_008.GlobalApplication;
 
 /**
  * Created by asus on 2017/11/19.
@@ -28,5 +32,15 @@ public class CommonUtil {
             AutoUtil.sleep(1000);
         }
 
+    }
+
+    public static Integer getNetWorkType(){
+        Integer type = null;
+        ConnectivityManager connectMgr = (ConnectivityManager) GlobalApplication.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = connectMgr.getActiveNetworkInfo();
+       if(info!=null){
+           type = info.getType();
+       }
+       return type;
     }
 }

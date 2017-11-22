@@ -2,7 +2,7 @@ package hyj.weixin_008.thread;
 
 import hyj.weixin_008.AutoUtil;
 import hyj.weixin_008.model.PhoneApi;
-import hyj.weixin_008.service.PhoneNumberAPIService;
+import hyj.weixin_008.service.LhPhoneNumberAPIService;
 import hyj.weixin_008.service.XmhPhoneNumberAPIService;
 import hyj.weixin_008.util.LogUtil;
 import hyj.weixin_008.util.OkHttpUtil;
@@ -11,44 +11,45 @@ import hyj.weixin_008.util.OkHttpUtil;
  * Created by Administrator on 2017/8/15.
  */
 
-public class XmhGetPhoneAndValidCodeThread implements Runnable{
-    // PhoneNumberAPIService phoneService = new PhoneNumberAPIService();
-    //AlzPhoneNumberAPIService phoneService = new AlzPhoneNumberAPIService();
-    String mainUrl ="http://www.ximahuang.com/alz/api";
-    XmhPhoneNumberAPIService phoneService = new XmhPhoneNumberAPIService(mainUrl);
+public class LhGetPhoneAndValidCodeThread implements Runnable{
+
+    LhPhoneNumberAPIService phoneService = new LhPhoneNumberAPIService();
 
     PhoneApi pa;
-    public XmhGetPhoneAndValidCodeThread(PhoneApi pa){
+    public LhGetPhoneAndValidCodeThread(PhoneApi pa){
         this.pa = pa;
     }
     @Override
     public void run() {
         while (true){
             AutoUtil.sleep(4000);
-            LogUtil.d("XmhGetPhoneAndValidCodeThread","【-->XmhGetPhoneAndValidCodeThread获取号码线程运行...】"+Thread.currentThread().getName()+" phone:"+pa.isPhoneIsAvailavle()+" validCode:"+pa.isValidCodeIsAvailavle()+" isSendMsg:"+pa.isSendMsg());
+            LogUtil.d("LhPhoneNumberAPIService","【-->获取号码线程运行...】"+Thread.currentThread().getName()+" phone:"+pa.isPhoneIsAvailavle()+" validCode:"+pa.isValidCodeIsAvailavle()+" isSendMsg:"+pa.isSendMsg());
             if(pa.getToken()==null){
                 /*pa.setApiId("52922-akx");
                 pa.setPwd("aa105105");
                 pa.setPjId("1296");*/
                 String token = phoneService.login(pa.getApiId(),pa.getPwd());
                 pa.setToken(token);
-                LogUtil.d("XmhGetPhoneAndValidCodeThread","token获取成功："+token);
+                LogUtil.d("LhPhoneNumberAPIService","token获取成功："+token);
                 //首次启动执行释放所有号码，目前只支持吸码蝗
                 //cancelAllRecv(token);
             }
             if(pa.getToken()!=null){
                 if(!pa.isPhoneIsAvailavle()){
-                    String phone = phoneService.getPhone(pa.getApiId(),pa.getToken(),pa.getPjId(),pa.getCnNum());
-                    LogUtil.d("XmhGetPhoneAndValidCodeThread","phoneBody:"+phone);
-                    if(phone.matches("[\\d]{6,20}")){
-                        pa.setPhone(phone);
+                    String phones = phoneService.getPhone(pa.getApiId(),pa.getToken(),pa.getPjId(),pa.getCnNum());
+                    LogUtil.d("LhPhoneNumberAPIService","phoneBody:"+phones);
+                    if(phones.indexOf("OK")>-1){
+                        String[] ph = phones.split("\\|");
+                        pa.setPhone(ph[4]);
+                        pa.setPhoneId(ph[1]);
                         pa.setPhoneIsAvailavle(true);
+
                     }
                 }
 
                if(pa.isPhoneIsAvailavle()&&!pa.isValidCodeIsAvailavle()){
-                    String validCode = phoneService.getValidCode(pa.getApiId(),pa.getPhone(),pa.getToken(),pa.getPjId());
-                    LogUtil.d("XmhGetPhoneAndValidCodeThread","validCodeBody："+validCode);
+                    String validCode = phoneService.getValidCode(pa.getToken(),pa.getPhoneId());
+                    LogUtil.d("LhPhoneNumberAPIService","validCodeBody："+validCode);
                     if(validCode.matches("[\\d]{4,8}")){
                         pa.setValidCode(validCode);
                         pa.setValidCodeIsAvailavle(true);
