@@ -156,10 +156,10 @@ public class SettingActivity extends AppCompatActivity {
 
         List<String> datas = new ArrayList<String>();
         for(int i=0,l=wx008Datas.size();i<l;i++){
-            SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
+            SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm:ss");
             String time =sdf.format(wx008Datas.get(i).getCreateTime());
-
-            datas.add(i+"-"+wx008Datas.get(i).getPhone()+"    "+time);
+            String cn =  wx008Datas.get(i).getCnNum();
+            datas.add(i+"-"+wx008Datas.get(i).getPhone()+" "+time+" "+(cn==null?"86":cn));
         }
 
         return datas.toArray(new String[datas.size()]);
