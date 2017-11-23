@@ -302,13 +302,14 @@ public class Set008DataService implements Runnable{
         if(!AutoUtil.checkAction(record,"wx登录2")) return;
         String phone = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone();
         String wxId = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId();
+        String pwd = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxPwd();
         Wx008Data wx008Data = new Wx008Data();
         int index = regObj.getCurrentIndex();
 
         //处理账号异常
         AccessibilityNodeInfo node = AutoUtil.findNodeInfosByText(root,Constants.wx_Exception1);
         if(node!=null){
-            LogUtil.login(index+" exception",phone+" "+wxId+"-"+Constants.wx_Exception1);
+            LogUtil.login(index+" exception",phone+" "+wxId+"-"+pwd+"-"+Constants.wx_Exception1);
             LogUtil.d("exception",Constants.wx_Exception1);
             AutoUtil.recordAndLog(record,"008登录异常");
             wx008Data.setExpMsg(Constants.wx_Exception1);
@@ -318,7 +319,7 @@ public class Set008DataService implements Runnable{
         //处理操作频繁
         AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosByText(root,ConstantWxId.REGMSG10);
         if(node1!=null){
-            LogUtil.login(index+" exception",phone+" "+wxId+"-"+ConstantWxId.REGMSG10);
+            LogUtil.login(index+" exception",phone+" "+wxId+"-"+pwd+"-"+ConstantWxId.REGMSG10);
             LogUtil.d("exception",ConstantWxId.REGMSG10);
             AutoUtil.recordAndLog(record,"008登录异常");
             wx008Data.setExpMsg(ConstantWxId.REGMSG10);
@@ -347,7 +348,7 @@ public class Set008DataService implements Runnable{
                 wx008Data.setDieFlag(4);
             }
             LogUtil.d("exception",errMsg);
-            LogUtil.login(index+" exception",phone+" "+wxId+"-"+errMsg);
+            LogUtil.login(index+" exception",phone+" "+wxId+"-"+pwd+"-"+errMsg);
             wx008Data.setExpMsg(errMsg);
             int countdel = wx008Data.updateAll("phone=? or wxId=?",phone,wxId);
             System.out.println(countdel+"hyj-->"+JSON.toJSONString(wx008Data));
