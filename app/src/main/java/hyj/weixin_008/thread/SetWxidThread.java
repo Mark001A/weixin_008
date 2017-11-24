@@ -53,7 +53,9 @@ public class SetWxidThread implements Runnable {
             }
 
             AccessibilityNodeInfo node2 = ParseRootUtil.getNodeByPathAndText(root,"00570","设置");
+            AccessibilityNodeInfo node21 = ParseRootUtil.getNodeByPathAndText(root,"00670","设置");
             AutoUtil.performClick(node2,record,"SetWxidThread点击设置");
+            AutoUtil.performClick(node21,record,"SetWxidThread点击设置");
             System.out.println("SetWxidThread node2-->"+node2);
 
             AccessibilityNodeInfo node3 = ParseRootUtil.getNodeByPathAndText(root,"00260","帐号与安全");
