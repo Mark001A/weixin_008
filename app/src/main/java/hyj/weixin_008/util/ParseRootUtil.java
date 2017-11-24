@@ -118,6 +118,44 @@ public class ParseRootUtil {
         }
         return root;
     }
+
+    public static AccessibilityNodeInfo getNodeByPathAndText(AccessibilityNodeInfo root,String path,String text){
+        if(path.length()<2){
+            return null;
+        }
+        for(int i=1;i<path.length();i++){
+            int childNo = Integer.parseInt(path.substring(i,i+1));
+            if(root==null||childNo>=root.getChildCount()){
+                return null;
+            }else {
+                root = root.getChild(childNo);
+            }
+        }
+
+        if(!text.equals(root.getText()+"")){
+            return null;
+        }
+        return root;
+    }
+
+    public static AccessibilityNodeInfo getNodeByPathAndDesc(AccessibilityNodeInfo root,String path,String desc){
+        if(path.length()<2){
+            return null;
+        }
+        for(int i=1;i<path.length();i++){
+            int childNo = Integer.parseInt(path.substring(i,i+1));
+            if(root==null||childNo>=root.getChildCount()){
+                return null;
+            }else {
+                root = root.getChild(childNo);
+            }
+        }
+
+        if(!desc.equals(root.getContentDescription()+"")){
+            return null;
+        }
+        return root;
+    }
     public static void debugRoot(AccessibilityNodeInfo root){
         List<List<NodeAttr>> treeNodes =  ParseRootUtil.createLevelNodes(root);
 

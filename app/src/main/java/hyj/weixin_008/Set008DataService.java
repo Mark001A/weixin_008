@@ -239,13 +239,7 @@ public class Set008DataService implements Runnable{
                 }
             }
         }
-        //adbService.clickXYByWindow("用手机号登录",540,1120,"wx登录2",2000);
-       /* if(AutoUtil.findNodeInfosByText(root,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone())!=null){
-            if(!AutoUtil.checkAction(record,"wx下一步")){
-                AutoUtil.sleep(5000);
-            }
-            adbService.clickXYByWindow("用微信号/QQ号/邮箱登录",540,1115,"wx下一步",2000);
-        }*/
+
         if(AutoUtil.checkAction(record,"wx下一步")){
             AccessibilityNodeInfo pwdNode = ParseRootUtil.getNodePath(root,"00331");
             String pwd = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxPwd();
@@ -293,6 +287,10 @@ public class Set008DataService implements Runnable{
                     AutoUtil.recordAndLog(record,"登录成功添加好友");
                     //new Thread(new AddFriendThread(context)).start();
                     new Thread(new AutoChatThread(context)).start();
+                }
+                //登陆成功后执行其他动过
+                if(!"".equals(regObj.getAction())){
+                    AutoUtil.recordAndLog(record,regObj.getAction());
                 }
             }
         }

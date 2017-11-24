@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     private EditText wxPwd;
     private EditText cn_num;
+    private EditText action;
     CheckBox zc1;
     CheckBox zc2;
     CheckBox zc3;
@@ -93,9 +94,11 @@ public class MainActivity extends AppCompatActivity {
         get008Data = (CheckBox)this.findViewById(R.id.get008Data);
         wxPwd = (EditText)findViewById(R.id.zc_pwd);
         cn_num = (EditText)findViewById(R.id.cn_num);
+        action = (EditText)findViewById(R.id.action);
 
         wxPwd.setText(sharedPreferences.getString("wxPwd","").trim().equals("")?"www12345":sharedPreferences.getString("wxPwd",""));
         cn_num.setText(sharedPreferences.getString("cn_num","").trim().equals("")?"86":sharedPreferences.getString("cn_num",""));
+        action.setText(sharedPreferences.getString("action","").trim().equals("")?"":sharedPreferences.getString("action",""));
         zc1.setChecked(sharedPreferences.getString("zc1","").equals("true")?true:false);
         zc2.setChecked(sharedPreferences.getString("zc2","").equals("true")?true:false);
         zc3.setChecked(sharedPreferences.getString("zc3","").equals("true")?true:false);
@@ -113,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
         openAssit.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                if(!zc1.isChecked()&&!yh.isChecked()){
+                if(!zc1.isChecked()&&!yh.isChecked()&&!"0".equals(action.getText()+"")){
                     Toast.makeText(MainActivity.this, "注册？养号？请勾选", Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -164,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor= sharedPreferences.edit();
         editor.putString("wxPwd",wxPwd.getText()+"");
         editor.putString("cn_num",cn_num.getText()+"");
+        editor.putString("action",action.getText()+"");
         editor.putString("zc1",zc1.isChecked()+"");
         editor.putString("zc2",zc2.isChecked()+"");
         editor.putString("zc3",zc3.isChecked()+"");

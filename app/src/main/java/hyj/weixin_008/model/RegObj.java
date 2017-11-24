@@ -32,6 +32,8 @@ public class RegObj {
 
     private String currentIP;
 
+    private String action;// 登陆成功后处理的动作  1 设置微信号
+
 
 
     public RegObj(String airplane,String zc2,String zc3,String addSpFr,List<Wx008Data> wx008Datas,int airplaneChangeIpNum) {
@@ -59,6 +61,14 @@ public class RegObj {
 
     public void setAirplaneChangeIpNum(int airplaneChangeIpNum) {
         this.airplaneChangeIpNum = airplaneChangeIpNum;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
     }
 
     public List<Wx008Data> getWx008Datas() {

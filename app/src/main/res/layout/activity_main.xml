@@ -95,6 +95,17 @@
         android:id="@+id/cn_num"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+    <TextView
+        android:text="动作"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#2E2E2E"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <EditText
+        android:id="@+id/action"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
     <Button
         android:id="@+id/api_setting"
         android:layout_width="match_parent"

@@ -39,6 +39,7 @@ import hyj.weixin_008.thread.DrapImageThread;
 import hyj.weixin_008.thread.ForeignRegisterService;
 import hyj.weixin_008.thread.Get008DataThread;
 import hyj.weixin_008.thread.LhGetPhoneAndValidCodeThread;
+import hyj.weixin_008.thread.SetWxidThread;
 import hyj.weixin_008.thread.XmhGetPhoneAndValidCodeThread;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
@@ -84,6 +85,8 @@ public class MyService extends AccessibilityService {
         String apiPwd = sharedPreferences.getString("apiPwd","").trim();
         String apiPjId = sharedPreferences.getString("apiPjId","").trim();
         String zcPwd = sharedPreferences.getString("wxPwd","").trim();
+        String api_type = sharedPreferences.getString("api_type","").trim();
+        String action = sharedPreferences.getString("action","").trim();
         cn_num = sharedPreferences.getString("cn_num","");
         String addSpFr = sharedPreferences.getString("addSpFr","");
         String airplane = sharedPreferences.getString("airplane","");
@@ -99,6 +102,8 @@ public class MyService extends AccessibilityService {
         List<Wx008Data> wx008Datas = DataSupport.where("expMsg  not like ? or expMsg is null","%被限制登录%").order("createTime asc").find(Wx008Data.class);
         LogUtil.d("008data","读取数据库信息成功，总长度："+wx008Datas.size());
         regObj = new RegObj(airplane,zc2,zc3,addSpFr,wx008Datas,airplaneChangeIpNum);
+        regObj.setAction(action);
+        System.out.println("action-->"+action);
 
     if("true".equals(zc1)){
             if(!"86".equals(cn_num)){
@@ -108,7 +113,6 @@ public class MyService extends AccessibilityService {
              }
 
         //api平台选择 1玉米 2 爱乐赞 3 吸码 11路虎
-          String api_type = sharedPreferences.getString("api_type","").trim();
           System.out.println("api_type-->"+api_type);
           if("1".equals(api_type)){
               new Thread(new GetPhoneAndValidCodeThread(pa)).start();//玉米
@@ -124,16 +128,26 @@ public class MyService extends AccessibilityService {
             new Thread(new DrapImageThread(this,WeixinAutoHandler.record)).start(); //方块拖动
 
     }else if("true".equals(yh)){
-            new Thread(new Set008DataService(this,WeixinAutoHandler.record,regObj)).start();
+            new Thread(new Set008DataService(this,WeixinAutoHandler.record,regObj)).start();//养号
+            if("1".equals(regObj.getAction())){
+                new Thread(new SetWxidThread(this,WeixinAutoHandler.record)).start(); //设置微信号
+            }
     }else if("true".equals(get008Data)){
            new Thread(new Get008DataThread(this,new Get008Data())).start();
     }
+       //启动008
+       if(!"0".equals(action)){
+           AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
+           AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
+           AutoUtil.sleep(1000);
+       }
 
-        AutoUtil.showToastByRunnable(getApplicationContext(),"启动008");
-        AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
-        AutoUtil.sleep(1000);
+     //测试执行
+     if("0".equals(regObj.getAction())){
+         AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
 
-
+         new Thread(new SetWxidThread(this,WeixinAutoHandler.record)).start(); //设置微信号
+     }
 
     }
     private String getFlowMsg(RegObj regObj,Map<String,String> record){
