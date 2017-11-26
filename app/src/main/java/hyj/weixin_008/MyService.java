@@ -33,6 +33,7 @@ import hyj.weixin_008.model.PhoneApi;
 import hyj.weixin_008.model.RegObj;
 import hyj.weixin_008.service.ADBClickService;
 import hyj.weixin_008.thread.AddFriendThread;
+import hyj.weixin_008.thread.AddFriendThread1;
 import hyj.weixin_008.thread.AutoChatThread;
 import hyj.weixin_008.thread.DieThread;
 import hyj.weixin_008.thread.DrapImageThread;
@@ -129,9 +130,14 @@ public class MyService extends AccessibilityService {
 
     }else if("true".equals(yh)){
             new Thread(new Set008DataService(this,WeixinAutoHandler.record,regObj)).start();//养号
-            if("1".equals(regObj.getAction())){
+        /**
+         * 0 测试 1 设置微信号 2 添加好友
+         */
+        if("1".equals(regObj.getAction())){
                 new Thread(new SetWxidThread(this,WeixinAutoHandler.record)).start(); //设置微信号
-            }
+        }else if("2".equals(regObj.getAction())){
+                new Thread(new AddFriendThread1(this)).start();
+        }
     }else if("true".equals(get008Data)){
            new Thread(new Get008DataThread(this,new Get008Data())).start();
     }

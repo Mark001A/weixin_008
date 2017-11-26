@@ -106,6 +106,7 @@
         android:id="@+id/action"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
     <Button
         android:id="@+id/api_setting"
         android:layout_width="match_parent"

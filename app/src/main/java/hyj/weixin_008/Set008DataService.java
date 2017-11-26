@@ -66,6 +66,9 @@ public class Set008DataService implements Runnable{
         while (true){
             AutoUtil.sleep(500);
             LogUtil.d("myService","-->养号线程运行..."+Thread.currentThread().getName()+record);
+            //缓存手机号
+            record.put("phone",regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone());
+            record.put("wxIndex",regObj.getCurrentIndex()+"");
 
             if(regObj.getWx008Datas().size()==0){
                 AutoUtil.recordAndLog(record,"没有008数据");
@@ -395,7 +398,7 @@ public class Set008DataService implements Runnable{
         if(node1!=null){
             AutoUtil.clickXY(518,918);
             AutoUtil.recordAndLog(record,"008一键操作");
-            AutoUtil.sleep(4000);
+            AutoUtil.sleep(6000);
         }
     }
     private void set008Data(AccessibilityNodeInfo root){
@@ -421,8 +424,9 @@ public class Set008DataService implements Runnable{
             LogUtil.d("number",msg);
             AutoUtil.showToastByRunnable(GlobalApplication.getContext().getApplicationContext(),msg);
             if(AutoUtil.checkAction(record,"008写入数据完成")){
+                AutoUtil.sleep(3000);
                 AccessibilityNodeInfo save =AutoUtil.findNodeInfosByText(root,"保存");
-                AutoUtil.performClick(save,record,"st保存",2500);
+                AutoUtil.performClick(save,record,"st保存",1500);
                 AutoUtil.recordAndLog(record,"st写入数据");
             }
 
