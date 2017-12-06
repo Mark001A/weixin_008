@@ -73,7 +73,7 @@ public class ParseRootUtil {
     private static boolean haveNextLevel(List<NodeAttr> levelNodes){
         boolean flag = false;
         for(NodeAttr levelNode:levelNodes){
-            if(levelNode.getNode().getChildCount()>0){
+            if(levelNode.getNode()!=null&&levelNode.getNode().getChildCount()>0){
                 flag = true;
                 break;
             }
@@ -132,7 +132,7 @@ public class ParseRootUtil {
             }
         }
 
-        if(!text.equals(root.getText()+"")){
+        if(root==null||!text.equals(root.getText()+"")){
             return null;
         }
         return root;
@@ -151,7 +151,7 @@ public class ParseRootUtil {
             }
         }
 
-        if(!desc.equals(root.getContentDescription()+"")){
+        if(root==null||!desc.equals(root.getContentDescription()+"")){
             return null;
         }
         return root;

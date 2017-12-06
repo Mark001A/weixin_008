@@ -42,6 +42,7 @@ import hyj.weixin_008.thread.Get008DataThread;
 import hyj.weixin_008.thread.LhGetPhoneAndValidCodeThread;
 import hyj.weixin_008.thread.SetWxidThread;
 import hyj.weixin_008.thread.XmhGetPhoneAndValidCodeThread;
+import hyj.weixin_008.util.DaoUtil;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
 import hyj.weixin_008.util.OkHttpUtil;
@@ -100,7 +101,8 @@ public class MyService extends AccessibilityService {
 
         PhoneApi pa = new PhoneApi(apiId,apiPwd,apiPjId,zcPwd,cn_num);
         //List<Wx008Data> wx008Datas = DataSupport.findAll(Wx008Data.class);
-        List<Wx008Data> wx008Datas = DataSupport.where("expMsg  not like ? or expMsg is null","%被限制登录%").order("createTime asc").find(Wx008Data.class);
+        //List<Wx008Data> wx008Datas = DataSupport.where("expMsg  not like ? or expMsg is null","%被限制登录%").order("createTime asc").find(Wx008Data.class);
+        List<Wx008Data> wx008Datas = DaoUtil.getWx008Datas();
         LogUtil.d("008data","读取数据库信息成功，总长度："+wx008Datas.size());
         regObj = new RegObj(airplane,zc2,zc3,addSpFr,wx008Datas,airplaneChangeIpNum);
         regObj.setAction(action);
@@ -157,7 +159,7 @@ public class MyService extends AccessibilityService {
 
     }
     private String getFlowMsg(RegObj regObj,Map<String,String> record){
-        String msg = "总数："+regObj.getTotalNum()+" 序号："+regObj.getCurrentIndex()
+        String msg = "T:"+regObj.getTotalNum()+" NO:"+regObj.getCurrentIndex()+" F:"+ DaoUtil.getLoginFailNum()
                     +"\n"+record.get("recordAction");
         return msg;
     }

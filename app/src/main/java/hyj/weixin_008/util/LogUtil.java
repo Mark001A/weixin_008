@@ -24,7 +24,7 @@ public class LogUtil {
         String dateTime = sdf.format(new Date());
         String logMsg = dateTime+" "+tab+"---->"+msg;
         //以天为单位生成日志文件
-        System.out.println(logMsg);
+        LogUtil.d("logMsg",logMsg);
         FileUtil.writeContent2File("/sdcard/A_hyj_login/","loginInfo_"+dateTime.substring(0,10)+".txt",logMsg);
     }
     //记录登录账号sd卡

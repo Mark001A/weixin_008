@@ -97,6 +97,15 @@ public class AddFriendThread1 implements Runnable {
 
     }
     private void doAddFr(AccessibilityNodeInfo root){
+        //处理添加异常情况
+        AccessibilityNodeInfo expNode1 = ParseRootUtil.getNodeByPathAndText(root,"00","用户不存在");
+        if(expNode1!=null){
+            AccessibilityNodeInfo expNode2 = ParseRootUtil.getNodeByPathAndText(root,"01","确定");
+            AutoUtil.performClick(expNode2,record,"AddFriendThread1用户不存在");
+            currentAddWxid = currentAddWxid+1;
+            return;
+        }
+
         //点击返回，序号加1
         if(AutoUtil.checkAction(record,"AddFriendThread1发送好友请求")){
             AccessibilityNodeInfo node61 = AutoUtil.findNodeInfosByText(root,"添加到通讯录");
@@ -142,7 +151,8 @@ public class AddFriendThread1 implements Runnable {
         AccessibilityNodeInfo node7 = ParseRootUtil.getNodeByPathAndText(root,"002","发送");
         AutoUtil.performClick(node7,record,"AddFriendThread1发送好友请求");
 
-        AccessibilityNodeInfo node8 = ParseRootUtil.getNodeByPathAndText(root,"00350","发消息");
+        //AccessibilityNodeInfo node8 = ParseRootUtil.getNodeByPathAndText(root,"00350","发消息");
+        AccessibilityNodeInfo node8 = AutoUtil.findNodeInfosByText(root,"发消息");
         System.out.println("node8-->"+node8);
         if(node8!=null&&!AutoUtil.checkAction(record,"AddFriendThread1以前已添加返回主界面")){
             /*AccessibilityNodeInfo node9 = ParseRootUtil.getNodePath(root,"003");

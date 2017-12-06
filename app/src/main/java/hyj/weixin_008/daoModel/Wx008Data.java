@@ -15,10 +15,19 @@ public class Wx008Data extends DataSupport {
     private String wxPwd;//属性名称为pwd无法保存？
     private String expMsg;
     private int dieFlag;//0正常 1账号异常 2 操作频率过快 3 登录环境异常 长期未登录  批量注册 4手机不在身边
-    private String cnNum;
+    private String cnNum;//国别区号
+    private String loginState;//登陆状态 0 登陆不成功 1 登陆成功
     private Date createTime;
 
     public Wx008Data() {
+    }
+
+    public String getLoginState() {
+        return loginState;
+    }
+
+    public void setLoginState(String loginState) {
+        this.loginState = loginState;
     }
 
     public String getCnNum() {

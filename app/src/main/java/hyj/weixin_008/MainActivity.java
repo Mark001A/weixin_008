@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //save2Db();
-                //del();
+                 //del();
                 //update();
                 startActivity(new Intent(MainActivity.this,SettingActivity.class));
             }
@@ -239,18 +239,15 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("datas size1--->"+datas.size());
 
         List<String> phones = new ArrayList<String>();
-        phones.add("15211688524");
-        phones.add("15274634534");
-        phones.add("15907486524");
-        phones.add("15874692484");
+        phones.add("8970363980");
+
 
 
 
         for(String phone:phones){
-            DataSupport.deleteAll(Wx008Data.class,"phone=?",phone);
+            int cntDel = DataSupport.deleteAll(Wx008Data.class,"phone=?",phone);
+            System.out.println("--->cntDel-->"+cntDel);
         }
-        List<Wx008Data> datas2 = DataSupport.findAll(Wx008Data.class);
-        System.out.println("datas size2--->"+datas2.size());
     }
     private void update(){
        Wx008Data wx1 = new Wx008Data();

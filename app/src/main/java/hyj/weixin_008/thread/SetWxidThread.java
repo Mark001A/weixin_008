@@ -28,7 +28,7 @@ public class SetWxidThread implements Runnable {
         this.record = record;
     }
     int wxNum = 459;
-    String wxpref = "uae";
+    String wxpref = "uac";
     String wxid="";
     @Override
     public void run() {

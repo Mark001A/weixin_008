@@ -32,6 +32,7 @@ import hyj.weixin_008.R;
 import hyj.weixin_008.common.WeixinAutoHandler;
 import hyj.weixin_008.daoModel.Wx008Data;
 import hyj.weixin_008.flowWindow.MyWindowManager;
+import hyj.weixin_008.util.DaoUtil;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
 
@@ -152,7 +153,8 @@ public class SettingActivity extends AppCompatActivity {
 
     private String[] getAllPhoneList(){
 
-        List<Wx008Data> wx008Datas = DataSupport.where("expMsg  not like ? or expMsg is null","%被限制登录%").order("createTime asc").find(Wx008Data.class);
+        //List<Wx008Data> wx008Datas = DataSupport.where("expMsg  not like ? or expMsg is null","%被限制登录%").order("createTime asc").find(Wx008Data.class);
+        List<Wx008Data> wx008Datas = DaoUtil.getWx008Datas();
 
         List<String> datas = new ArrayList<String>();
         for(int i=0,l=wx008Datas.size();i<l;i++){
