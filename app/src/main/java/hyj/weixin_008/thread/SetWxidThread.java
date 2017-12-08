@@ -79,6 +79,18 @@ public class SetWxidThread implements Runnable {
             AccessibilityNodeInfo node4 = ParseRootUtil.getNodeByPathAndText(root,"00210","微信号");
             AccessibilityNodeInfo node41 = ParseRootUtil.getNodePath(root,"00211");
             if(node4!=null&&node41!=null&&!"未设置".equals(node41.getText()+"")){
+
+                //已经设置，但是wxid没记录到数据库
+                AccessibilityNodeInfo wxidNode = ParseRootUtil.getNodePath(root,"00211");
+                if(wxidNode!=null&&(wxidNode.getText()+"").length()>5){
+                    String wx = wxidNode.getText()+"";
+                    String phone = record.remove("phone");
+                    Wx008Data data = new Wx008Data();
+                    data.setWxId(wx);
+                    int up = data.updateAll("phone=?",phone);
+                    System.out.println("填报微信号-->wx:"+wx+" isupdate:"+up+" phone;"+phone);
+                }
+
                 AutoUtil.recordAndLog(record,"008登录成功");
                 continue;
             }

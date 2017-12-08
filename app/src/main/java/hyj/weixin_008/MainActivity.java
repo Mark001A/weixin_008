@@ -239,10 +239,8 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("datas size1--->"+datas.size());
 
         List<String> phones = new ArrayList<String>();
-        phones.add("8970363980");
-
-
-
+        phones.add("8970359143");
+        phones.add("8970365919");
 
         for(String phone:phones){
             int cntDel = DataSupport.deleteAll(Wx008Data.class,"phone=?",phone);

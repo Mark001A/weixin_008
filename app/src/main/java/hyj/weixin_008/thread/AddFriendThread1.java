@@ -3,6 +3,8 @@ package hyj.weixin_008.thread;
 import android.accessibilityservice.AccessibilityService;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.alibaba.fastjson.JSON;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -131,6 +133,7 @@ public class AddFriendThread1 implements Runnable {
             System.out.println("--->008 login seccess");
             AutoUtil.recordAndLog(record,"008登录成功");
             currentAddWxid = 0;
+            updateFriends(record);
             return;
         }
         AccessibilityNodeInfo node2 = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/hb");
@@ -166,13 +169,8 @@ public class AddFriendThread1 implements Runnable {
 
     }
 
-    /**
-     *
-     * @param index 当前登录wxid的序号
-     * @param addIndex 添加wxid好友序号
-     * @return
-     */
-    private String getWxidByIndex(String index,int addIndex){
+
+   /* private String getWxidByIndex(String index,int addIndex){
         List<String> groups = getCurrentGroupByIndex(index);
         if(groups==null||groups.size()==0){
             LogUtil.d("AddFriendThread1","groups is null");
@@ -180,6 +178,64 @@ public class AddFriendThread1 implements Runnable {
         }
         if(addIndex<groups.size()){
             return groups.get(addIndex);
+        }else {
+            return null;
+        }
+
+    }*/
+   private List<String> getAddWxids(){
+       List<String> list1 =getAddWxids2();
+
+       List<String> list = new ArrayList<String>();
+       int index = 24;
+       list.add(list1.get(index));
+       list.add(list1.get(index+1));
+       return list;
+   }
+
+    private List<String> getAddWxids2(){
+        List<String> list = new ArrayList<String>();
+        list.add("mnf444");
+        list.add("uyh222");
+        list.add("ikf222");
+        list.add("ehg222");
+        list.add("ehg333");
+        list.add("ehg999");
+
+        list.add("w222qu");
+        list.add("w234wr");
+        list.add("w456mb");
+        list.add("w444mb");
+        list.add("w555mb");
+        list.add("w666mb");
+
+        list.add("w777mb");
+        list.add("w888mb");
+        list.add("w333mb");
+        list.add("w222mb");
+        list.add("w333wc");
+        list.add("w444wc");
+
+        list.add("w666wc");
+        list.add("w777wc");
+        list.add("w222wt");
+        list.add("w333wt");
+        list.add("w444wt");
+        list.add("w555hb");
+
+        list.add("w555wt");
+        list.add("w222wu");
+        list.add("w444wu");
+        list.add("w222hk");
+        list.add("w333hk");
+        list.add("w444hk");
+
+        return list;
+    }
+    private String getWxidByIndex(String index,int addIndex){
+        List<String> list =getAddWxids();
+        if(addIndex<list.size()){
+            return list.get(addIndex);
         }else {
             return null;
         }
@@ -211,6 +267,21 @@ public class AddFriendThread1 implements Runnable {
             wxid = data.getPhone();
         }
         return wxid;
+    }
+    //记录添加好友到数据库
+    private void updateFriends(Map<String,String> record){
+        String phone = record.get("phone");
+        System.out.println("updateFriends phone:-->"+phone);
+        Wx008Data wx008Data = DaoUtil.findByPhone(phone);
+        List<String> list = JSON.parseArray(wx008Data.getFriends(),String.class);
+        System.out.println("updateFriends db FriendList1:-->"+wx008Data.getFriends());
+        if(list==null){
+            wx008Data.setFriends(JSON.toJSONString(getAddWxids()));
+        }else {
+            wx008Data.setFriends(JSON.toJSONString(list.addAll(getAddWxids())));
+        }
+        wx008Data.updateAll("phone=?",phone);
+        System.out.println("updateFriends db FriendList2:-->"+DaoUtil.findByPhone(phone).getFriends());
     }
 
 }

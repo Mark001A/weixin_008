@@ -16,6 +16,14 @@ public class DaoUtil {
         return wx008Datas;
     }
 
+    public static Wx008Data findByPhone(String phone){
+        List<Wx008Data> wx008Datas = DataSupport.where("phone=?",phone).find(Wx008Data.class);
+        if(wx008Datas!=null&&wx008Datas.size()==1)
+            return wx008Datas.get(0);
+        else
+            return null;
+    }
+
     public static Integer getLoginFailNum(){
         List<Wx008Data> wx008Datas = DataSupport.where("loginState='0'").find(Wx008Data.class);
         if(wx008Datas==null)

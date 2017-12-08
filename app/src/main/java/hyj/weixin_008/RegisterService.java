@@ -99,6 +99,13 @@ public class RegisterService implements Runnable{
 
             ParseRootUtil.debugRoot(root);
 
+            if(AutoUtil.findNodeInfosByText(root,"SIM卡工具包")!=null){
+                context.performGlobalAction(context.GLOBAL_ACTION_BACK);
+                System.out.println("----SIM卡工具包1-->back");
+                continue;
+            }
+
+
             AccessibilityNodeInfo node4 = AutoUtil.findNodeInfosById(root,ConstantWxId.TIPS);
             if(node4!=null){
                 String tips = node4.getText().toString();
@@ -124,22 +131,32 @@ public class RegisterService implements Runnable{
                 }
             }
 
-            //操作评分弹出窗口
-           /* AccessibilityNodeInfo errorNode1 = ParseRootUtil.getNodePath(root,"00");
-            AccessibilityNodeInfo errorNode2 = ParseRootUtil.getNodePath(root,"01");
-            if(errorNode1!=null&&(errorNode1.getText()+"").indexOf("操作太频繁")>-1){
-               if(errorNode2!=null){
-                   errorNode2.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-                   LogUtil.d("error","操作太频繁");
-                   pa.setPhoneIsAvailavle(false);
-                   AutoUtil.recordAndLog(record,"008登录异常");
-               }
-            }*/
+
 
             if(record.get("recordAction").contains("008")||AutoUtil.checkAction(record,Constants.CHAT_LISTENING))
                 do008(root);
-            if(record.get("recordAction").contains("st"))
-                doVPN(root);
+            if(record.get("recordAction").contains("st")){
+
+                //doVPN(root);
+
+                if("true".equals(regObj.getAirplane())){
+                    if(regObj.getAirplaneChangeIpNum()==0){
+                        LogUtil.d("getAirplaneChangeIpNum","0跳过飞行模式");
+                        AutoUtil.recordAndLog(record,"wx连接成功");
+                    }else{
+                        if(regObj.getCurrentIndex()%regObj.getAirplaneChangeIpNum()==0){
+                            doAirplane(root);
+                        }else {
+                            LogUtil.d("getAirplaneChangeIpNum",regObj.getCurrentIndex()+"跳过飞行模式");
+                            AutoUtil.recordAndLog(record,"wx连接成功");
+                        }
+
+                    }
+
+                }else{
+                    doVPN(root);
+                }
+            }
                 //AutoUtil.recordAndLog(record,"wx连接成功");
             if(record.get("recordAction").contains("wx"))
                 doWxRegister(root);
@@ -190,7 +207,11 @@ public class RegisterService implements Runnable{
 
         //判断是否需好友辅助
         AccessibilityNodeInfo checkAssitNode = ParseRootUtil.getNodePath(root,"000000");
-        if(checkAssitNode!=null&&(checkAssitNode.getContentDescription()+"").indexOf("联系符合")>-1){
+        AccessibilityNodeInfo checkAssitNode1 = ParseRootUtil.getNodePath(root,"000001");
+        if(
+                (checkAssitNode!=null&&(checkAssitNode.getContentDescription()+"").indexOf("联系符合")>-1)
+                ||(checkAssitNode1!=null&&(checkAssitNode1.getContentDescription()+"").indexOf("联系符合")>-1)
+                ){
             pa.setPhoneIsAvailavle(false);
             AutoUtil.recordAndLog(record,"008登录异常");
         }
@@ -512,6 +533,48 @@ public class RegisterService implements Runnable{
         }
         System.out.println("currentAccount-->"+accounts);
         return accounts;
+    }
+
+    private void doAirplane(AccessibilityNodeInfo root) {
+
+        if (AutoUtil.checkAction(record, "st写入数据")) {
+            AutoUtil.recordAndLog(record, "st设置VPN");
+            AutoUtil.opentActivity(Settings.ACTION_AIRPLANE_MODE_SETTINGS);
+            AutoUtil.sleep(500);
+        }
+        if(AutoUtil.findNodeInfosByText(root,"无线和网络")!=null){
+            AccessibilityNodeInfo node1 = AutoUtil.findNodeInfosById(root,"android:id/checkbox");
+            if(node1==null) return;
+            String ip1 = AutoUtil.getIPAddress(GlobalApplication.getContext());
+            System.out.println("ip1-->"+ip1);
+            if(AutoUtil.checkAction(record,"st设置VPN")){
+                regObj.setCurrentIP(ip1);
+                if(!node1.isChecked()){
+                    clickTextXY1(960,270,"st开启飞行模式","miui:id/action_bar_title","无线和网络",2000);
+                    return;
+                }
+            }
+            if(node1.isChecked()&&AutoUtil.checkAction(record,"st开启飞行模式")&&ip1==null){
+                clickTextXY1(960,270,"st关闭飞行模式","miui:id/action_bar_title","无线和网络",5000);
+                return;
+            }
+            if(AutoUtil.checkAction(record,"st关闭飞行模式")){
+                if(ip1!=null&&!ip1.equals(regObj.getCurrentIP())){
+                    System.out.println("ip2-->"+ip1);
+                    regObj.setCurrentIP(ip1);
+                }
+            }
+
+            //判断关闭飞行模式后网络是否恢复
+            if(AutoUtil.checkAction(record,"st关闭飞行模式")){
+                if(CommonUtil.getNetWorkType()!=null){
+                    AutoUtil.recordAndLog(record,"wx连接成功");
+                }
+
+            }
+
+        }
+
     }
 
 }

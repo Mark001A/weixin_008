@@ -480,11 +480,17 @@ public class Set008DataService implements Runnable{
                     regObj.setCurrentIndex(regObj.getCurrentIndex()+1);
                     loginState = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getLoginState();
                 }
-            }else if("1".equals(action)){
+            }else if("1".equals(action)){//设置微信号
                 String wxId = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId();
                 while (regObj.getCurrentIndex()<regObj.getDatas().size()-1&&wxId!=null){
                     regObj.setCurrentIndex(regObj.getCurrentIndex()+1);
                     wxId = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId();
+                }
+            }else if("2".equals(action)){//添加好友
+                String friends = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getFriends();
+                while (regObj.getCurrentIndex()<regObj.getDatas().size()-1&&friends!=null){
+                    regObj.setCurrentIndex(regObj.getCurrentIndex()+1);
+                    friends = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getFriends();
                 }
             }
 

@@ -19,11 +19,6 @@ public class AddFrObj {
 
         wxList.add("w666mb");
         wxList.add("w777mb");
-        wxList.add("w888mb");
-        wxList.add("w333mb");
-        wxList.add("w222mb");
-        wxList.add("w333wc");
-        wxList.add("w444wc");
        /* wxList.add("w666wc");
         wxList.add("w777wc");
         wxList.add("w222wt");*/
