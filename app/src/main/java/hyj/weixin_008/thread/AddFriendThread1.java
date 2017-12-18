@@ -183,7 +183,7 @@ public class AddFriendThread1 implements Runnable {
         }
 
     }*/
-   private List<String> getAddWxids(){
+ /*  private List<String> getAddWxids(){
        List<String> list1 =getAddWxids2();
 
        List<String> list = new ArrayList<String>();
@@ -191,9 +191,9 @@ public class AddFriendThread1 implements Runnable {
        list.add(list1.get(index));
        list.add(list1.get(index+1));
        return list;
-   }
+   }*/
 
-    private List<String> getAddWxids2(){
+    private List<String> getAddWxids(){
         List<String> list = new ArrayList<String>();
         list.add("mnf444");
         list.add("uyh222");
@@ -229,6 +229,11 @@ public class AddFriendThread1 implements Runnable {
         list.add("w222hk");
         list.add("w333hk");
         list.add("w444hk");
+
+        String phone = record.get("phone");
+        Wx008Data wx008Data = DaoUtil.findByPhone(phone);
+        list = JSON.parseArray(wx008Data.getFriends(),String.class);
+        System.out.println("当前呆添加wx:-->"+wx008Data.getFriends());
 
         return list;
     }
@@ -278,7 +283,10 @@ public class AddFriendThread1 implements Runnable {
         if(list==null){
             wx008Data.setFriends(JSON.toJSONString(getAddWxids()));
         }else {
-            wx008Data.setFriends(JSON.toJSONString(list.addAll(getAddWxids())));
+            list.addAll(getAddWxids());
+            String newStr  = JSON.toJSONString(list);
+            System.out.println("updateFriends db newStr:-->"+newStr);
+            wx008Data.setFriends(newStr);
         }
         wx008Data.updateAll("phone=?",phone);
         System.out.println("updateFriends db FriendList2:-->"+DaoUtil.findByPhone(phone).getFriends());

@@ -16,6 +16,7 @@ import android.support.annotation.Dimension;
 import android.support.constraint.solver.widgets.Rectangle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -306,6 +307,15 @@ public class MainActivity extends AppCompatActivity {
             int distance = DragImageUtil.getDragDistance(path+"/"+f.getName());
             System.out.println("name-->"+f.getName()+"  size:"+f.length()+"  distance:"+distance);
         }*/
+
+    }
+
+    private void getPhoneInfo(){
+        TelephonyManager phone = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        String deviceId = phone.getDeviceId();
+        String imsi = phone.getSubscriberId();
+        String imei = phone.getSimSerialNumber();
+        String tel = phone.getLine1Number();
 
     }
 }

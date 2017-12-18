@@ -436,7 +436,9 @@ public class Set008DataService implements Runnable{
             set008Data(root);
         }
         if(AutoUtil.checkAction(record,"008登录成功")||AutoUtil.checkAction(record,"008登录异常")||AutoUtil.checkAction(record,"008注册处理完成")){
-
+            if(AutoUtil.checkAction(record,"008登录异常")){
+                updateStateByPhoneOrWxid("0");
+            }
             AutoUtil.showToastByRunnable(GlobalApplication.getContext().getApplicationContext(),"启动008");
             AutoUtil.startAppByPackName("com.soft.apk008v","com.soft.apk008.LoadActivity");
             AutoUtil.recordAndLog(record,"008启动008");
@@ -488,9 +490,11 @@ public class Set008DataService implements Runnable{
                 }
             }else if("2".equals(action)){//添加好友
                 String friends = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getFriends();
-                while (regObj.getCurrentIndex()<regObj.getDatas().size()-1&&friends!=null){
+                List<String> listd = JSON.parseArray(friends,String.class);
+                while (regObj.getCurrentIndex()<regObj.getDatas().size()-1&&(listd!=null&&listd.size()>=4)){
                     regObj.setCurrentIndex(regObj.getCurrentIndex()+1);
                     friends = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getFriends();
+                    listd = JSON.parseArray(friends,String.class);
                 }
             }
 
