@@ -1,5 +1,7 @@
 package hyj.weixin_008.thread;
 
+import com.alibaba.fastjson.JSONObject;
+
 import hyj.weixin_008.AutoUtil;
 import hyj.weixin_008.model.PhoneApi;
 import hyj.weixin_008.service.XmhPhoneNumberAPIService;
@@ -21,6 +23,7 @@ public class ZYGetPhoneAndValidCodeThread implements Runnable{
     @Override
     public void run() {
         while (true){
+            try {
             AutoUtil.sleep(5000);
             LogUtil.d("ZYGetPhoneAndValidCodeThread","【-->ZYGetPhoneAndValidCodeThread获取号码线程运行...】"+Thread.currentThread().getName()+" phone:"+pa.isPhoneIsAvailavle()+" validCode:"+pa.isValidCodeIsAvailavle()+" isSendMsg:"+pa.isSendMsg());
             if(pa.getToken()==null){
@@ -30,22 +33,26 @@ public class ZYGetPhoneAndValidCodeThread implements Runnable{
             }
             if(pa.getToken()!=null){
                 if(!pa.isPhoneIsAvailavle()){
-                    String phone = phoneService.getPhone(pa.getToken(),pa.getPjId());
+                    JSONObject phoneObj = phoneService.getPhone(pa.getToken(),pa.getPjId());
+                    String phone = phoneObj.getString("Phone");
+                    String MSGID = phoneObj.getString("MSGID");
                     LogUtil.d("ZYGetPhoneAndValidCodeThread","phoneBody:"+phone);
                     if(phone.matches("[\\d]{4,20}")){
+                        pa.setPhoneId(MSGID);
                         pa.setPhone(phone);
                         pa.setPhoneIsAvailavle(true);
                     }
                 }
 
                if(pa.isPhoneIsAvailavle()&&!pa.isValidCodeIsAvailavle()){
-                    String validCode = phoneService.getValidCode(pa.getApiId(),pa.getPhone(),pa.getToken(),pa.getPjId());
+                    String validCode = phoneService.getValidCode(pa.getApiId(),pa.getPhoneId(),pa.getToken(),pa.getPjId());
                     LogUtil.d("ZYGetPhoneAndValidCodeThread","validCodeBody："+validCode);
                     if(validCode.matches("[\\d]{4,8}")){
                         pa.setValidCode(validCode);
                         pa.setValidCodeIsAvailavle(true);
                     }
                 }
+
                 /*//发送短信
                 if(pa.isSendMsg()){
                     String status = phoneService.sendMsg(pa.getToken(),pa.getPhone(),pa.getMsg());
@@ -60,6 +67,11 @@ public class ZYGetPhoneAndValidCodeThread implements Runnable{
                     }
                 }*/
 
+            }
+
+            }catch (Exception e){
+                System.out.println("----Thread error");
+                e.printStackTrace();
             }
         }
     }

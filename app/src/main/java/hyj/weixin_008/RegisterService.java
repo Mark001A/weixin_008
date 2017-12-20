@@ -71,8 +71,10 @@ public class RegisterService implements Runnable{
     @Override
     public void run() {
         while (true){
+            try {
             AutoUtil.sleep(500);
             LogUtil.d("myService","hyj-->注册线程运行..."+Thread.currentThread().getName()+record);
+            System.out.println("--->getNetWorkType:"+CommonUtil.getNetWorkType());
 
             if(WeixinAutoHandler.IS_PAUSE){
                 LogUtil.d("autoChat","暂停服务");
@@ -160,6 +162,12 @@ public class RegisterService implements Runnable{
                 //AutoUtil.recordAndLog(record,"wx连接成功");
             if(record.get("recordAction").contains("wx"))
                 doWxRegister(root);
+
+
+            }catch (Exception e){
+                System.out.println("---->reg error");
+                e.printStackTrace();
+            }
         }
     }
     private void loginNext(){

@@ -32,9 +32,9 @@ public class ZYPhoneNumberAPIService {
     }
 
 
-    public String getPhone( String token, String pjId){
+    public JSONObject getPhone( String token, String pjId){
 
-        String phone = "";
+        JSONObject phone = null;
         String url = "http://zhiyuan.quanhuini.com/GetPhoneNumber?Token="+token+"&ItemId="+pjId+"&Phone=&Operator=0&Developer=";
         String phones = OkHttpUtil.okHttpGet(url);
         System.out.println("-->hyj ZYPhoneNumberAPIService getPhone url-->"+url);
@@ -42,7 +42,7 @@ public class ZYPhoneNumberAPIService {
         //LogUtil.d("phoneBody",phones);
         JSONObject jb = JSON.parseObject(phones);
         if("0".equals(jb.getString("code"))){
-            phone = jb.getJSONObject("data").getString("MSGID");
+            phone = jb.getJSONObject("data");
 
         }
         System.out.println("-->hyj ZYPhoneNumberAPIService getPhone-->"+phone);
