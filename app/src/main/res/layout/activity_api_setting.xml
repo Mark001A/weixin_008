@@ -9,7 +9,7 @@
     tools:context="hyj.weixin_008.acvitity.ApiSettingActivity">
 
     <TextView
-        android:text="平台编号（1玉米 2 爱乐赞 3 吸码）"
+        android:text="平台编号（1玉米 2 爱乐赞 3 吸码 4 志远）"
         android:textSize="20sp"
         android:textColor="#000000"
         android:layout_width="match_parent"

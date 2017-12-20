@@ -42,6 +42,7 @@ import hyj.weixin_008.thread.Get008DataThread;
 import hyj.weixin_008.thread.LhGetPhoneAndValidCodeThread;
 import hyj.weixin_008.thread.SetWxidThread;
 import hyj.weixin_008.thread.XmhGetPhoneAndValidCodeThread;
+import hyj.weixin_008.thread.ZYGetPhoneAndValidCodeThread;
 import hyj.weixin_008.util.DaoUtil;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
@@ -115,7 +116,7 @@ public class MyService extends AccessibilityService {
                 new Thread(new RegisterService(this,WeixinAutoHandler.record,pa,regObj)).start();
              }
 
-        //api平台选择 1玉米 2 爱乐赞 3 吸码 11路虎
+        //api平台选择 1玉米 2 爱乐赞 3 吸码 11路虎 4 志远
           System.out.println("api_type-->"+api_type);
           if("1".equals(api_type)){
               new Thread(new GetPhoneAndValidCodeThread(pa)).start();//玉米
@@ -125,6 +126,8 @@ public class MyService extends AccessibilityService {
               new Thread(new LhGetPhoneAndValidCodeThread(pa)).start();//路虎
           }else if("3".equals(api_type)){
               new Thread(new XmhGetPhoneAndValidCodeThread(pa)).start();//吸码
+          }else if("4".equals(api_type)){
+              new Thread(new ZYGetPhoneAndValidCodeThread(pa)).start();//志远
           }
 
             new Thread(new DieThread()).start();//注册死亡开关
