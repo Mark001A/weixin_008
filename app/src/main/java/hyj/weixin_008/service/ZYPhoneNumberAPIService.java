@@ -56,9 +56,10 @@ public class ZYPhoneNumberAPIService {
         if("0".equals(jb.getString("code"))){
             phone = jb.getString("data");
             System.out.println("hyj veryCodeBody data-->"+phone);
-            phone = regString(phone,"[\\d]{4,10}",0);
+            validCode = regString(phone,"[\\d]{4,10}",0);
             System.out.println("hyj veryCodeBody code-->"+phone);
         }
+        System.out.println("hyj veryCodeBody-->"+veryCodeBody);
 
         return validCode;
     }

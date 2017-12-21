@@ -80,7 +80,7 @@ public class ForeignRegisterService implements Runnable{
             }
 
             AutoUtil.sleep(500);
-            LogUtil.d("myService","hyj-->【国外】注册线程运行..."+Thread.currentThread().getName()+record);
+            LogUtil.d("myService","hyj-->【国外】注册线程运行..."+Thread.currentThread().getName()+record+" pa.getValidCode()："+pa.getValidCode());
             //cancelAllRecv(pa.getToken());
 
             if(WeixinAutoHandler.IS_PAUSE){
@@ -114,7 +114,7 @@ public class ForeignRegisterService implements Runnable{
                 continue;
             }
 
-            //ParseRootUtil.debugRoot(root);
+            ParseRootUtil.debugRoot(root);
 
             AccessibilityNodeInfo node4 = AutoUtil.findNodeInfosById(root,ConstantWxId.TIPS);
             if(node4!=null){
@@ -237,9 +237,16 @@ public class ForeignRegisterService implements Runnable{
             pa.setPhoneIsAvailavle(false);
             AutoUtil.recordAndLog(record,"008登录异常");
         }
+        AccessibilityNodeInfo checkAssitNode1 = ParseRootUtil.getNodePath(root,"000001");
+        if(checkAssitNode1!=null&&(checkAssitNode1.getContentDescription()+"").indexOf("联系符合")>-1){
+            pa.setPhoneIsAvailavle(false);
+            AutoUtil.recordAndLog(record,"008登录异常");
+        }
 
        //输入验证码界面
         AccessibilityNodeInfo enterValicodeNode = ParseRootUtil.getNodePath(root,"00221");
+        System.out.println("enterValicodeNode--->"+enterValicodeNode);
+        System.out.println("pa.isValidCodeIsAvailavle()--->"+pa.isValidCodeIsAvailavle());
         if(enterValicodeNode!=null&&"请输入验证码".equals(enterValicodeNode.getText()+"")&&pa.isValidCodeIsAvailavle()){
             AutoUtil.performSetText(enterValicodeNode,pa.getValidCode(),record,"wx输入验证码");
             if(AutoUtil.checkAction(record,"wx输入验证码")){
