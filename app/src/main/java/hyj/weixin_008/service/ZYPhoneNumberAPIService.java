@@ -35,7 +35,7 @@ public class ZYPhoneNumberAPIService {
     public JSONObject getPhone( String token, String pjId){
 
         JSONObject phone = null;
-        String url = "http://zhiyuan.quanhuini.com/GetPhoneNumber?Token="+token+"&ItemId="+pjId+"&Phone=&Operator=0&Developer=";
+        String url = "http://zhiyuan.quanhuini.com/GetPhoneNumber?Token="+token+"&ItemId="+pjId+"&Phone=&Operator=0&Developer=brute121105";
         String phones = OkHttpUtil.okHttpGet(url);
         System.out.println("-->hyj ZYPhoneNumberAPIService getPhone url-->"+url);
         System.out.println("-->hyj ZYPhoneNumberAPIService phoneBody-->"+phones);
