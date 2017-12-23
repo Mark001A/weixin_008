@@ -16,6 +16,7 @@ public class PhoneApi {
     private String status;
     private String cnNum;
     private String phoneId;
+    private String releasPhone;
 
 
     private int waitValicodeTime;
@@ -32,6 +33,14 @@ public class PhoneApi {
         this.pjId = pjId;
         this.cnNum = cnNum;
 
+    }
+
+    public String getReleasPhone() {
+        return releasPhone;
+    }
+
+    public void setReleasPhone(String releasPhone) {
+        this.releasPhone = releasPhone;
     }
 
     public String getPhoneId() {

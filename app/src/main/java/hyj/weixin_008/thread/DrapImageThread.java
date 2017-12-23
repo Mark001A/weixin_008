@@ -6,7 +6,12 @@ import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -102,29 +107,28 @@ public class DrapImageThread implements Runnable {
                 AutoUtil.sleep(1000);
                 String  path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()+"/Screenshots";
                 LogUtil.d("DrapImageThread","path-->"+path);
-                //清空文件
-               /*  File file = new File(path);
-                   File[] files = file.listFiles();
-                   if(files!=null&&files.length>0){
-                    LogUtil.d("DrapImageThread","file length-->"+files.length);
-                    for(File f:files){
-                        LogUtil.d("DrapImageThread","删除："+f.getName());
-                        f.delete();
-                        LogUtil.d("DrapImageThread","删除完："+f.getName());
-                    }
-                }*/
+
                 //截图
                 AutoUtil.execShell("input keyevent 120");
                 LogUtil.d("DrapImageThread","截图");
-                AutoUtil.sleep(2000);
+                AutoUtil.sleep(4000);
 
                 //获取图片，计算拖动坐标
                 File picFile = waitAndGetFile(path);
+                if(picFile ==null){
+                    LogUtil.d("DrapImageThread","等待picFile生成");
+                    AutoUtil.sleep(3000);
+                    continue;
+                }
+
+               // InputStream is = getFileInputStrem(picFile);
+               /* Bitmap bi = BitmapFactory.decodeStream(is);*/
                 String picPath = path+"/"+picFile.getName();
                 LogUtil.d("DrapImageThread","picPath:"+picPath);
                 Bitmap bi = BitmapFactory.decodeFile(picPath);
                 if(bi ==null){
                     LogUtil.d("DrapImageThread","等待bitmap生成");
+                    AutoUtil.sleep(3000);
                     continue;
                 }
                 String dragStr = DragImageUtil.dragPoint(bi);
@@ -152,7 +156,7 @@ public class DrapImageThread implements Runnable {
         }
     }
 
-    //轮询获取截图图片
+   /* //轮询获取截图图片
     private File waitAndGetFile(String path){
         File picFile = null;
         while (picFile==null){
@@ -165,6 +169,34 @@ public class DrapImageThread implements Runnable {
             }
         }
         return picFile;
+    }*/
+   //轮询获取截图图片
+   private File waitAndGetFile(String path){
+       File picFile = null;
+       File[] files = new File(path).listFiles();
+       if(files!=null&&files.length>0){
+           picFile = files[files.length-1];
+       }
+       return picFile;
+   }
+
+    private InputStream getFileInputStrem(File f){
+        InputStream in = null;
+        try {
+            in = new FileInputStream(f);
+            byte b[]=new byte[(int)f.length()];     //创建合适文件大小的数组
+            try {
+                in.read(b);    //读取文件中的内容到b[]数组
+                in.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.out.println(new String(b));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return in;
+
     }
 
 

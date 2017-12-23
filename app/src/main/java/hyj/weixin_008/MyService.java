@@ -220,7 +220,25 @@ public class MyService extends AccessibilityService {
                     AutoUtil.clickXY(1043,1768);
                     clickFlag = true;
                 }
-                AccessibilityNodeInfo n1 = AutoUtil.findNodeInfosByText(root,cn_num);
+                List<AccessibilityNodeInfo> cnNumNodes =  root.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/ip");//国家数字号节点
+                if(cnNumNodes!=null&&cnNumNodes.size()>0){
+                    for(AccessibilityNodeInfo cnNode:cnNumNodes){
+                        //找到目标，点击
+                        if(cn_num.equals(cnNode.getText()+"")){
+                            AutoUtil.performClick(cnNode,WeixinAutoHandler.record,"wx选择国家",3000);
+                            clickFlag = false;
+                            return;
+
+                        }
+                        System.out.println("cnNode text-->"+cnNode.getText());
+                    }
+                }
+
+                AccessibilityNodeInfo listViewNode = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/i9");
+                AutoUtil.performScroll(listViewNode,WeixinAutoHandler.record,"access下滚");
+
+
+              /*  AccessibilityNodeInfo n1 = AutoUtil.findNodeInfosByText(root,cn_num);
                 if(n1==null||(n1!=null&&!cn_num.equals(n1.getText()+""))){
                     AccessibilityNodeInfo listViewNode = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/i9");
                     AutoUtil.performScroll(listViewNode,WeixinAutoHandler.record,"access下滚");
@@ -230,7 +248,7 @@ public class MyService extends AccessibilityService {
                 if(n1!=null&&cn_num.equals(n1.getText()+"")){
                     AutoUtil.performClick(n1,WeixinAutoHandler.record,"wx选择国家",3000);
                     clickFlag = false;
-                }
+                }*/
             }
         }
 

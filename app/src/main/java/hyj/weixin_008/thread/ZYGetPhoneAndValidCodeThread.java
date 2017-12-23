@@ -30,6 +30,7 @@ public class ZYGetPhoneAndValidCodeThread implements Runnable{
                 String token = phoneService.login(pa.getApiId(),pa.getPwd());
                 pa.setToken(token);
                 LogUtil.d("ZYGetPhoneAndValidCodeThread","token获取成功："+token);
+                cancelAllRecv(token);
             }
             if(pa.getToken()!=null){
                 if(!pa.isPhoneIsAvailavle()){
@@ -51,6 +52,13 @@ public class ZYGetPhoneAndValidCodeThread implements Runnable{
                         pa.setValidCode(validCode);
                         pa.setValidCodeIsAvailavle(true);
                     }
+                }
+
+                //释放手机号码
+                if(pa.getReleasPhone()!=null){
+                    LogUtil.d("ZYGetPhoneAndValidCodeThread","【释放手机号】："+pa.getReleasPhone());
+                    releasePhone(pa.getToken(),pa.getReleasPhone());
+                    pa.setReleasPhone(null);
                 }
 
                 /*//发送短信
@@ -78,11 +86,17 @@ public class ZYGetPhoneAndValidCodeThread implements Runnable{
 
     //针对吸吸码蝗
     public String cancelAllRecv(String token){
-        String mainUrl = "http://www.ximahuang.com/alz/api";
-        String url = mainUrl+"?action=cancelAllRecv&token="+token;
+        String url ="http://zhiyuan.quanhuini.com/AllRelease?Token="+token;
         LogUtil.d("ZYGetPhoneAndValidCodeThread cancelAllRecvUrl",url);
         String cancelAllRecvBody = OkHttpUtil.okHttpGet(url);
         LogUtil.d("ZYGetPhoneAndValidCodeThread cancelAllRecvBody",cancelAllRecvBody);
         return cancelAllRecvBody;
+    }
+
+    private void releasePhone(String token,String phone){
+        String url  = "http://zhiyuan.quanhuini.com/ReleasePhone?Token="+token+"&MSGID="+phone;
+        LogUtil.d("ZYGetPhoneAndValidCodeThread releasePhone",url);
+        String releasePhoneBody = OkHttpUtil.okHttpGet(url);
+        LogUtil.d("ZYGetPhoneAndValidCodeThread releasePhone",releasePhoneBody);
     }
 }

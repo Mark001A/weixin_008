@@ -141,17 +141,7 @@ public class ForeignRegisterService implements Runnable{
                 }
             }
 
-            //操作评分弹出窗口
-           /* AccessibilityNodeInfo errorNode1 = ParseRootUtil.getNodePath(root,"00");
-            AccessibilityNodeInfo errorNode2 = ParseRootUtil.getNodePath(root,"01");
-            if(errorNode1!=null&&(errorNode1.getText()+"").indexOf("操作太频繁")>-1){
-               if(errorNode2!=null){
-                   errorNode2.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-                   LogUtil.d("error","操作太频繁");
-                   pa.setPhoneIsAvailavle(false);
-                   AutoUtil.recordAndLog(record,"008登录异常");
-               }
-            }*/
+
 
             if(record.get("recordAction").contains("008")||AutoUtil.checkAction(record,Constants.CHAT_LISTENING))
                 do008(root);
@@ -200,9 +190,9 @@ public class ForeignRegisterService implements Runnable{
             AutoUtil.sleep(1000);
         }
 
-        if(AutoUtil.checkAction(record,"wx连接成功")||AutoUtil.checkAction(record,"wx点击注册1")){
+        if(AutoUtil.checkAction(record,"wx连接成功")||AutoUtil.checkAction(record,"wx点11击注册1")){
             AccessibilityNodeInfo regNode = AutoUtil.findNodeInfosByText(root,"注册");
-            AutoUtil.performClick(regNode,record,"wx点击注册1");
+            AutoUtil.performClick(regNode,record,"wx点击注册1",1500);
             //adbService.clickXYByWindow("登录&注册",834,1790,"wx点击注册1",500);
         }
 
@@ -234,14 +224,27 @@ public class ForeignRegisterService implements Runnable{
         //判断是否需好友辅助
         AccessibilityNodeInfo checkAssitNode = ParseRootUtil.getNodePath(root,"000000");
         if(checkAssitNode!=null&&(checkAssitNode.getContentDescription()+"").indexOf("联系符合")>-1){
-            pa.setPhoneIsAvailavle(false);
+            //pa.setPhoneIsAvailavle(false);
             AutoUtil.recordAndLog(record,"008登录异常");
         }
         AccessibilityNodeInfo checkAssitNode1 = ParseRootUtil.getNodePath(root,"000001");
         if(checkAssitNode1!=null&&(checkAssitNode1.getContentDescription()+"").indexOf("联系符合")>-1){
-            pa.setPhoneIsAvailavle(false);
+            //pa.setPhoneIsAvailavle(false);
             AutoUtil.recordAndLog(record,"008登录异常");
         }
+        //操作频繁
+            AccessibilityNodeInfo errorNode1 = ParseRootUtil.getNodePath(root,"00");
+            AccessibilityNodeInfo errorNode2 = ParseRootUtil.getNodePath(root,"01");
+            if(errorNode1!=null&&(errorNode1.getText()+"").indexOf("操作太频繁")>-1){
+               if(errorNode2!=null){
+                   AutoUtil.sleep(4000);
+                   errorNode2.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                   LogUtil.d("error","操作太频繁");
+                   AutoUtil.recordAndLog(record,"008登录异常");
+                   return;
+               }
+            }
+
 
        //输入验证码界面
         AccessibilityNodeInfo enterValicodeNode = ParseRootUtil.getNodePath(root,"00221");
@@ -390,6 +393,7 @@ public class ForeignRegisterService implements Runnable{
             set008Data(root);
         }
         if(AutoUtil.checkAction(record,"008登录异常")){
+            pa.setReleasPhone(pa.getPhoneId()==null?pa.getPhone():pa.getPhoneId());
             pa.setPhoneIsAvailavle(false);
             pa.setValidCodeIsAvailavle(false);
             AutoUtil.showToastByRunnable(GlobalApplication.getContext().getApplicationContext(),"启动008");

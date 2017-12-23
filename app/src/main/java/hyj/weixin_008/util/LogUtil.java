@@ -41,7 +41,7 @@ public class LogUtil {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateTime = sdf.format(new Date());
         //以天为单位生成日志文件
-        FileUtil.writeContent2File("/sdcard/A_hyj_008data/","008data.txt",msg);
+            FileUtil.writeContent2File("/sdcard/A_hyj_008data/","008data.txt",msg);
     }
     //记录008数据到sd卡
     public static void export(String path,String msg){
