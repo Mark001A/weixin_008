@@ -42,6 +42,8 @@ public class Set008DataService implements Runnable{
     ADBClickService adbService;
     RegObj regObj;
     boolean clickFlag = false;
+    boolean isFistOne = true;
+    int loginIndex = 0;
     public Set008DataService(AccessibilityService context, Map<String,String> record,RegObj regObj){
         this.context = context;
         this.record = record;
@@ -50,7 +52,8 @@ public class Set008DataService implements Runnable{
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("url",MODE_PRIVATE);
         String startLoginIndex = sharedPreferences.getString("startLoginIndex","");
         if(startLoginIndex!=null&&!"".equals(startLoginIndex)){
-            regObj.setCurrentIndex(Integer.parseInt(startLoginIndex.split("-")[0]));
+            loginIndex = Integer.parseInt(startLoginIndex.split("-")[0]);
+            regObj.setCurrentIndex(loginIndex);
         }
     }
     int countLongin=0;
@@ -468,11 +471,15 @@ public class Set008DataService implements Runnable{
 
             AutoUtil.sleep(3000);
 
-            if(regObj.getCurrentIndex()<regObj.getDatas().size()-1){
+
+            if(regObj.getCurrentIndex()<regObj.getDatas().size()-1&&!isFistOne){
                 regObj.setCurrentIndex(regObj.getCurrentIndex()+1);
             }else {
 
             }
+
+            isFistOne =false;
+
 
             String loginState = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getLoginState();
             String action = regObj.getAction();
@@ -497,6 +504,7 @@ public class Set008DataService implements Runnable{
                     listd = JSON.parseArray(friends,String.class);
                 }
             }
+
 
             for(int i=1;i<91;i++){
                 if(list.getChild(i).isEditable()){
