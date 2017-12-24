@@ -19,6 +19,16 @@ public class Wx008Data extends DataSupport {
     private String loginState;//登陆状态 0 登陆不成功 1 登陆成功
     private String friends;//好友
     private Date createTime;
+    private Date lastLoginTime;
+
+
+    public Date getLastLoginTime() {
+        return lastLoginTime;
+    }
+
+    public void setLastLoginTime(Date lastLoginTime) {
+        this.lastLoginTime = lastLoginTime;
+    }
 
     public Wx008Data() {
     }

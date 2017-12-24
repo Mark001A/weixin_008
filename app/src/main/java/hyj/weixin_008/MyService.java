@@ -219,8 +219,14 @@ public class MyService extends AccessibilityService {
                     AutoUtil.sleep(1000);
                     AutoUtil.clickXY(1043,1768);
                     clickFlag = true;
+                }else if(("233".equals(cn_num)||"60".equals(cn_num))&&!clickFlag){
+                    AutoUtil.sleep(1000);
+                    AutoUtil.clickXY(1043,888);
+                    clickFlag = true;
                 }
+
                 List<AccessibilityNodeInfo> cnNumNodes =  root.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/ip");//国家数字号节点
+                System.out.println("cnNode text cnNumNodes-->"+cnNumNodes);
                 if(cnNumNodes!=null&&cnNumNodes.size()>0){
                     for(AccessibilityNodeInfo cnNode:cnNumNodes){
                         //找到目标，点击

@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -174,6 +175,7 @@ public class Set008DataService implements Runnable{
         String wxid = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId();
         Wx008Data wx008Data = new Wx008Data();
         wx008Data.setLoginState(state);
+        wx008Data.setLastLoginTime(new Date());
         int countUpdate = wx008Data.updateAll("phone=? or wxId=?",phone,wxid);
         LogUtil.d("countUpdate","countUpdate【"+countUpdate+"】"+"["+state+"]");
     }
@@ -184,6 +186,7 @@ public class Set008DataService implements Runnable{
         WeixinAutoHandler.IS_NEXT_NONE = false;
     }
     private void selsectCn(AccessibilityNodeInfo root,String cn_num){
+        System.out.println("cn_num--->"+cn_num);
         if(!"86".equals(cn_num)){
             //点击进入国家列表
             AccessibilityNodeInfo cn1 = AutoUtil.findNodeInfosByText(root,"国家/地区");
@@ -197,10 +200,34 @@ public class Set008DataService implements Runnable{
             //国家号码遍历查找
             if(AutoUtil.checkAction(record,"wx点击国家地区")||AutoUtil.checkAction(record,"wx下滚")){
                 if("62".equals(cn_num)&&!clickFlag){
+                    AutoUtil.sleep(500);
                     AutoUtil.clickXY(1043,1768);
                     clickFlag = true;
+                }else if(("233".equals(cn_num)||"60".equals(cn_num))&&!clickFlag){
+                    AutoUtil.sleep(500);
+                    AutoUtil.clickXY(1043,888);
+                    clickFlag = true;
                 }
-                AccessibilityNodeInfo n1 = AutoUtil.findNodeInfosByText(root,cn_num);
+
+                List<AccessibilityNodeInfo> cnNumNodes =  root.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/ip");//国家数字号节点
+                System.out.println("cnNode text cnNumNodes-->"+cnNumNodes);
+                if(cnNumNodes!=null&&cnNumNodes.size()>0){
+                    for(AccessibilityNodeInfo cnNode:cnNumNodes){
+                        //找到目标，点击
+                        if(cn_num.equals(cnNode.getText()+"")){
+                            AutoUtil.performClick(cnNode,WeixinAutoHandler.record,"wx选择国家",3000);
+                            clickFlag = false;
+                            return;
+
+                        }
+                        System.out.println("cnNode text-->"+cnNode.getText());
+                    }
+                }
+
+                AccessibilityNodeInfo listViewNode = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/i9");
+                AutoUtil.performScroll(listViewNode,WeixinAutoHandler.record,"wx下滚");
+
+                /*AccessibilityNodeInfo n1 = AutoUtil.findNodeInfosByText(root,cn_num);
                 if(n1==null||(n1!=null&&!cn_num.equals(n1.getText()+""))){
                     AccessibilityNodeInfo listViewNode = AutoUtil.findNodeInfosById(root,"com.tencent.mm:id/i9");
                     AutoUtil.performScroll(listViewNode,record,"wx下滚");
@@ -210,7 +237,7 @@ public class Set008DataService implements Runnable{
                 if(n1!=null&&cn_num.equals(n1.getText()+"")){
                     AutoUtil.performClick(n1,record,"wx选择国家",3000);
                     clickFlag = false;
-                }
+                }*/
             }
         }
 
