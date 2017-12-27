@@ -7,6 +7,7 @@ import java.util.Map;
 
 import hyj.weixin_008.AutoUtil;
 import hyj.weixin_008.daoModel.Wx008Data;
+import hyj.weixin_008.model.PhoneApi;
 import hyj.weixin_008.util.LogUtil;
 import hyj.weixin_008.util.OkHttpUtil;
 import hyj.weixin_008.util.ParseRootUtil;
@@ -19,9 +20,11 @@ public class ReplacePhoneThread implements Runnable {
     public static final String TAG = "ReplacePhoneThread";
     AccessibilityService context;
     Map<String,String> record;
-    public ReplacePhoneThread(AccessibilityService context, Map<String,String> record){
+    PhoneApi pa;
+    public ReplacePhoneThread(AccessibilityService context, Map<String,String> record,PhoneApi pa){
         this.context = context;
         this.record = record;
+        this.pa = pa;
     }
     String phone ="",code="";
     @Override
@@ -29,7 +32,7 @@ public class ReplacePhoneThread implements Runnable {
         while (true){
             AutoUtil.sleep(500);
             if(!AutoUtil.actionContains(record,"ReplacePhoneThread")&&!AutoUtil.checkAction(record,"6")) continue;
-            if ("".equals(phone)) {
+           /* if ("".equals(phone)) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -63,7 +66,7 @@ public class ReplacePhoneThread implements Runnable {
                 }).start();
 
             }
-
+*/
             LogUtil.d("ReplacePhoneThread","【ReplacePhoneThread...】"+Thread.currentThread().getName()+" phone:"+record.get("phone"));
             AccessibilityNodeInfo root = context.getRootInActiveWindow();
             if(root==null){
@@ -102,7 +105,7 @@ public class ReplacePhoneThread implements Runnable {
 
             if(AutoUtil.checkAction(record,"ReplacePhoneThread更换手机号")){
                 AccessibilityNodeInfo node7 = ParseRootUtil.getNodePath(root,"0032");
-                AutoUtil.performSetText(node7,phone,record,"ReplacePhoneThread输入手机号");
+                AutoUtil.performSetText(node7,pa.getPhone(),record,"ReplacePhoneThread输入手机号");
                 continue;
             }
 
@@ -118,7 +121,7 @@ public class ReplacePhoneThread implements Runnable {
                 AccessibilityNodeInfo node8 = AutoUtil.findNodeInfosByText(root,"请输入验证码");
                 if(node8!=null){
                     AccessibilityNodeInfo node7 = ParseRootUtil.getNodePath(root,"0021");
-                    AutoUtil.performSetText(node7,code,record,"ReplacePhoneThread输入验证码");
+                    AutoUtil.performSetText(node7,pa.getValidCode(),record,"ReplacePhoneThread输入验证码");
                 }
             }
 
@@ -131,12 +134,16 @@ public class ReplacePhoneThread implements Runnable {
                 AccessibilityNodeInfo node8 = AutoUtil.findNodeInfosByText(root,"完成");
                 if(node8!=null){
                     code = "";
+                    pa.setPhoneIsAvailavle(false);
+                    pa.setValidCodeIsAvailavle(false);
                     AutoUtil.recordAndLog(record,"008登录成功");
                 }
             }
 
             AccessibilityNodeInfo node9 = AutoUtil.findNodeInfosByText(root,"验证码不正确，请重新输入");
             if(node9!=null){
+                pa.setValidCodeIsAvailavle(false);
+                AutoUtil.sleep(2000);
                 code="";
                 AccessibilityNodeInfo node10 = AutoUtil.findNodeInfosByText(root,"确定");
                 AutoUtil.performClick(node10,record,"ReplacePhoneThread验证码不正确确定");

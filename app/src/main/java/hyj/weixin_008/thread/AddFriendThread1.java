@@ -14,6 +14,7 @@ import hyj.weixin_008.Constants;
 import hyj.weixin_008.common.WeixinAutoHandler;
 import hyj.weixin_008.daoModel.Wx008Data;
 import hyj.weixin_008.model.AutoChatObj;
+import hyj.weixin_008.model.PhoneApi;
 import hyj.weixin_008.util.DaoUtil;
 import hyj.weixin_008.util.LogUtil;
 import hyj.weixin_008.util.ParseRootUtil;

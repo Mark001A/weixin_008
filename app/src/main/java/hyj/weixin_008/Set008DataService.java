@@ -261,7 +261,11 @@ public class Set008DataService implements Runnable{
                 if(cnNum==null||AutoUtil.checkAction(record,"wx选择国家")||AutoUtil.checkAction(record,"wx输入手机号")){
                     AccessibilityNodeInfo phoneNumNode = ParseRootUtil.getNodePath(root,"00321");
                     System.out.println("phoneNumNode-->"+phoneNumNode);
-                    AutoUtil.performSetText(phoneNumNode,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone(),record,"wx输入手机号");
+                    String phone = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone();
+                    if(cnNum.equals("255")&&"255".equals(phone.substring(0,3))){
+                        phone = phone.substring(3);
+                    }
+                    AutoUtil.performSetText(phoneNumNode,phone,record,"wx输入手机号");
 
                     AutoUtil.sleep(1000);
                     AccessibilityNodeInfo nextNode = AutoUtil.findNodeInfosByText(root,"下一步");
