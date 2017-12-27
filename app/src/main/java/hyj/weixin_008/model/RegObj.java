@@ -32,7 +32,7 @@ public class RegObj {
 
     private String currentIP;
 
-    private String action;// 登陆成功后处理的动作  1 设置微信号 2 添加好友 5 登陆失败的
+    private String action;// 登陆成功后处理的动作  1 设置微信号 2 添加好友 4 登陆成功停留 5 登陆失败的  6 解绑手机
 
 
 

@@ -27,8 +27,6 @@ public class SetWxidThread implements Runnable {
         this.context = context;
         this.record = record;
     }
-    int wxNum = 459;
-    String wxpref = "uac";
     String wxid="";
     @Override
     public void run() {
@@ -98,10 +96,9 @@ public class SetWxidThread implements Runnable {
 
             if(AutoUtil.checkAction(record,"SetWxidThread点击微信号")||AutoUtil.checkAction(record,"SetWxidThread点击确认微信号已存在")){
                 AccessibilityNodeInfo node5 = ParseRootUtil.getNodePath(root,"0032");
-                wxid = wxpref +wxNum;
+                wxid = createWxid();
                 LogUtil.d("SetWxidThread输入微信号",wxid);
                 AutoUtil.performSetText(node5,wxid,record,"SetWxidThread输入微信号");
-                wxNum = getNextNum(wxNum);
 
             }
 
@@ -125,6 +122,29 @@ public class SetWxidThread implements Runnable {
             num = num+1;
         }
         return num;
+    }
+
+    private  String createAEOU() {
+        String chars = "aeiu";
+        String str = chars.charAt((int)(Math.random() * 4))+"";
+        return str;
+    }
+
+    private  String createZM() {
+        String chars = "abcdefghijkmnpqrstuvwxyz";
+        String str = chars.charAt((int)(Math.random() * 24))+"";
+        return str;
+    }
+    private  String createSJ() {
+        String chars = "23456789";
+        String str = chars.charAt((int)(Math.random() * 8))+"";
+        return str;
+    }
+
+    private  String createWxid() {
+        String str = "";
+        str = createZM()+createZM()+createZM()+createSJ()+createSJ()+createSJ();
+        return str;
     }
 
 }

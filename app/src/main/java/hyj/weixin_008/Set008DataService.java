@@ -110,7 +110,7 @@ public class Set008DataService implements Runnable{
             //处理不在应在的界面
             CommonUtil.doNotInCurrentView(root,record);
 
-            ParseRootUtil.debugRoot(root);
+            //ParseRootUtil.debugRoot(root);
 
           if(AutoUtil.findNodeInfosByText(root,"SIM卡工具包")!=null){
                 context.performGlobalAction(context.GLOBAL_ACTION_BACK);
@@ -175,7 +175,7 @@ public class Set008DataService implements Runnable{
         String wxid = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId();
         Wx008Data wx008Data = new Wx008Data();
         wx008Data.setLoginState(state);
-        wx008Data.setLastLoginTime(new Date());
+        //wx008Data.setLastLoginTime(new Date());
         int countUpdate = wx008Data.updateAll("phone=? or wxId=?",phone,wxid);
         LogUtil.d("countUpdate","countUpdate【"+countUpdate+"】"+"["+state+"]");
     }
@@ -252,14 +252,15 @@ public class Set008DataService implements Runnable{
         }
         if(!AutoUtil.checkAction(record,"wx登录2"))
             adbService.clickXYByWindow("登录&注册",255,1790,"wx点击登录1",500);
-        if(!AutoUtil.checkAction(record,"wx输入手机号")&&!AutoUtil.checkAction(record,"wx下一步")){
+        if(!AutoUtil.checkAction(record,"wx下一步")){
             if(regObj.getWx008Datas().get(regObj.getCurrentIndex()).getWxId()==null){
                 String cnNum = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getCnNum();
                 if(cnNum!=null&&!"86".equals(cnNum)){
                     selsectCn(root,cnNum);
                 }
-                if(cnNum==null||AutoUtil.checkAction(record,"wx选择国家")){
+                if(cnNum==null||AutoUtil.checkAction(record,"wx选择国家")||AutoUtil.checkAction(record,"wx输入手机号")){
                     AccessibilityNodeInfo phoneNumNode = ParseRootUtil.getNodePath(root,"00321");
+                    System.out.println("phoneNumNode-->"+phoneNumNode);
                     AutoUtil.performSetText(phoneNumNode,regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone(),record,"wx输入手机号");
 
                     AutoUtil.sleep(1000);
@@ -347,7 +348,7 @@ public class Set008DataService implements Runnable{
                 }
                 //登陆成功后执行其他动过
                 if(!"".equals(regObj.getAction())&&!"5".equals(regObj.getAction())){
-                    AutoUtil.recordAndLog(record,regObj.getAction());
+                    AutoUtil.recordAndLog(record,regObj.getAction());//修改标志 对接其他线程
                 }
             }
         }

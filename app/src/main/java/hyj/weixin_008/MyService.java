@@ -40,6 +40,7 @@ import hyj.weixin_008.thread.DrapImageThread;
 import hyj.weixin_008.thread.ForeignRegisterService;
 import hyj.weixin_008.thread.Get008DataThread;
 import hyj.weixin_008.thread.LhGetPhoneAndValidCodeThread;
+import hyj.weixin_008.thread.ReplacePhoneThread;
 import hyj.weixin_008.thread.SetWxidThread;
 import hyj.weixin_008.thread.XmhGetPhoneAndValidCodeThread;
 import hyj.weixin_008.thread.ZYGetPhoneAndValidCodeThread;
@@ -136,12 +137,15 @@ public class MyService extends AccessibilityService {
     }else if("true".equals(yh)){
             new Thread(new Set008DataService(this,WeixinAutoHandler.record,regObj)).start();//养号
         /**
-         * 0 测试 1 设置微信号 2 添加好友
+         *  0 测试
+         *  1 设置微信号 2 添加好友 4 登陆成功停留 5 登陆失败的  6 解绑手机
          */
         if("1".equals(regObj.getAction())){
-                new Thread(new SetWxidThread(this,WeixinAutoHandler.record)).start(); //设置微信号
+                new Thread(new SetWxidThread(this,WeixinAutoHandler.record)).start(); // 1 设置微信号
         }else if("2".equals(regObj.getAction())){
-                new Thread(new AddFriendThread1(this)).start();
+                new Thread(new AddFriendThread1(this)).start();//2 添加好友
+        }else if("6".equals(regObj.getAction())){
+            new Thread(new ReplacePhoneThread(this,WeixinAutoHandler.record)).start(); // 6 解绑手机
         }
     }else if("true".equals(get008Data)){
            new Thread(new Get008DataThread(this,new Get008Data())).start();
@@ -296,7 +300,7 @@ public class MyService extends AccessibilityService {
                 AccessibilityNodeInfo node7 = AutoUtil.findNodeInfosByText(root,"发送");
                 AutoUtil.performClick(node7,WeixinAutoHandler.record,"pyq发送");
             }
-            //打开点赞小框
+           /* //打开点赞小框
             if(AutoUtil.checkAction(WeixinAutoHandler.record,"pyq发送")){
                 AutoUtil.sleep(2000);
                 AccessibilityNodeInfo node8 = ParseRootUtil.getNodePath(root,"00016");
@@ -304,10 +308,10 @@ public class MyService extends AccessibilityService {
             }
             //点赞
             AccessibilityNodeInfo node9 = AutoUtil.findNodeInfosByText(root,"赞");
-            AutoUtil.performClick(node9,WeixinAutoHandler.record,"pyq点赞2");
+            AutoUtil.performClick(node9,WeixinAutoHandler.record,"pyq点赞2");*/
 
-            if(AutoUtil.checkAction(WeixinAutoHandler.record,"pyq点赞2")){
-                AutoUtil.sleep(3500);
+            if(AutoUtil.checkAction(WeixinAutoHandler.record,"pyq发送")){
+                AutoUtil.sleep(5000);
                 AutoUtil.recordAndLog(WeixinAutoHandler.record,"008注册处理完成");
             }
         }
