@@ -1,27 +1,20 @@
 package hyj.weixin_008;
 
-import android.app.ActivityManager;
-import android.content.ComponentName;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.os.Environment;
-import android.os.Handler;
-import android.provider.Settings;
-import android.support.annotation.Dimension;
-import android.support.constraint.solver.widgets.Rectangle;
-import android.support.v7.app.AppCompatActivity;
+import android.net.ConnectivityManager;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.Settings;
+import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -31,23 +24,15 @@ import com.alibaba.fastjson.JSONObject;
 import org.litepal.crud.DataSupport;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import hyj.weixin_008.acvitity.ApiSettingActivity;
 import hyj.weixin_008.acvitity.SettingActivity;
-import hyj.weixin_008.common.WeixinAutoHandler;
 import hyj.weixin_008.daoModel.Wx008Data;
 import hyj.weixin_008.flowWindow.MyWindowManager;
-import hyj.weixin_008.util.CommonUtil;
-import hyj.weixin_008.util.DragImageUtil;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.GetPermissionUtil;
 import hyj.weixin_008.util.LogUtil;
@@ -109,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         apiSettingBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                getPhoneInfo();
                 //testPic();
                 //selectAllData();
                 startActivity(new Intent(MainActivity.this, ApiSettingActivity.class));
@@ -312,10 +298,91 @@ public class MainActivity extends AppCompatActivity {
 
     private void getPhoneInfo(){
         TelephonyManager phone = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        String deviceId = phone.getDeviceId();
-        String imsi = phone.getSubscriberId();
-        String imei = phone.getSimSerialNumber();
-        String tel = phone.getLine1Number();
+        String deviceId = phone.getDeviceId(); //序列号
+        String tel = phone.getLine1Number();//手机号码
+        String imei = phone.getSimSerialNumber();//手机号序列号
+        String imsi = phone.getSubscriberId();//IMSI
+        String getSimCountryIso = phone.getSimCountryIso();//手机卡国家
+        String getSimOperator = phone.getSimOperator();//运营商
+        String getSimOperatorName = phone.getSimOperatorName();//运营商名字
+        String getNetworkCountryIso = phone.getNetworkCountryIso();//国家iso代码
+        String getNetworkOperator = phone.getNetworkOperator();//网络运营商类型
+        String getNetworkOperatorName = phone.getNetworkOperatorName();//网络类型名
+        int getNetworkType = phone.getNetworkType();//网络类型
+        int getPhoneType = phone.getPhoneType();//手机类型
+        int getSimState = phone.getSimState();//手机卡状态
+        //getMacAddress
 
+        String systemVersion =  android.os.Build.VERSION.RELEASE;//系统版本 6.0.1
+        int sdk =  Build.VERSION.SDK_INT;//系统版本值
+        String sdk1 =  Build.VERSION.SDK;//系统版本值
+        String getDeviceBrand = android.os.Build.BRAND;//品牌
+        String getSystemModel =  android.os.Build.MODEL;//型号
+        String ID = android.os.Build.ID;//ID
+        String DISPLAY = android.os.Build.DISPLAY;
+        String PRODUCT = Build.PRODUCT;//产品名
+        String MANUFACTURER = Build.MANUFACTURER;//制造商
+        String DEVICE = Build.DEVICE;//设备名
+        String CPU_ABI = Build.CPU_ABI;//cpu型号 ---？
+        String HARDWARE = Build.HARDWARE;//硬件
+        String FINGERPRINT = Build.FINGERPRINT;//指纹
+        String SERIAL = Build.SERIAL;//串口序列号；
+        String RADIO = Build.RADIO;//蓝牙地址?
+
+        String androidId = Settings.Secure.getString(
+                getContentResolver(), Settings.Secure.ANDROID_ID);//android_id
+        String macAddress = getLocalMac(this);//mac地址
+
+        System.out.println("macAddress->"+macAddress);
+
+
+        //System.out.println("CPU_ABI->"+CPU_ABI);
+        //System.out.println("RADIO->"+RADIO);
+
+
+
+
+        System.out.println("序列号 deviceId->"+deviceId);
+        System.out.println("androidId->"+androidId);
+        System.out.println("手机号码 tel->"+tel);
+        System.out.println("手机号序列号 imei->"+imei);
+        System.out.println("imsi->"+imsi);
+        System.out.println("手机卡国家 getSimCountryIso->"+getSimCountryIso);
+        System.out.println("运营商 getSimOperator->"+getSimOperator);
+        System.out.println("运营商名字 getSimOperatorName->"+getSimOperatorName);
+        System.out.println("国家iso代码 getNetworkCountryIso->"+getNetworkCountryIso);
+        System.out.println("网络运营商类型 getNetworkOperator->"+getNetworkOperator);
+        System.out.println("网络类型名 getNetworkOperatorName->"+getNetworkOperatorName);
+        System.out.println("网络类型 getNetworkType->"+getNetworkType);
+        System.out.println("手机类型 getPhoneType->"+getPhoneType);
+        System.out.println("手机卡状态 getSimState->"+getSimState);
+
+        System.out.println("系统版本 systemVersion->"+systemVersion);
+        System.out.println("系统版本值 sdk->"+sdk +" "+sdk1);
+        System.out.println("型号 getSystemModel->"+getSystemModel);
+        System.out.println("品牌 getDeviceBrand->"+getDeviceBrand);
+        System.out.println("ID->"+ID);
+        System.out.println("DISPLAY->"+DISPLAY);
+        System.out.println("产品名 PRODUCT->"+PRODUCT);
+        System.out.println("制造商 MANUFACTURER->"+MANUFACTURER);
+        System.out.println("设备名 DEVICE->"+DEVICE);
+        System.out.println("硬件 HARDWARE->"+HARDWARE);
+        System.out.println("指纹 FINGERPRINT->"+FINGERPRINT);
+        System.out.println("串口序列号 SERIAL->"+SERIAL);
+
+        ConnectivityManager connectivity = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        String subTypeName = connectivity.getActiveNetworkInfo().getSubtypeName();
+        int subtype = connectivity.getActiveNetworkInfo().getSubtype();
+        System.out.println("subTypeName->"+subTypeName);
+        System.out.println("subtype->"+subtype);
+
+
+    }
+    // Mac地址
+    private static String getLocalMac(Context context) {
+        WifiManager wifi = (WifiManager) context
+                .getSystemService(Context.WIFI_SERVICE);
+        WifiInfo info = wifi.getConnectionInfo();
+        return info.getMacAddress();
     }
 }

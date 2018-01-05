@@ -2,31 +2,21 @@ package hyj.weixin_008;
 
 import android.accessibilityservice.AccessibilityService;
 import android.content.SharedPreferences;
-import android.os.Handler;
 import android.provider.Settings;
-import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
-import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import hyj.weixin_008.common.ConstantWxId;
 import hyj.weixin_008.common.WeixinAutoHandler;
 import hyj.weixin_008.daoModel.Wx008Data;
-import hyj.weixin_008.flowWindow.MyWindowManager;
 import hyj.weixin_008.model.RegObj;
 import hyj.weixin_008.service.ADBClickService;
-import hyj.weixin_008.thread.AddFriendThread;
 import hyj.weixin_008.thread.AutoChatThread;
 import hyj.weixin_008.util.CommonUtil;
-import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.LogUtil;
 import hyj.weixin_008.util.ParseRootUtil;
 
@@ -262,7 +252,7 @@ public class Set008DataService implements Runnable{
                     AccessibilityNodeInfo phoneNumNode = ParseRootUtil.getNodePath(root,"00321");
                     System.out.println("phoneNumNode-->"+phoneNumNode);
                     String phone = regObj.getWx008Datas().get(regObj.getCurrentIndex()).getPhone();
-                    if(cnNum.equals("255")&&"255".equals(phone.substring(0,3))){
+                    if("255".equals(cnNum)&&"255".equals(phone.substring(0,3))){
                         phone = phone.substring(3);
                     }
                     AutoUtil.performSetText(phoneNumNode,phone,record,"wx输入手机号");
