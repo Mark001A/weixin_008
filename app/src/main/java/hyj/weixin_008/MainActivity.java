@@ -272,14 +272,14 @@ public class MainActivity extends AppCompatActivity {
         File[] files1 = file1.listFiles();
         if(files1!=null&&files1.length>0) {
             LogUtil.d("DrapImageThread", "file length-->" + files1.length);
-            for (File f : files1) {
-                if(f.isFile()&&f!=null&&f.getName()!=null&&(f.getName().indexOf(".apk")>-1||f.getName().indexOf("app2")>-1||f.getName().indexOf("app3")>-1|f.getName().indexOf("debug")>-1)){
+           /* for (File f : files1) {
+                if(f.isFile()&&f!=null&&f.getName()!=null&&(f.getName().indexOf(".ap2k")>-1||f.getName().indexOf("app2")>-1||f.getName().indexOf("app3")>-1|f.getName().indexOf("debug")>-1)){
                     LogUtil.d("DrapImageThread", "删除APk：" + f.getName());
                     f.delete();
                     LogUtil.d("DrapImageThread", "删除完APK：" + f.getName());
                 }
 
-            }
+            }*/
         }
     }
 
