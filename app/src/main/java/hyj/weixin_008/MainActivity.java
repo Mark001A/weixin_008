@@ -35,6 +35,7 @@ import hyj.weixin_008.daoModel.Wx008Data;
 import hyj.weixin_008.flowWindow.MyWindowManager;
 import hyj.weixin_008.util.FileUtil;
 import hyj.weixin_008.util.GetPermissionUtil;
+import hyj.weixin_008.util.GetPhoneInfoUtil;
 import hyj.weixin_008.util.LogUtil;
 
 public class MainActivity extends AppCompatActivity {
@@ -146,6 +147,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         delScennShotPic();
+
+        GetPhoneInfoUtil.getPhoneInfo();
 
     }
 
