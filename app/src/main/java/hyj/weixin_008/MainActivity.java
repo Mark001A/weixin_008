@@ -53,13 +53,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         System.out.println("-----tt----");
         super.onCreate(savedInstanceState);
-        MyWindowManager.createSmallWindow(getApplicationContext());
+     /*   MyWindowManager.createSmallWindow(getApplicationContext());
         MyWindowManager.createSmallWindow2(getApplicationContext());
         GetPermissionUtil.getReadAndWriteContactPermision(this,MainActivity.this);
         setContentView(R.layout.activity_main);
         sharedPreferences = GlobalApplication.getContext().getSharedPreferences("url",MODE_PRIVATE);
 
-      /*  System.out.println("--IP1--->"+AutoUtil.getIPAddress(getApplicationContext()));
+      *//*  System.out.println("--IP1--->"+AutoUtil.getIPAddress(getApplicationContext()));
         AutoUtil.opentActivity(Settings.ACTION_AIRPLANE_MODE_SETTINGS);
         AutoUtil.sleep(3000);
         AutoUtil.clickXY(952,262);
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         AutoUtil.clickXY(952,262);
         AutoUtil.sleep(10000);
         System.out.println("--IP1--->"+AutoUtil.getIPAddress(getApplicationContext()));
-*/
+*//*
 
         Button apiSettingBtn = (Button)this.findViewById(R.id.api_setting);
         Button openAssit = (Button)this.findViewById(R.id.open_assist);
@@ -149,6 +149,8 @@ public class MainActivity extends AppCompatActivity {
         delScennShotPic();
 
         GetPhoneInfoUtil.getPhoneInfo();
+*/
+        AutoUtil.startAppByPackName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
 
     }
 

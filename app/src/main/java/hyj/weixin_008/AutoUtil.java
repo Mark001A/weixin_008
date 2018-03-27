@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import hyj.weixin_008.util.LogUtil;
 
@@ -387,6 +388,7 @@ public class AutoUtil {
         list.add("可以没有");
         return list;
     }
+
 
 
 }
